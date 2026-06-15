@@ -1,0 +1,7 @@
+{
+  "version": "1.0.9",
+  "min_version": "1.0.0",
+  "changelog": "Fix crash Android: eliminat shared_preferences native assets incompatibil",
+  "installer_filename": "CarRecords_Setup_v1.0.9.exe",
+  "force_update": false
+}
