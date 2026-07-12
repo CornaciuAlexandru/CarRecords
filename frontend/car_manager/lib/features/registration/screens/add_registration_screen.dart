@@ -85,6 +85,7 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
   void _applyOcrData(Map<String, dynamic> data) {
     setState(() {
       if (data['owner_name']        != null) _ownerCtrl.text  = data['owner_name'];
+      if (data['owner_address']     != null) _addressCtrl.text = data['owner_address'];
       if (data['car_series']        != null) _seriesCtrl.text = data['car_series'];
       if (data['brand']             != null) _brandCtrl.text  = data['brand'];
       if (data['model']             != null) _modelCtrl.text  = data['model'];
@@ -120,6 +121,7 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
               if (data['manufacturing_year'] != null) _ocrRow('An fabricație', data['manufacturing_year']),
               if (data['car_series']        != null) _ocrRow('Serie șasiu (VIN)', data['car_series']),
               if (data['owner_name']        != null) _ocrRow('Proprietar', data['owner_name']),
+              if (data['owner_address']     != null) _ocrRow('Adresă', data['owner_address']),
               if (data['registration_date'] != null) _ocrRow('Data înmatriculării', data['registration_date']),
               if (data['itp_expiry_date']   != null) _ocrRow('ITP expiră', data['itp_expiry_date']),
             ] else ...[

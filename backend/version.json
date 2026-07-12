@@ -1,8 +1,8 @@
 {
-  "version": "1.0.11",
+  "version": "1.0.12",
   "min_version": "1.0.0",
-  "changelog": "Backup automat baza de date + verificare SHA-256 la actualizari",
-  "installer_filename": "CarRecords_Setup_v1.0.11.exe",
+  "changelog": "OCR talon imbunatatit: auto-rotire, multi-pass, vot majoritar VIN/placuta + fix mapare adresa",
+  "installer_filename": "CarRecords_Setup_v1.0.12.exe",
   "force_update": false,
-  "sha256": "d07d5e37a9008c22f70e3a1a65b3b294ba5c41b9800fd3472eaf4986a233eead"
+  "sha256": "f2d859f5d67d25e893f3c5491d0e34c3683ea41d275a54670f9892504ec9da50"
 }
