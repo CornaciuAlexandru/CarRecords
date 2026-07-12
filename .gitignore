@@ -1,0 +1,29 @@
+# ── Secrete si date ──────────────────────────────
+backend/.env
+backend/*.db
+backend/uploads/
+backend/downloads/
+
+# ── Python ───────────────────────────────────────
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ── Flutter / Dart ───────────────────────────────
+frontend/car_manager/build/
+frontend/car_manager/.dart_tool/
+frontend/car_manager/.flutter-plugins
+frontend/car_manager/.flutter-plugins-dependencies
+frontend/car_manager/android/.gradle/
+frontend/car_manager/android/local.properties
+frontend/car_manager/*.iml
+
+# ── Artefacte de release (generate de release.py) ─
+*.exe
+*.apk
+
+# ── Diverse ──────────────────────────────────────
+node_modules/
+*.log
+Thumbs.db
