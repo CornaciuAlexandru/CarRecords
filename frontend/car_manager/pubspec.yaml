@@ -1,7 +1,7 @@
 name: car_manager
 description: CarRecords - Aplicatie pentru gestionarea documentelor si datelor auto
 publish_to: 'none'
-version: 1.0.10+1010
+version: 1.0.11+1011
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -21,6 +21,9 @@ dependencies:
 
   # Local storage
   shared_preferences: '>=2.2.3 <2.3.0'
+
+  # Verificare integritate update (SHA-256)
+  crypto: ^3.0.3
 
   # Camera & OCR
   image_picker: ^1.1.2

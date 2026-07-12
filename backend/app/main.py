@@ -1,6 +1,9 @@
 import json
+import shutil
 import socket
 import threading
+import time
+from datetime import date
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,8 +20,13 @@ DISCOVERY_PORT = 8765
 DISCOVERY_MSG  = b"CARRECORDS_DISCOVER"
 DISCOVERY_RESP = b"CARRECORDS_HERE:8000"
 
-VERSION_FILE = Path(__file__).parent.parent / "version.json"
-DOWNLOADS_DIR = Path(__file__).parent.parent / "downloads"
+BASE_DIR = Path(__file__).resolve().parent.parent
+VERSION_FILE = BASE_DIR / "version.json"
+DOWNLOADS_DIR = BASE_DIR / "downloads"
+DB_FILE = BASE_DIR / "carmanager.db"
+BACKUPS_DIR = BASE_DIR / "backups"
+BACKUP_KEEP = 14          # pastram ultimele 14 backup-uri zilnice
+BACKUP_INTERVAL = 86400   # 24 ore, pentru sesiuni lungi fara restart
 
 
 @asynccontextmanager
@@ -29,7 +37,37 @@ async def lifespan(app: FastAPI):
     DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
     _migrate_max_cars()
     _start_discovery_server()
+    _start_backup_scheduler()
     yield
+
+
+def _backup_database():
+    """Copiaza baza de date in backups/ (max un backup pe zi, pastreaza ultimele 14)."""
+    try:
+        if not DB_FILE.exists():
+            return
+        BACKUPS_DIR.mkdir(parents=True, exist_ok=True)
+        target = BACKUPS_DIR / f"carmanager_{date.today().isoformat()}.db"
+        if not target.exists():
+            shutil.copy2(DB_FILE, target)
+        # Pastram doar ultimele BACKUP_KEEP backup-uri
+        backups = sorted(BACKUPS_DIR.glob("carmanager_*.db"))
+        for old in backups[:-BACKUP_KEEP]:
+            old.unlink(missing_ok=True)
+    except Exception:
+        pass  # backup-ul nu trebuie sa blocheze niciodata pornirea
+
+
+def _start_backup_scheduler():
+    """Backup imediat la pornire + o data la 24h (pentru sesiuni lungi)."""
+    _backup_database()
+
+    def _loop():
+        while True:
+            time.sleep(BACKUP_INTERVAL)
+            _backup_database()
+
+    threading.Thread(target=_loop, daemon=True).start()
 
 
 def _start_discovery_server():
@@ -124,4 +162,5 @@ def get_version(client_version: str = "0.0.0"):
         "changelog":        data.get("changelog", ""),
         "download_url":     f"/downloads/{data['installer_filename']}" if update_available else None,
         "installer_filename": data.get("installer_filename"),
+        "sha256":           data.get("sha256"),
     }

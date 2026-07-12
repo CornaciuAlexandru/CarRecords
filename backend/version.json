@@ -1,7 +1,8 @@
 {
-  "version": "1.0.10",
+  "version": "1.0.11",
   "min_version": "1.0.0",
-  "changelog": "Fix conectare Windows: 127.0.0.1 in loc de localhost (conflict IPv6)",
-  "installer_filename": "CarRecords_Setup_v1.0.10.exe",
-  "force_update": false
+  "changelog": "Backup automat baza de date + verificare SHA-256 la actualizari",
+  "installer_filename": "CarRecords_Setup_v1.0.11.exe",
+  "force_update": false,
+  "sha256": "d07d5e37a9008c22f70e3a1a65b3b294ba5c41b9800fd3472eaf4986a233eead"
 }

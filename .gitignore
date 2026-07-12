@@ -1,6 +1,7 @@
 # ── Secrete si date ──────────────────────────────
 backend/.env
 backend/*.db
+backend/backups/
 backend/uploads/
 backend/downloads/
 

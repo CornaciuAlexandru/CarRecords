@@ -11,7 +11,7 @@ Ce face:
   5. Actualizeaza version.json in backend
   6. Copiaza installer-ul in backend/downloads/
 """
-import sys, subprocess, json, shutil, re
+import sys, subprocess, json, shutil, re, hashlib
 from pathlib import Path
 
 # Forteaza UTF-8 pe stdout pentru a evita erori cp1252 pe Windows
@@ -52,12 +52,24 @@ def bump_inno_version(new_ver: str):
     iss.write_text(txt, encoding="utf-8")
     print(f"  ✓ Versiune Inno Setup actualizata: {new_ver}")
 
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
 def update_version_json(new_ver: str, changelog: str):
     vf = BACKEND / "version.json"
     data = json.loads(vf.read_text(encoding="utf-8")) if vf.exists() else {}
     data["version"]            = new_ver
     data["changelog"]          = changelog
     data["installer_filename"] = f"CarRecords_Setup_v{new_ver}.exe"
+    # Hash SHA-256 al installer-ului — verificat de client inainte de executie
+    installer = ROOT / f"CarRecords_Setup_v{new_ver}.exe"
+    if installer.exists():
+        data["sha256"] = sha256_file(installer)
+        print(f"  ✓ SHA-256: {data['sha256'][:16]}...")
     vf.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"  ✓ version.json actualizat: {new_ver}")
 

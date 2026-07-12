@@ -1,11 +1,12 @@
 import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import '../api/api_client.dart';
 import '../theme/app_theme.dart';
 
-const _appVersion = '1.0.10';   // ← actualizat la fiecare release
+const _appVersion = '1.0.11';   // ← actualizat la fiecare release
 
 class UpdateInfo {
   final String serverVersion;
@@ -14,6 +15,7 @@ class UpdateInfo {
   final String changelog;
   final String? downloadUrl;
   final String? installerFilename;
+  final String? sha256;
 
   const UpdateInfo({
     required this.serverVersion,
@@ -22,6 +24,7 @@ class UpdateInfo {
     required this.changelog,
     this.downloadUrl,
     this.installerFilename,
+    this.sha256,
   });
 
   factory UpdateInfo.fromJson(Map<String, dynamic> j) => UpdateInfo(
@@ -31,6 +34,7 @@ class UpdateInfo {
     changelog:        j['changelog'] ?? '',
     downloadUrl:      j['download_url'],
     installerFilename: j['installer_filename'],
+    sha256:           j['sha256'],
   );
 }
 
@@ -103,17 +107,42 @@ class UpdateService {
       );
     }
 
-    await _dio.download(
-      fullUrl,
-      savePath,
-      onReceiveProgress: (rec, total) {
-        if (total > 0) {
-          progress = rec / total;
-          onProgress();
+    try {
+      await _dio.download(
+        fullUrl,
+        savePath,
+        onReceiveProgress: (rec, total) {
+          if (total > 0) {
+            progress = rec / total;
+            onProgress();
+          }
+        },
+        options: Options(receiveTimeout: const Duration(minutes: 10)),
+      );
+    } catch (_) {
+      // Download esuat — inchidem dialogul si anuntam utilizatorul
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        _showError(context, 'Descărcarea a eșuat. Verifică conexiunea și încearcă din nou.');
+      }
+      return;
+    }
+
+    // ── Verificare integritate SHA-256 ─────────────────────────────
+    // Blocheaza executia daca fisierul descarcat difera de cel publicat
+    // (download corupt sau atac man-in-the-middle).
+    if (info.sha256 != null && info.sha256!.isNotEmpty) {
+      final actual = sha256.convert(await File(savePath).readAsBytes()).toString();
+      if (actual.toLowerCase() != info.sha256!.toLowerCase()) {
+        try { File(savePath).deleteSync(); } catch (_) {}
+        if (context.mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+          _showError(context,
+              'Verificarea integrității a eșuat — fișierul descărcat este corupt sau modificat. Instalarea a fost anulată.');
         }
-      },
-      options: Options(receiveTimeout: const Duration(minutes: 10)),
-    );
+        return;
+      }
+    }
 
     if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
 
@@ -122,6 +151,26 @@ class UpdateService {
         runInShell: false);
     // Inchide app-ul curent — installer-ul va redeschide versiunea noua
     exit(0);
+  }
+
+  void _showError(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Row(children: [
+          Icon(Icons.error_outline, color: AppColors.danger),
+          SizedBox(width: 8),
+          Text('Eroare la actualizare'),
+        ]),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }
 
