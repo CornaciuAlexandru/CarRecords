@@ -1,12 +1,11 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Pe Windows backend-ul ruleaza intotdeauna pe localhost.
+// Pe Windows backend-ul ruleaza intotdeauna pe loopback local.
+// Folosim 127.0.0.1 explicit (nu "localhost") — pe unele sisteme localhost
+// se rezolva la ::1 (IPv6), iar uvicorn asculta doar pe IPv4.
 // Pe Android IP-ul este descoperit automat prin UDP broadcast la fiecare pornire.
-String _dynamicBaseUrl = Platform.isAndroid
-    ? 'http://127.0.0.1:8000/api/v1'   // placeholder — suprascris de discovery
-    : 'http://localhost:8000/api/v1';
+String _dynamicBaseUrl = 'http://127.0.0.1:8000/api/v1';
 
 /// URL-ul curent al backend-ului.
 String get backendBaseUrl => _dynamicBaseUrl;

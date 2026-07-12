@@ -1,7 +1,7 @@
 {
-  "version": "1.0.9",
+  "version": "1.0.10",
   "min_version": "1.0.0",
-  "changelog": "Fix crash Android: eliminat shared_preferences native assets incompatibil",
-  "installer_filename": "CarRecords_Setup_v1.0.9.exe",
+  "changelog": "Fix conectare Windows: 127.0.0.1 in loc de localhost (conflict IPv6)",
+  "installer_filename": "CarRecords_Setup_v1.0.10.exe",
   "force_update": false
 }
