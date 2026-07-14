@@ -25,6 +25,7 @@ class VehicleRegistration(Base):
     homologation_number = Column(String, nullable=True)
     document_image_path = Column(String, nullable=True)
     ocr_raw_text = Column(Text, nullable=True)
+    notes = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 

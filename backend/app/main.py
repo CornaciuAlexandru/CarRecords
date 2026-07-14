@@ -35,6 +35,7 @@ async def lifespan(app: FastAPI):
     DOCUMENTS_PATH.mkdir(parents=True, exist_ok=True)
     PHOTOS_PATH.mkdir(parents=True, exist_ok=True)
     DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    _migrate_missing_columns()
     _migrate_max_cars()
     _start_discovery_server()
     _start_backup_scheduler()
@@ -89,6 +90,32 @@ def _start_discovery_server():
 
     t = threading.Thread(target=_listen, daemon=True)
     t.start()
+
+
+def _migrate_missing_columns():
+    """Adauga automat coloanele noi din modele care lipsesc din tabelele
+    existente (create_all nu modifica tabele deja create)."""
+    from sqlalchemy import text, inspect as sa_inspect
+    _TYPE_MAP = {"VARCHAR": "VARCHAR", "TEXT": "TEXT", "INTEGER": "INTEGER",
+                 "FLOAT": "FLOAT", "BOOLEAN": "BOOLEAN", "DATE": "DATE",
+                 "DATETIME": "DATETIME"}
+    try:
+        inspector = sa_inspect(engine)
+        with engine.begin() as conn:
+            for table in Base.metadata.tables.values():
+                if table.name not in inspector.get_table_names():
+                    continue
+                existing = {c["name"] for c in inspector.get_columns(table.name)}
+                for col in table.columns:
+                    if col.name in existing:
+                        continue
+                    col_type = str(col.type).split("(")[0].upper()
+                    sql_type = _TYPE_MAP.get(col_type, "TEXT")
+                    conn.execute(text(
+                        f'ALTER TABLE {table.name} ADD COLUMN {col.name} {sql_type}'
+                    ))
+    except Exception:
+        pass  # migrarea nu trebuie sa blocheze pornirea
 
 
 def _migrate_max_cars():
