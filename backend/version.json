@@ -1,8 +1,8 @@
 {
-  "version": "1.0.12",
+  "version": "1.0.13",
   "min_version": "1.0.0",
-  "changelog": "OCR talon imbunatatit: auto-rotire, multi-pass, vot majoritar VIN/placuta + fix mapare adresa",
-  "installer_filename": "CarRecords_Setup_v1.0.12.exe",
+  "changelog": "Fix crash Android la pornire: eliminat path_provider cu JNI",
+  "installer_filename": "CarRecords_Setup_v1.0.13.exe",
   "force_update": false,
-  "sha256": "f2d859f5d67d25e893f3c5491d0e34c3683ea41d275a54670f9892504ec9da50"
+  "sha256": "b6f45c676db47b45f8e56ff7a73c8651c2ac658531191c149f2310a8b1e04362"
 }

@@ -1,7 +1,7 @@
 name: car_manager
 description: CarRecords - Aplicatie pentru gestionarea documentelor si datelor auto
 publish_to: 'none'
-version: 1.0.12+1012
+version: 1.0.13+1013
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -46,10 +46,11 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
 
-# Forteaza versiuni fara Dart Native Assets (libdatastore_shared_counter.so)
-# care cauzeaza crash pe Android
+# Forteaza versiuni fara Dart Native Assets / JNI (libdatastore_shared_counter.so,
+# libdartjni.so) care cauzeaza crash la pornire pe Android
 dependency_overrides:
   shared_preferences_android: '>=2.2.0 <2.3.0'
+  path_provider_android: '>=2.2.0 <2.3.0'
 
 flutter:
   uses-material-design: true

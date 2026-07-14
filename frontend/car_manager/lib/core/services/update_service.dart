@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import '../api/api_client.dart';
 import '../theme/app_theme.dart';
 
-const _appVersion = '1.0.12';   // ← actualizat la fiecare release
+const _appVersion = '1.0.13';   // ← actualizat la fiecare release
 
 class UpdateInfo {
   final String serverVersion;
