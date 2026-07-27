@@ -135,6 +135,48 @@ def _extract_text(image_path: Path) -> str:
     return "\n".join(_text_variants(image_path))
 
 
+def _prepared_images(image_path: Path) -> tuple:
+    """(varianta_gri, varianta_binarizata) cu orientarea deja corectata."""
+    img = _load_image(image_path)
+    rot = _detect_rotation(img)
+    if rot:
+        img = img.rotate(rot, expand=True)
+    enhanced = _enhance(img)
+    return enhanced, _otsu_binarize(enhanced)
+
+
+def _word_boxes(img: Image.Image, psm: int = 6) -> list[dict]:
+    """Cuvintele detectate, cu pozitia lor: {text, x, y, w, h, cx, cy}.
+
+    Permite parsare pe layout (coloane, etichete si valori aliniate), nu
+    doar pe linii de text — talonul e un formular cu doua coloane.
+    """
+    try:
+        data = pytesseract.image_to_data(
+            img, lang=OCR_LANG, config=f'--oem 3 --psm {psm}',
+            output_type=pytesseract.Output.DICT,
+        )
+    except Exception:
+        return []
+
+    words = []
+    for i, txt in enumerate(data.get("text", [])):
+        txt = (txt or "").strip()
+        if not txt:
+            continue
+        try:
+            conf = float(data["conf"][i])
+        except (ValueError, KeyError):
+            conf = -1
+        if conf < 30:          # ignoram detectiile nesigure
+            continue
+        x, y = data["left"][i], data["top"][i]
+        w, h = data["width"][i], data["height"][i]
+        words.append({"text": txt, "x": x, "y": y, "w": w, "h": h,
+                      "cy": y + h / 2, "x2": x + w})
+    return words
+
+
 # ═══════════════════════════════════════════════════════════════════
 #  Helpers comune
 # ═══════════════════════════════════════════════════════════════════
@@ -325,6 +367,31 @@ _KNOWN_BRANDS = [
     "CHEVROLET", "MINI", "SMART", "LEXUS", "SUBARU", "DAEWOO", "LADA",
 ]
 
+# Modele frecvente pe piata din Romania — folosite ca plasa de siguranta
+# cand campul D.3 e citit gresit de OCR.
+_MODELS_BY_BRAND = {
+    "DACIA":      ("LOGAN", "SANDERO", "DUSTER", "SPRING", "JOGGER", "LODGY", "DOKKER", "SOLENZA"),
+    "RENAULT":    ("LAGUNA", "MEGANE", "CLIO", "SCENIC", "CAPTUR", "KADJAR", "TALISMAN", "TWINGO", "ESPACE"),
+    "VOLKSWAGEN": ("GOLF", "PASSAT", "POLO", "TIGUAN", "TOURAN", "JETTA", "ARTEON", "T-ROC", "SHARAN"),
+    "FORD":       ("FOCUS", "FIESTA", "MONDEO", "KUGA", "PUMA", "TRANSIT", "S-MAX", "C-MAX"),
+    "OPEL":       ("ASTRA", "CORSA", "INSIGNIA", "ZAFIRA", "MOKKA", "VECTRA", "MERIVA"),
+    "SKODA":      ("OCTAVIA", "FABIA", "SUPERB", "KODIAQ", "KAROQ", "RAPID", "ROOMSTER"),
+    "BMW":        ("SERIA", "X1", "X3", "X5", "X6", "320", "318", "520"),
+    "AUDI":       ("A3", "A4", "A6", "A8", "Q3", "Q5", "Q7", "A1", "A5"),
+    "MERCEDES":   ("C-CLASS", "E-CLASS", "A-CLASS", "SPRINTER", "VITO", "GLA", "GLC"),
+    "TOYOTA":     ("COROLLA", "YARIS", "AVENSIS", "RAV4", "AURIS", "C-HR", "PRIUS"),
+    "HYUNDAI":    ("TUCSON", "I20", "I30", "SANTA FE", "KONA", "ACCENT"),
+    "KIA":        ("SPORTAGE", "CEED", "RIO", "SORENTO", "PICANTO", "STONIC"),
+    "PEUGEOT":    ("206", "207", "208", "307", "308", "3008", "5008", "2008"),
+    "CITROEN":    ("C3", "C4", "C5", "BERLINGO", "PICASSO", "C-ELYSEE"),
+    "FIAT":       ("PUNTO", "PANDA", "500", "DOBLO", "TIPO", "BRAVO"),
+    "SEAT":       ("IBIZA", "LEON", "ATECA", "TOLEDO", "ARONA"),
+    "VOLVO":      ("XC60", "XC90", "S60", "V40", "V60", "XC40"),
+    "NISSAN":     ("QASHQAI", "JUKE", "MICRA", "X-TRAIL", "NOTE"),
+    "MAZDA":      ("CX-5", "CX-3", "MAZDA3", "MAZDA6", "MAZDA2"),
+    "HONDA":      ("CIVIC", "ACCORD", "CR-V", "JAZZ", "HR-V"),
+}
+
 
 def _canon_code(raw: str) -> str:
     """'C.2.2' / 'C,2 2' → 'C22'"""
@@ -417,6 +484,119 @@ def _parse_talon_fields(text: str) -> dict:
     return fields
 
 
+def _reading_order(words: list[dict], line_tol: float) -> list[dict]:
+    """Ordoneaza cuvintele ca la citire: pe randuri (sus→jos), iar in cadrul
+    fiecarui rand de la stanga la dreapta.
+
+    Sortarea directa dupa 'cy' amesteca cuvintele de pe acelasi rand, pentru
+    ca inaltimile difera cu cativa pixeli ('MARI' la 791 vs 'VALCEA' la 786).
+    """
+    lines: list[list[dict]] = []
+    for w in sorted(words, key=lambda w: w["cy"]):
+        if lines and abs(w["cy"] - lines[-1][0]["cy"]) <= line_tol:
+            lines[-1].append(w)
+        else:
+            lines.append([w])
+    ordered = []
+    for line in lines:
+        ordered.extend(sorted(line, key=lambda w: w["x"]))
+    return ordered
+
+
+def _date_near_label(words: list[dict], code: str) -> Optional[str]:
+    """Cauta o data in vecinatatea unei etichete de camp.
+
+    Unele campuri (X = expirarea ITP) sunt celule de tabel: eticheta pe un
+    rand, valoarea mai jos si la dreapta. Cautam in dreptunghiul din
+    dreapta-jos al etichetei si luam data cea mai apropiata.
+    """
+    label = next((w for w in words
+                  if _canon_code(w["text"]) == code and len(w["text"]) <= 6), None)
+    if not label:
+        return None
+
+    reach_y = label["h"] * 14      # cat de jos cautam
+    reach_x = label["h"] * 30      # cat de la dreapta
+
+    best, best_dist = None, None
+    for w in words:
+        if not _DATE_RE.fullmatch(w["text"]):
+            continue
+        dy = w["cy"] - label["cy"]
+        dx = w["x"] - label["x"]
+        if -label["h"] <= dy <= reach_y and -label["h"] <= dx <= reach_x:
+            parsed = _parse_date_str(w["text"])
+            if not parsed:
+                continue
+            dist = abs(dy) + abs(dx) * 0.3
+            if best_dist is None or dist < best_dist:
+                best, best_dist = parsed, dist
+    return best
+
+
+def _spatial_fields(words: list[dict]) -> dict:
+    """Parsare pe layout: gaseste etichetele de camp (A, B, D.1, C.2.2, X…)
+    si ia cuvintele din dreapta lor, de pe aceeasi linie.
+
+    Rezolva cazurile pe care parsarea pe linii le rateaza:
+      - etichete lipite de gunoi OCR ('R 2) c2s MITROI')
+      - campuri din coloana din dreapta (X = expirare ITP)
+      - valori care continua pe randul urmator (adresa)
+    """
+    if not words:
+        return {}
+
+    # Inaltimea mediana a unui cuvant → toleranta pentru "aceeasi linie"
+    heights = sorted(w["h"] for w in words)
+    line_tol = max(6, heights[len(heights) // 2] * 0.6)
+
+    # Identificam etichetele: cuvinte care sunt exact un cod de talon
+    labels = []
+    for i, w in enumerate(words):
+        code = _canon_code(w["text"])
+        if code in _TALON_CODES and len(w["text"]) <= 6:
+            labels.append((i, code, w))
+
+    fields: dict[str, str] = {}
+    for idx, code, lw in labels:
+        # Cuvinte pe aceeasi banda orizontala, la dreapta etichetei
+        same_line = [w for w in words
+                     if abs(w["cy"] - lw["cy"]) <= line_tol and w["x"] > lw["x2"] - 2]
+        same_line.sort(key=lambda w: w["x"])
+
+        value_words, prev_x2 = [], lw["x2"]
+        for w in same_line:
+            # Alt cod de camp → aici se termina valoarea curenta
+            if _canon_code(w["text"]) in _TALON_CODES and len(w["text"]) <= 6:
+                break
+            # Salt orizontal mare → am trecut in alta coloana
+            if w["x"] - prev_x2 > lw["h"] * 6:
+                break
+            value_words.append(w["text"])
+            prev_x2 = w["x2"]
+
+        if not value_words:
+            continue
+        value = _clean_value(" ".join(value_words))
+
+        # Adresa (C.2.3) continua pe randurile de dedesubt, in aceeasi coloana
+        if code == "C23":
+            band_x1 = lw["x"]
+            band_x2 = max(w["x2"] for w in same_line[:len(value_words)])
+            below = [w for w in words
+                     if lw["cy"] + line_tol < w["cy"] <= lw["cy"] + line_tol * 6
+                     and band_x1 - line_tol <= w["x"] <= band_x2 + line_tol * 3
+                     and _canon_code(w["text"]) not in _TALON_CODES]
+            if below:
+                below = _reading_order(below, line_tol)
+                value = _clean_value(value + " " + " ".join(w["text"] for w in below))
+
+        if value and code not in fields:
+            fields[code] = value
+
+    return fields
+
+
 def _clean_address(value: str) -> str:
     """Taie adresa la primul token care contine 3+ cifre consecutive
     (specificatii anvelope '215/55R16' etc. din coloana vecina)."""
@@ -501,21 +681,51 @@ def _clean_name(value: str) -> Optional[str]:
 
 
 async def extract_registration_data(image_path: Path) -> dict:
-    variants = _text_variants(image_path, psms=(4, 6))
+    if not OCR_AVAILABLE:
+        return {"ocr_raw_text": ""}
+    try:
+        enhanced, binary = _prepared_images(image_path)
+    except Exception:
+        return {"ocr_raw_text": ""}
+
+    # Doua surse de adevar, combinate:
+    #   1. text pe linii  — robust cand randurile sunt curate
+    #   2. layout (x, y)  — prinde etichetele lipite de gunoi si coloanele
+    variants = [t for img in (enhanced, binary) for psm in (4, 6)
+                if (t := _ocr(img, psm)).strip()]
     if not variants:
         return {"ocr_raw_text": ""}
 
-    # Parsam fiecare varianta si le ordonam dupa scor
     parsed = sorted(
         ((_parse_talon_fields(t), t) for t in variants),
         key=lambda pt: _score_fields(pt[0]),
         reverse=True,
     )
-    # Varianta cu cel mai bun scor e baza; completam lipsurile din celelalte
     fields = dict(parsed[0][0])
     for extra, _ in parsed[1:]:
         for code, val in extra.items():
             fields.setdefault(code, val)
+
+    # Completam din parsarea spatiala ce nu s-a gasit pe linii
+    spatial, itp_spatial = {}, None
+    for img in (enhanced, binary):
+        boxes = _word_boxes(img)
+        for code, val in _spatial_fields(boxes).items():
+            spatial.setdefault(code, val)
+        itp_spatial = itp_spatial or _date_near_label(boxes, "X")
+    for code, val in spatial.items():
+        fields.setdefault(code, val)
+
+    # Campurile unde layout-ul e mai de incredere decat liniile.
+    # Comparam valorile DUPA curatare — varianta pe linii poate parea mai
+    # lunga doar pentru ca a inglobat text din coloana vecina.
+    for code in ("C21", "X"):
+        if code in spatial and len(spatial[code]) > len(fields.get(code, "")):
+            fields[code] = spatial[code]
+    if "C23" in spatial:
+        if len(_clean_address(spatial["C23"])) > len(_clean_address(fields.get("C23", ""))):
+            fields["C23"] = spatial["C23"]
+
     full_text = "\n".join(t for _, t in parsed)
 
     # ── A: numar de inmatriculare (vot majoritar intre variante) ──
@@ -550,7 +760,7 @@ async def extract_registration_data(image_path: Path) -> dict:
                 break
 
     # ── X: data expirare ITP ─────────────────────────────────────
-    itp_expiry_date = _parse_date_str(fields.get("X", ""))
+    itp_expiry_date = _parse_date_str(fields.get("X", "")) or itp_spatial
     if not itp_expiry_date:
         m = re.search(
             r"(?:ITP|inspec[tț]ie\s*tehnic[aă])[\s:]*(\d{1,2}[.\-/]\d{1,2}[.\-/]\d{4})",
@@ -574,15 +784,24 @@ async def extract_registration_data(image_path: Path) -> dict:
     # ── D.3: model — pastram doar sirul initial de tokeni MAJUSCULE
     # ('LAGUNA ps MOTORINA _} Q' → 'LAGUNA'; 'LAND CRUISER' ramane intreg)
     model = None
-    if "D3" in fields:
+    for code in ("D3", "D2"):
+        if code not in fields:
+            continue
         tokens = []
-        for tok in _clean_value(fields["D3"]).split():
+        for tok in _clean_value(fields[code]).split():
             if re.fullmatch(r"[A-Z0-9ĂÎȘȚÂ\-]{2,}", tok):
                 tokens.append(tok)
             else:
                 break
         if tokens and not "".join(tokens).isdigit():
             model = " ".join(tokens)
+            break
+    # Fallback: cautam un model cunoscut al marcii detectate oriunde in text
+    if not model and brand:
+        for known in _MODELS_BY_BRAND.get(brand, ()):
+            if re.search(rf"\b{re.escape(known)}\b", full_text, re.IGNORECASE):
+                model = known
+                break
 
     # ── E: VIN / serie sasiu (vot majoritar intre variante) ──────
     from collections import Counter

@@ -1,8 +1,8 @@
 {
-  "version": "1.0.14",
+  "version": "1.0.15",
   "min_version": "1.0.0",
-  "changelog": "Fix crash Android (MainActivity in pachet gresit) + semnare cu cheie de release",
-  "installer_filename": "CarRecords_Setup_v1.0.14.exe",
+  "changelog": "OCR talon pe layout (nume complet, ITP, adresa) + marcaj vizual campuri scanate",
+  "installer_filename": "CarRecords_Setup_v1.0.15.exe",
   "force_update": false,
-  "sha256": "56c86163390c9aefa30f4d74803780db4cd7810132b46852af8bce0e72f91444"
+  "sha256": "c46b5d25b10f026c263b18b36fabac5e35666518c6787a4565b009416e9c20e7"
 }

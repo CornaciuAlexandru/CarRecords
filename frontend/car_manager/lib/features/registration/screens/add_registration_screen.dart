@@ -82,18 +82,61 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
     }
   }
 
+  /// Campurile completate automat din scanare — marcate vizual, ca sa se
+  /// vada ce a fost "citit" de OCR si trebuie verificat.
+  final Set<String> _ocrFilled = {};
+
   void _applyOcrData(Map<String, dynamic> data) {
     setState(() {
-      if (data['owner_name']        != null) _ownerCtrl.text  = data['owner_name'];
-      if (data['owner_address']     != null) _addressCtrl.text = data['owner_address'];
-      if (data['car_series']        != null) _seriesCtrl.text = data['car_series'];
-      if (data['brand']             != null) _brandCtrl.text  = data['brand'];
-      if (data['model']             != null) _modelCtrl.text  = data['model'];
-      if (data['manufacturing_year'] != null) _yearCtrl.text  = data['manufacturing_year'];
-      if (data['registration_number'] != null) _regNrCtrl.text = data['registration_number'];
-      if (data['itp_expiry_date']   != null) _itpExpiry = DateTime.parse(data['itp_expiry_date']);
-      if (data['registration_date'] != null) _registrationDate = DateTime.parse(data['registration_date']);
+      _ocrFilled.clear();
+      void fill(String key, void Function(dynamic v) apply) {
+        if (data[key] != null) {
+          apply(data[key]);
+          _ocrFilled.add(key);
+        }
+      }
+
+      fill('owner_name',         (v) => _ownerCtrl.text   = v);
+      fill('owner_address',      (v) => _addressCtrl.text = v);
+      fill('car_series',         (v) => _seriesCtrl.text  = v);
+      fill('brand',              (v) => _brandCtrl.text   = v);
+      fill('model',              (v) => _modelCtrl.text   = v);
+      fill('manufacturing_year', (v) => _yearCtrl.text    = v);
+      fill('registration_number',(v) => _regNrCtrl.text   = v);
+      fill('itp_expiry_date',    (v) => _itpExpiry        = DateTime.parse(v));
+      fill('registration_date',  (v) => _registrationDate = DateTime.parse(v));
     });
+  }
+
+  /// Ambaleaza un camp completat din scanare cu un chenar si o eticheta
+  /// „scanat", ca utilizatorul sa stie ce sa verifice.
+  Widget _ocrMark(String key, Widget field) {
+    if (!_ocrFilled.contains(key)) return field;
+    return Stack(clipBehavior: Clip.none, children: [
+      Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.warning.withOpacity(0.55), width: 1.5),
+        ),
+        child: field,
+      ),
+      Positioned(
+        top: -7, right: 10,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+          decoration: BoxDecoration(
+            color: AppColors.warning,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: const Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(Icons.auto_awesome, size: 9, color: Colors.white),
+            SizedBox(width: 3),
+            Text('scanat', style: TextStyle(
+                fontSize: 9, color: Colors.white, fontWeight: FontWeight.w700)),
+          ]),
+        ),
+      ),
+    ]);
   }
 
   void _showQuickSaveDialog(Map<String, dynamic> data) {
@@ -259,31 +302,55 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
             ScanCard(scannedImage: _scannedImage, isScanning: _isScanning, onScan: _scan),
             const SizedBox(height: 20),
 
+            // Legenda pentru campurile completate din scanare
+            if (_ocrFilled.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.warning.withOpacity(0.35)),
+                ),
+                child: Row(children: [
+                  const Icon(Icons.auto_awesome, size: 16, color: AppColors.warning),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(
+                    '${_ocrFilled.length} câmpuri completate din scanare — '
+                    'verifică-le înainte de salvare.',
+                    style: const TextStyle(fontSize: 12.5, color: AppColors.textPrimary),
+                  )),
+                ]),
+              ),
+              const SizedBox(height: 18),
+            ],
+
             // ── Date vehicul ──────────────────────────────────────
             _sectionTitle('Date vehicul'),
             Row(children: [
-              Expanded(child: CmTextField(controller: _brandCtrl, label: 'Marcă', hint: 'DACIA', prefixIcon: Icons.directions_car_outlined)),
+              Expanded(child: _ocrMark('brand', CmTextField(controller: _brandCtrl, label: 'Marcă', hint: 'DACIA', prefixIcon: Icons.directions_car_outlined))),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _modelCtrl, label: 'Model', hint: 'Logan')),
+              Expanded(child: _ocrMark('model', CmTextField(controller: _modelCtrl, label: 'Model', hint: 'Logan'))),
             ]),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: CmTextField(controller: _yearCtrl, label: 'An fabricație', hint: '2018',
-                  keyboardType: TextInputType.number, prefixIcon: Icons.factory_outlined)),
+              Expanded(child: _ocrMark('manufacturing_year', CmTextField(controller: _yearCtrl, label: 'An fabricație', hint: '2018',
+                  keyboardType: TextInputType.number, prefixIcon: Icons.factory_outlined))),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _regNrCtrl, label: 'Nr. înmatriculare', hint: 'B123XXX',
-                  prefixIcon: Icons.confirmation_number_outlined)),
+              Expanded(child: _ocrMark('registration_number', CmTextField(controller: _regNrCtrl, label: 'Nr. înmatriculare', hint: 'B123XXX',
+                  prefixIcon: Icons.confirmation_number_outlined))),
             ]),
             const SizedBox(height: 14),
-            CmTextField(controller: _seriesCtrl, label: 'Serie șasiu (VIN)', hint: 'UU1LSDAXXXXXXXXXX',
-                prefixIcon: Icons.pin_outlined),
+            _ocrMark('car_series', CmTextField(controller: _seriesCtrl, label: 'Serie șasiu (VIN)', hint: 'UU1LSDAXXXXXXXXXX',
+                prefixIcon: Icons.pin_outlined)),
             const SizedBox(height: 20),
 
             // ── Date inmatriculare / ITP ──────────────────────────
             _sectionTitle('Înmatriculare & ITP'),
-            _datePicker('Data înmatriculării', _registrationDate, (d) => setState(() => _registrationDate = d)),
+            _ocrMark('registration_date',
+                _datePicker('Data înmatriculării', _registrationDate, (d) => setState(() => _registrationDate = d))),
             const SizedBox(height: 14),
-            _datePicker('Data expirare ITP', _itpExpiry, (d) => setState(() => _itpExpiry = d)),
+            _ocrMark('itp_expiry_date',
+                _datePicker('Data expirare ITP', _itpExpiry, (d) => setState(() => _itpExpiry = d))),
             if (_itpExpiry != null) ...[
               const SizedBox(height: 8),
               Container(
@@ -320,10 +387,11 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
 
             // ── Proprietar ────────────────────────────────────────
             _sectionTitle('Proprietar'),
-            CmTextField(controller: _ownerCtrl, label: 'Nume proprietar', hint: 'Ion Popescu', prefixIcon: Icons.person_outline),
+            _ocrMark('owner_name', CmTextField(controller: _ownerCtrl, label: 'Nume proprietar', hint: 'Ion Popescu', prefixIcon: Icons.person_outline)),
             const SizedBox(height: 14),
-            CmTextField(controller: _addressCtrl, label: 'Adresă proprietar', hint: 'Str. Exemplu, nr. 1, București',
-                prefixIcon: Icons.home_outlined, maxLines: 2),
+            _ocrMark('owner_address', CmTextField(controller: _addressCtrl, label: 'Adresă proprietar',
+                hint: 'Str. Exemplu, nr. 1, București',
+                prefixIcon: Icons.home_outlined, maxLines: 2)),
             const SizedBox(height: 14),
             CmTextField(controller: _notesCtrl, label: 'Note', hint: 'Observații...', maxLines: 2, prefixIcon: Icons.notes),
             const SizedBox(height: 28),
