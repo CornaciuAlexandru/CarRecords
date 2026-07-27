@@ -1,8 +1,8 @@
 {
-  "version": "1.0.13",
+  "version": "1.0.14",
   "min_version": "1.0.0",
-  "changelog": "Fix crash Android la pornire: eliminat path_provider cu JNI",
-  "installer_filename": "CarRecords_Setup_v1.0.13.exe",
+  "changelog": "Fix crash Android (MainActivity in pachet gresit) + semnare cu cheie de release",
+  "installer_filename": "CarRecords_Setup_v1.0.14.exe",
   "force_update": false,
-  "sha256": "b6f45c676db47b45f8e56ff7a73c8651c2ac658531191c149f2310a8b1e04362"
+  "sha256": "56c86163390c9aefa30f4d74803780db4cd7810132b46852af8bce0e72f91444"
 }

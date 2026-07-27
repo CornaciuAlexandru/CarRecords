@@ -5,6 +5,11 @@ backend/backups/
 backend/uploads/
 backend/downloads/
 
+# ── Chei de semnare Android (NU se urca niciodata pe git) ──
+*.jks
+*.keystore
+frontend/car_manager/android/key.properties
+
 # ── Python ───────────────────────────────────────
 __pycache__/
 *.pyc

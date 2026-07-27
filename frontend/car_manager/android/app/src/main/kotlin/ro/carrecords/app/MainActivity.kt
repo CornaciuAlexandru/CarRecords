@@ -1,4 +1,4 @@
-package ro.carmanager.car_manager
+package ro.carrecords.app
 
 import io.flutter.embedding.android.FlutterActivity
 
