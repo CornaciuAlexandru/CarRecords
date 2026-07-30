@@ -1,0 +1,31 @@
+# Caddy obtine si reinnoieste singur certificatul TLS de la Let's Encrypt.
+# Nu e nevoie de nicio configurare manuala de certificate.
+
+{$DOMAIN} {
+	encode gzip
+
+	# Limita de marime pentru incarcarea documentelor scanate
+	request_body {
+		max_size 15MB
+	}
+
+	reverse_proxy backend:8000 {
+		header_up X-Real-IP {remote_host}
+	}
+
+	# Antete de securitate
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output file /data/access.log {
+			roll_size 10MB
+			roll_keep 5
+		}
+	}
+}

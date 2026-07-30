@@ -46,8 +46,8 @@ class _StartupWrapperState extends State<StartupWrapper>
   }
 
   Future<void> _start() async {
-    // Pe Android: descoperire automata inainte de health-check
-    if (Platform.isAndroid) {
+    // Cu server in cloud stim adresa dinainte — sarim peste descoperire.
+    if (!usesCloudBackend && Platform.isAndroid) {
       await _discoverServer();
     }
     await _checkBackend();
@@ -101,9 +101,9 @@ class _StartupWrapperState extends State<StartupWrapper>
         setState(() { _ready = true; _status = 'Conectat!'; });
         return;
       } catch (_) {
-        // Daca suntem pe Android si health-check esueaza dupa primul incercare
-        // incearcam re-discovery (IP-ul poate s-a schimbat)
-        if (Platform.isAndroid && _attempt == 3) {
+        // In retea locala, daca health-check-ul esueaza, IP-ul serverului
+        // s-ar putea sa se fi schimbat — reluam descoperirea.
+        if (!usesCloudBackend && Platform.isAndroid && _attempt == 3) {
           await ServerDiscovery.clearCache();
           await _discoverServer();
         }

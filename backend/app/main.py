@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from app.core.database import engine, Base
 from app.api.v1.router import api_router
-from app.core.config import DOCUMENTS_PATH, PHOTOS_PATH
+from app.core.config import DOCUMENTS_PATH, PHOTOS_PATH, settings
 from app.core.database import SessionLocal
 import app.models  # noqa: F401 - ensures all models are registered
 
@@ -37,8 +37,14 @@ async def lifespan(app: FastAPI):
     DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
     _migrate_missing_columns()
     _migrate_max_cars()
-    _start_discovery_server()
-    _start_backup_scheduler()
+    # Descoperirea prin broadcast are sens doar in retea locala.
+    # In cloud clientii folosesc un domeniu fix.
+    if settings.DISCOVERY_ENABLED and not settings.is_production:
+        _start_discovery_server()
+    # Backup-ul local e util doar cu SQLite; in cloud se folosesc
+    # snapshot-urile bazei de date PostgreSQL.
+    if DB_FILE.exists():
+        _start_backup_scheduler()
     yield
 
 
@@ -94,25 +100,27 @@ def _start_discovery_server():
 
 def _migrate_missing_columns():
     """Adauga automat coloanele noi din modele care lipsesc din tabelele
-    existente (create_all nu modifica tabele deja create)."""
+    existente (create_all nu modifica tabele deja create).
+
+    Tipul coloanei se compileaza pentru dialectul curent, deci functioneaza
+    identic pe SQLite si pe PostgreSQL.
+    """
     from sqlalchemy import text, inspect as sa_inspect
-    _TYPE_MAP = {"VARCHAR": "VARCHAR", "TEXT": "TEXT", "INTEGER": "INTEGER",
-                 "FLOAT": "FLOAT", "BOOLEAN": "BOOLEAN", "DATE": "DATE",
-                 "DATETIME": "DATETIME"}
     try:
         inspector = sa_inspect(engine)
-        with engine.begin() as conn:
-            for table in Base.metadata.tables.values():
-                if table.name not in inspector.get_table_names():
+        existing_tables = set(inspector.get_table_names())
+        for table in Base.metadata.tables.values():
+            if table.name not in existing_tables:
+                continue
+            existing = {c["name"] for c in inspector.get_columns(table.name)}
+            for col in table.columns:
+                if col.name in existing:
                     continue
-                existing = {c["name"] for c in inspector.get_columns(table.name)}
-                for col in table.columns:
-                    if col.name in existing:
-                        continue
-                    col_type = str(col.type).split("(")[0].upper()
-                    sql_type = _TYPE_MAP.get(col_type, "TEXT")
+                sql_type = col.type.compile(dialect=engine.dialect)
+                with engine.begin() as conn:
                     conn.execute(text(
-                        f'ALTER TABLE {table.name} ADD COLUMN {col.name} {sql_type}'
+                        f'ALTER TABLE "{table.name}" '
+                        f'ADD COLUMN "{col.name}" {sql_type}'
                     ))
     except Exception:
         pass  # migrarea nu trebuie sa blocheze pornirea
@@ -146,7 +154,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -154,11 +162,16 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
-# Servire fisiere installer din /downloads
+# Folderele trebuie sa existe INAINTE de mount (StaticFiles verifica la
+# creare, iar intr-un container proaspat directoarele nu exista inca).
+from app.core.config import PHOTOS_PATH  # noqa: E402
+for _d in (DOWNLOADS_DIR, PHOTOS_PATH, DOCUMENTS_PATH):
+    _d.mkdir(parents=True, exist_ok=True)
+
+# Servire fisiere installer (folosit doar de aplicatia Windows)
 app.mount("/downloads", StaticFiles(directory=str(DOWNLOADS_DIR)), name="downloads")
 
 # Servire poze modificari
-from app.core.config import PHOTOS_PATH
 app.mount("/photos", StaticFiles(directory=str(PHOTOS_PATH)), name="photos")
 
 

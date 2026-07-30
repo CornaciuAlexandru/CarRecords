@@ -10,6 +10,9 @@ backend/downloads/
 *.keystore
 frontend/car_manager/android/key.properties
 
+# ── Secrete de deployment ──
+deploy/.env
+
 # ── Python ───────────────────────────────────────
 __pycache__/
 *.pyc
