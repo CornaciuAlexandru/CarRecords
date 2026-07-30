@@ -1,8 +1,8 @@
 {
-  "version": "1.0.15",
+  "version": "1.0.16",
   "min_version": "1.0.0",
-  "changelog": "OCR talon pe layout (nume complet, ITP, adresa) + marcaj vizual campuri scanate",
-  "installer_filename": "CarRecords_Setup_v1.0.15.exe",
+  "changelog": "Sigla noua CarRecords pe iconitele de aplicatie (Windows si Android)",
+  "installer_filename": "CarRecords_Setup_v1.0.16.exe",
   "force_update": false,
-  "sha256": "c46b5d25b10f026c263b18b36fabac5e35666518c6787a4565b009416e9c20e7"
+  "sha256": "565da280aa801f62e088c7446767c9a14fe9e28a05940b5c72261ffbbba832b3"
 }

@@ -2,7 +2,7 @@
 ; Generat automat
 
 #define AppName      "CarRecords"
-#define AppVersion      "1.0.15"
+#define AppVersion      "1.0.16"
 #define AppPublisher "CarRecords"
 #define AppURL       "https://carrecords.ro"
 #define AppExeName   "CarRecords.exe"
@@ -21,12 +21,15 @@ DefaultGroupName={#AppName}
 AllowNoIcons=yes
 ; Iesire installer
 OutputDir=.
-OutputBaseFilename=CarRecords_Setup_v1.0.15
+OutputBaseFilename=CarRecords_Setup_v1.0.16
 ; Icon installer
 SetupIconFile=app_icon.ico
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
+; Imagini cu sigla in expertul de instalare
+WizardImageFile=wizard_image.bmp
+WizardSmallImageFile=wizard_small.bmp
 ; Necesita Windows 10+
 MinVersion=10.0
 PrivilegesRequired=lowest
