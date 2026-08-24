@@ -8,6 +8,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
 import 'modifications_screen.dart';
+import '../../../core/utils/l10n.dart';
 
 class AddModificationScreen extends ConsumerStatefulWidget {
   final String carId;
@@ -33,10 +34,16 @@ class _AddModificationScreenState extends ConsumerState<AddModificationScreen> {
 
   bool get _isEditing => widget.existing != null;
 
-  static const _categories = {
-    'motor': 'Motor', 'exterior': 'Exterior', 'interior': 'Interior',
-    'suspensie': 'Suspensie', 'audio': 'Audio', 'electronic': 'Electronic',
-    'frane': 'Frâne', 'altul': 'Altul',
+  /// Categoriile de modificari, cu etichete traduse.
+  Map<String, String> _categories(BuildContext context) => {
+    'motor':      tr(context).catEngine,
+    'exterior':   tr(context).catExterior,
+    'interior':   tr(context).catInterior,
+    'suspensie':  tr(context).catSuspension,
+    'audio':      tr(context).catAudio,
+    'electronic': tr(context).catElectronic,
+    'frane':      tr(context).catBrakes,
+    'altul':      tr(context).other,
   };
 
   @override
@@ -78,14 +85,14 @@ class _AddModificationScreenState extends ConsumerState<AddModificationScreen> {
       if (mounted) {
         ref.invalidate(modificationsFutureProvider(widget.carId));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(_isEditing ? 'Modificare actualizată!' : 'Modificare adăugată!'),
+          content: Text(_isEditing ? tr(context).modificationUpdated : tr(context).modificationAdded),
           backgroundColor: AppColors.success,
         ));
         context.pop();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -96,17 +103,17 @@ class _AddModificationScreenState extends ConsumerState<AddModificationScreen> {
   Widget build(BuildContext context) {
     final fmt = DateFormat('dd.MM.yyyy');
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Editează modificare' : 'Adaugă modificare')),
+      appBar: AppBar(title: Text(_isEditing ? tr(context).editModification : tr(context).addModification)),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            const Text('Categorie *', style: TextStyle(fontWeight: FontWeight.w600)),
+            Text(tr(context).category, style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8, runSpacing: 8,
-              children: _categories.entries.map((e) => ChoiceChip(
+              children: _categories(context).entries.map((e) => ChoiceChip(
                 label: Text(e.value),
                 selected: _category == e.key,
                 selectedColor: AppColors.primary,
@@ -116,10 +123,10 @@ class _AddModificationScreenState extends ConsumerState<AddModificationScreen> {
             ),
             const SizedBox(height: 16),
             CmTextField(
-              controller: _descCtrl, label: 'Descriere modificare *',
+              controller: _descCtrl, label: tr(context).modDescription,
               hint: 'Ex: Instalare suspensie sport KW V3',
               maxLines: 2, prefixIcon: Icons.description_outlined,
-              validator: (v) => (v == null || v.isEmpty) ? 'Obligatoriu' : null,
+              validator: (v) => (v == null || v.isEmpty) ? tr(context).required : null,
             ),
             const SizedBox(height: 14),
             InkWell(
@@ -129,35 +136,35 @@ class _AddModificationScreenState extends ConsumerState<AddModificationScreen> {
                 if (d != null) setState(() => _date = d);
               },
               child: InputDecorator(
-                decoration: InputDecoration(labelText: 'Data modificării (opțional)', prefixIcon: const Icon(Icons.calendar_today_outlined),
+                decoration: InputDecoration(labelText: tr(context).modificationDate, prefixIcon: const Icon(Icons.calendar_today_outlined),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), filled: true, fillColor: Colors.white),
-                child: Text(_date != null ? fmt.format(_date!) : 'Alege dată',
+                child: Text(_date != null ? fmt.format(_date!) : tr(context).chooseDate,
                     style: TextStyle(fontWeight: FontWeight.w500, color: _date != null ? null : AppColors.textSecondary)),
               ),
             ),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: CmTextField(controller: _byCtrl, label: 'Realizată de', hint: 'Service / Persoană', prefixIcon: Icons.build_outlined)),
+              Expanded(child: CmTextField(controller: _byCtrl, label: tr(context).performedBy, hint: tr(context).hintPerformedBy, prefixIcon: Icons.build_outlined)),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _costCtrl, label: 'Cost (RON)', hint: '1500', keyboardType: TextInputType.number, prefixIcon: Icons.payments_outlined)),
+              Expanded(child: CmTextField(controller: _costCtrl, label: tr(context).cost, hint: '1500', keyboardType: TextInputType.number, prefixIcon: Icons.payments_outlined)),
             ]),
             const SizedBox(height: 14),
             SwitchListTile(
               value: _isHomologated,
               onChanged: (v) => setState(() => _isHomologated = v),
-              title: const Text('Modificare omologată RAR'),
+              title: Text(tr(context).homologated),
               secondary: const Icon(Icons.verified_outlined, color: AppColors.primary),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: AppColors.border)),
               tileColor: Colors.white,
             ),
             if (_isHomologated) ...[
               const SizedBox(height: 14),
-              CmTextField(controller: _homoNrCtrl, label: 'Nr. omologare', hint: 'RAR-XXXX-2026', prefixIcon: Icons.numbers),
+              CmTextField(controller: _homoNrCtrl, label: tr(context).homologationNumber, hint: 'RAR-XXXX-2026', prefixIcon: Icons.numbers),
             ],
             const SizedBox(height: 14),
-            CmTextField(controller: _notesCtrl, label: 'Note', hint: 'Observații...', maxLines: 2, prefixIcon: Icons.notes),
+            CmTextField(controller: _notesCtrl, label: tr(context).notes, hint: tr(context).notesHint, maxLines: 2, prefixIcon: Icons.notes),
             const SizedBox(height: 28),
-            CmButton(label: _isEditing ? 'Actualizează' : 'Salvează', icon: Icons.save,
+            CmButton(label: _isEditing ? tr(context).update : tr(context).save, icon: Icons.save,
                 isLoading: _isLoading, onPressed: _isLoading ? null : _save),
           ],
         ),

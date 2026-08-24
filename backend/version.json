@@ -1,8 +1,8 @@
 {
-  "version": "1.0.17",
+  "version": "1.0.18",
   "min_version": "1.0.0",
-  "changelog": "Text negru in campuri + alegerea limbii (7 limbi, implicit engleza)",
-  "installer_filename": "CarRecords_Setup_v1.0.17.exe",
+  "changelog": "Traducere completa a aplicatiei in 7 limbi",
+  "installer_filename": "CarRecords_Setup_v1.0.18.exe",
   "force_update": false,
-  "sha256": "497f75d556595f012f42080fa986b1870db1c52c7f642d54af55c681aff8f09d"
+  "sha256": "a1efb1aa98756d37dcceba520d5f9ad73bd5785e64fdc01d4958830dae09e52c"
 }

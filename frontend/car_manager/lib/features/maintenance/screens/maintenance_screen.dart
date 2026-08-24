@@ -5,16 +5,25 @@ import 'package:intl/intl.dart';
 import '../../../core/models/documents.dart';
 import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/l10n.dart';
 
 final maintenanceFutureProvider =
     FutureProvider.family<List<MaintenanceRecord>, String>((ref, carId) =>
         CarService().getMaintenance(carId));
 
-const _typeLabels = {
-  'schimb_ulei': 'Schimb ulei', 'filtre': 'Filtre', 'placute_frana': 'Plăcuțe frână',
-  'anvelope': 'Anvelope', 'distributie': 'Distribuție', 'curea_alternator': 'Curea alternator',
-  'baterie': 'Baterie', 'amortizoare': 'Amortizoare', 'bujii': 'Bujii', 'altul': 'Altul',
-};
+/// Eticheta tradusa pentru tipul de interventie.
+String _typeLabel(BuildContext context, String type) => {
+  'schimb_ulei':     tr(context).svcOilChange,
+  'filtre':          tr(context).svcFilters,
+  'placute_frana':   tr(context).svcBrakePads,
+  'anvelope':        tr(context).svcTyres,
+  'distributie':     tr(context).svcTimingBelt,
+  'curea_alternator':tr(context).svcAltBelt,
+  'baterie':         tr(context).svcBattery,
+  'amortizoare':     tr(context).svcShocks,
+  'bujii':           tr(context).svcSparkPlugs,
+  'altul':           tr(context).other,
+}[type] ?? type;
 
 const _typeIcons = {
   'schimb_ulei': Icons.water_drop, 'filtre': Icons.filter_alt, 'placute_frana': Icons.disc_full,
@@ -30,24 +39,24 @@ class MaintenanceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(maintenanceFutureProvider(carId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Service & Mentenanță')),
+      appBar: AppBar(title: Text(tr(context).maintenance)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/maintenance/add'),
-        icon: const Icon(Icons.add), label: const Text('Adaugă'),
+        icon: const Icon(Icons.add), label: Text(tr(context).add),
         backgroundColor: AppColors.primary, foregroundColor: Colors.white,
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Eroare: $e')),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
         data: (records) => records.isEmpty
             ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.build_outlined, size: 64, color: Colors.grey[300]),
                 const SizedBox(height: 16),
-                const Text('Niciun serviciu înregistrat', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(tr(context).noMaintenance, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () => context.push('/cars/$carId/maintenance/add'),
-                  icon: const Icon(Icons.add), label: const Text('Adaugă service'),
+                  icon: const Icon(Icons.add), label: Text(tr(context).addMaintenance),
                 ),
               ]))
             : ListView.separated(
@@ -74,12 +83,12 @@ class _MaintenanceCard extends StatelessWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Șterge înregistrarea'),
-        content: Text('Ștergi "${_typeLabels[record.type] ?? record.type}"?'),
+        title: Text(tr(context).deleteMaintenance),
+        content: Text(tr(context).deleteConfirmGeneric(_typeLabel(context, record.type))),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Anulează')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr(context).cancel)),
           TextButton(onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: AppColors.danger), child: const Text('Șterge')),
+              style: TextButton.styleFrom(foregroundColor: AppColors.danger), child: Text(tr(context).delete)),
         ],
       ),
     );
@@ -89,7 +98,7 @@ class _MaintenanceCard extends StatelessWidget {
       onChanged();
     } catch (e) {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
       );
     }
   }
@@ -98,7 +107,7 @@ class _MaintenanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final fmt = DateFormat('dd.MM.yyyy');
     final icon = _typeIcons[record.type] ?? Icons.build;
-    final label = _typeLabels[record.type] ?? record.type;
+    final label = _typeLabel(context, record.type);
     final nextSoon = record.nextServiceDate != null &&
         record.nextServiceDate!.difference(DateTime.now()).inDays < 30;
 
@@ -130,8 +139,8 @@ class _MaintenanceCard extends StatelessWidget {
                 if (v == 'delete') _delete(context);
               },
               itemBuilder: (_) => [
-                const PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit_outlined, color: AppColors.primary), title: Text('Editează'), dense: true)),
-                const PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete_outline, color: AppColors.danger), title: Text('Șterge', style: TextStyle(color: AppColors.danger)), dense: true)),
+                PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit_outlined, color: AppColors.primary), title: Text(tr(context).edit), dense: true)),
+                PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete_outline, color: AppColors.danger), title: Text(tr(context).delete, style: TextStyle(color: AppColors.danger)), dense: true)),
               ],
             ),
           ]),
@@ -140,12 +149,12 @@ class _MaintenanceCard extends StatelessWidget {
             Row(children: [
               const Icon(Icons.speed, size: 14, color: AppColors.textSecondary),
               const SizedBox(width: 6),
-              Text('La: ${record.mileageAtService} km', style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+              Text(tr(context).atKm('${record.mileageAtService}'), style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
               if (record.nextServiceMileage != null) ...[
                 const SizedBox(width: 16),
                 const Icon(Icons.arrow_forward, size: 12, color: AppColors.textSecondary),
                 const SizedBox(width: 6),
-                Text('Următor: ${record.nextServiceMileage} km',
+                Text(tr(context).nextAtKm('${record.nextServiceMileage}'),
                     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.primary)),
               ],
             ]),
@@ -167,7 +176,7 @@ class _MaintenanceCard extends StatelessWidget {
               child: Row(children: [
                 const Icon(Icons.warning_amber, color: AppColors.warning, size: 16),
                 const SizedBox(width: 6),
-                Text('Următoarea revizie: ${fmt.format(record.nextServiceDate!)}',
+                Text(tr(context).nextServiceOn(fmt.format(record.nextServiceDate!)),
                     style: const TextStyle(color: AppColors.warning, fontSize: 12, fontWeight: FontWeight.w600)),
               ]),
             ),

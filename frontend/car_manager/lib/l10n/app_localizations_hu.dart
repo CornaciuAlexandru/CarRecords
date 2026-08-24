@@ -222,4 +222,603 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get languageChoose => 'Válassz nyelvet';
+
+  @override
+  String get generalInfo => 'Általános adatok';
+
+  @override
+  String get technicalDetails => 'Műszaki adatok';
+
+  @override
+  String get validFrom => 'Érvényes ettől';
+
+  @override
+  String get expires => 'Lejár';
+
+  @override
+  String get expiresOn => 'Lejárat';
+
+  @override
+  String get daysLeft => 'Hátralévő napok';
+
+  @override
+  String get price => 'Ár';
+
+  @override
+  String get priceRon => 'Ár (RON)';
+
+  @override
+  String scanFailed(String msg) {
+    return 'A beolvasás sikertelen: $msg';
+  }
+
+  @override
+  String get extractedData => 'Kinyert adatok';
+
+  @override
+  String get noDataExtracted =>
+      'Nem sikerült automatikusan adatot kinyerni a képből.';
+
+  @override
+  String get detectedText => 'Felismert szöveg:';
+
+  @override
+  String get checkFirst => 'Előbb ellenőrizd';
+
+  @override
+  String get saveDirectly => 'Mentés azonnal';
+
+  @override
+  String deleteConfirmGeneric(String name) {
+    return 'Törlöd: \"$name\"?';
+  }
+
+  @override
+  String get vignettes => 'Matricák';
+
+  @override
+  String get vignette => 'Matrica';
+
+  @override
+  String get addVignette => 'Matrica hozzáadása';
+
+  @override
+  String get editVignette => 'Matrica szerkesztése';
+
+  @override
+  String get saveVignette => 'Matrica mentése';
+
+  @override
+  String get vignetteAdded => 'Matrica hozzáadva!';
+
+  @override
+  String get vignetteUpdated => 'Matrica frissítve!';
+
+  @override
+  String get noVignettes => 'Nincs matrica hozzáadva';
+
+  @override
+  String get deleteVignette => 'Matrica törlése';
+
+  @override
+  String get deleteVignetteConfirm => 'Biztosan törlöd ezt a matricát?';
+
+  @override
+  String get purchaseDate => 'Vásárlás dátuma';
+
+  @override
+  String get validityPeriod => 'Érvényességi idő *';
+
+  @override
+  String get period => 'Időszak';
+
+  @override
+  String get issuer => 'Kibocsátó';
+
+  @override
+  String get issuerCompany => 'Kibocsátó cég';
+
+  @override
+  String get invoiceSeries => 'Számlasorozat';
+
+  @override
+  String get insurance => 'Biztosítások';
+
+  @override
+  String get addInsurance => 'Biztosítás hozzáadása';
+
+  @override
+  String get saveInsurance => 'Biztosítás mentése';
+
+  @override
+  String get insuranceAdded => 'Biztosítás hozzáadva!';
+
+  @override
+  String get insuranceUpdated => 'Biztosítás frissítve!';
+
+  @override
+  String get noInsurance => 'Nincs biztosítás hozzáadva';
+
+  @override
+  String get deleteInsurance => 'Biztosítás törlése';
+
+  @override
+  String get insurerCompany => 'Biztosítótársaság *';
+
+  @override
+  String get policyNumber => 'Kötvényszám';
+
+  @override
+  String get premiumRon => 'Díj (RON)';
+
+  @override
+  String get premium => 'Díj';
+
+  @override
+  String get deductibleRon => 'Önrész (RON)';
+
+  @override
+  String get paymentFrequency => 'Fizetési gyakoriság';
+
+  @override
+  String get purchasedOn => 'Vásárolva';
+
+  @override
+  String get agentName => 'Ügynök neve';
+
+  @override
+  String get agentPhone => 'Ügynök telefonszáma';
+
+  @override
+  String get agent => 'Ügynök';
+
+  @override
+  String get roadsideAssistance => 'Útmenti segítségnyújtás';
+
+  @override
+  String get roadsideIncluded => 'Útmenti segítségnyújtás beleértve';
+
+  @override
+  String get included => 'Tartalmazza';
+
+  @override
+  String get freqMonthly => 'Havonta';
+
+  @override
+  String get freqQuarterly => 'Negyedévente';
+
+  @override
+  String get freqBiannual => 'Félévente';
+
+  @override
+  String get freqAnnual => 'Évente';
+
+  @override
+  String get registrationDoc => 'Forgalmi & Műszaki';
+
+  @override
+  String get registrationShort => 'Forgalmi';
+
+  @override
+  String get addRegistration => 'Forgalmi hozzáadása';
+
+  @override
+  String get editRegistration => 'Forgalmi szerkesztése';
+
+  @override
+  String get registrationAdded => 'Forgalmi hozzáadva!';
+
+  @override
+  String get registrationUpdated => 'Forgalmi frissítve!';
+
+  @override
+  String get noRegistration => 'Nincs forgalmi hozzáadva';
+
+  @override
+  String get deleteRegistration => 'Forgalmi törlése';
+
+  @override
+  String get deleteRegistrationConfirm => 'Biztosan törlöd ezt a forgalmit?';
+
+  @override
+  String get vehicleData => 'Jármű adatai';
+
+  @override
+  String get registrationAndItp => 'Forgalomba helyezés & Műszaki';
+
+  @override
+  String get brand => 'Márka';
+
+  @override
+  String get model => 'Modell';
+
+  @override
+  String get manufacturingYear => 'Gyártási év';
+
+  @override
+  String get plateNumber => 'Rendszám';
+
+  @override
+  String get vin => 'Alvázszám (VIN)';
+
+  @override
+  String get ownerName => 'Tulajdonos neve';
+
+  @override
+  String get ownerAddress => 'Tulajdonos címe';
+
+  @override
+  String get owner => 'Tulajdonos';
+
+  @override
+  String get address => 'Cím';
+
+  @override
+  String get registrationDate => 'Forgalomba helyezés dátuma';
+
+  @override
+  String get itpExpiryDate => 'Műszaki lejárata';
+
+  @override
+  String get itpExpires => 'Műszaki lejár';
+
+  @override
+  String get itpValid => 'Műszaki érvényes';
+
+  @override
+  String get itpExpired => 'Műszaki lejárt!';
+
+  @override
+  String ocrFieldsFilled(int count) {
+    return '$count mező kitöltve a beolvasásból — mentés előtt ellenőrizd.';
+  }
+
+  @override
+  String get scanned => 'beolvasva';
+
+  @override
+  String get maintenance => 'Szerviz & Karbantartás';
+
+  @override
+  String get maintenanceShort => 'Szerviz';
+
+  @override
+  String get addMaintenance => 'Szerviz hozzáadása';
+
+  @override
+  String get editMaintenance => 'Szerviz szerkesztése';
+
+  @override
+  String get maintenanceAdded => 'Szerviz rögzítve!';
+
+  @override
+  String get maintenanceUpdated => 'Szerviz frissítve!';
+
+  @override
+  String get noMaintenance => 'Nincs rögzített szerviz';
+
+  @override
+  String get deleteMaintenance => 'Bejegyzés törlése';
+
+  @override
+  String get interventionType => 'Beavatkozás típusa *';
+
+  @override
+  String get performedDate => 'Elvégzés dátuma *';
+
+  @override
+  String get description => 'Leírás';
+
+  @override
+  String get mileageAtService => 'Km a szervizkor';
+
+  @override
+  String get nextService => 'Következő szerviz (opcionális)';
+
+  @override
+  String get nextMileage => 'Következő km';
+
+  @override
+  String get nextDate => 'Következő dátum';
+
+  @override
+  String get autoShop => 'Autószerviz';
+
+  @override
+  String get svcOilChange => 'Olajcsere';
+
+  @override
+  String get svcFilters => 'Szűrők';
+
+  @override
+  String get svcBrakePads => 'Fékbetétek';
+
+  @override
+  String get svcTyres => 'Gumiabroncsok';
+
+  @override
+  String get svcTimingBelt => 'Vezérműszíj';
+
+  @override
+  String get svcAltBelt => 'Generátorszíj';
+
+  @override
+  String get svcBattery => 'Akkumulátor';
+
+  @override
+  String get svcShocks => 'Lengéscsillapítók';
+
+  @override
+  String get svcSparkPlugs => 'Gyertyák';
+
+  @override
+  String get other => 'Egyéb';
+
+  @override
+  String get modifications => 'Módosítások';
+
+  @override
+  String get addModification => 'Módosítás hozzáadása';
+
+  @override
+  String get editModification => 'Módosítás szerkesztése';
+
+  @override
+  String get modificationAdded => 'Módosítás hozzáadva!';
+
+  @override
+  String get modificationUpdated => 'Módosítás frissítve!';
+
+  @override
+  String get noModifications => 'Nincs módosítás hozzáadva';
+
+  @override
+  String get deleteModification => 'Módosítás törlése';
+
+  @override
+  String get category => 'Kategória *';
+
+  @override
+  String get modDescription => 'Módosítás leírása *';
+
+  @override
+  String get modificationDate => 'Módosítás dátuma (opcionális)';
+
+  @override
+  String get performedBy => 'Elvégezte';
+
+  @override
+  String get homologated => 'Hatóságilag jóváhagyva';
+
+  @override
+  String get homologatedShort => 'Jóváhagyva';
+
+  @override
+  String get homologationNumber => 'Jóváhagyási szám';
+
+  @override
+  String get catEngine => 'Motor';
+
+  @override
+  String get catExterior => 'Külső';
+
+  @override
+  String get catInterior => 'Belső';
+
+  @override
+  String get catSuspension => 'Futómű';
+
+  @override
+  String get catAudio => 'Hangrendszer';
+
+  @override
+  String get catElectronic => 'Elektronika';
+
+  @override
+  String get catBrakes => 'Fékek';
+
+  @override
+  String get addPhoto => 'Fotó hozzáadása';
+
+  @override
+  String get noPhotos => 'Nincs fotó';
+
+  @override
+  String photoCounter(int count, int max) {
+    return '$count. fotó / $max';
+  }
+
+  @override
+  String uploadError(String msg) {
+    return 'Feltöltési hiba: $msg';
+  }
+
+  @override
+  String get notificationsTitle => 'Értesítések és riasztások';
+
+  @override
+  String get noNotifications => 'Nincs értesítés';
+
+  @override
+  String get allInOrder => 'Minden rendben!';
+
+  @override
+  String get checkNow => 'Ellenőrzés most';
+
+  @override
+  String get checkDocuments => 'Dokumentumok ellenőrzése';
+
+  @override
+  String get markRead => 'Megjelölés olvasottként';
+
+  @override
+  String get markAllRead => 'Összes olvasottként';
+
+  @override
+  String unreadCount(int count) {
+    return '$count olvasatlan értesítés';
+  }
+
+  @override
+  String get administration => 'Adminisztráció';
+
+  @override
+  String get users => 'Felhasználók';
+
+  @override
+  String accountsCount(int count) {
+    return '$count fiók';
+  }
+
+  @override
+  String get reload => 'Újratöltés';
+
+  @override
+  String get accountActive => 'Fiók aktív';
+
+  @override
+  String get accountActiveHint => 'A felhasználó be tud jelentkezni';
+
+  @override
+  String get inactive => 'Inaktív';
+
+  @override
+  String get role => 'Szerepkör';
+
+  @override
+  String get subscription => 'Előfizetés';
+
+  @override
+  String get carLimit => 'Autók korlátja';
+
+  @override
+  String createdOn(String name) {
+    return 'Létrehozva: $name';
+  }
+
+  @override
+  String docsShort(int count) {
+    return '$count dok.';
+  }
+
+  @override
+  String get deleteUser => 'Felhasználó törlése';
+
+  @override
+  String deleteUserConfirm(String name) {
+    return 'Törlöd \"$name\" fiókját?\n\nMinden autója és dokumentuma véglegesen törlődik.';
+  }
+
+  @override
+  String userDeleted(String name) {
+    return 'A(z) \"$name\" fiók törölve.';
+  }
+
+  @override
+  String get userUpdated => 'Felhasználó sikeresen frissítve!';
+
+  @override
+  String get carDetails => 'Autó részletei';
+
+  @override
+  String get documents => 'Dokumentumok';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get tapForDetails => 'Koppints a részletekért';
+
+  @override
+  String get engineCapacity => 'Hengerűrtartalom';
+
+  @override
+  String get enginePower => 'Teljesítmény';
+
+  @override
+  String get fuelType => 'Üzemanyag';
+
+  @override
+  String get color => 'Szín';
+
+  @override
+  String get mileage => 'Kilométeróra';
+
+  @override
+  String get nickname => 'Becenév (opcionális)';
+
+  @override
+  String get saveCar => 'Autó mentése';
+
+  @override
+  String get carAdded => 'Autó hozzáadva!';
+
+  @override
+  String get invalidYear => 'Érvénytelen év';
+
+  @override
+  String get saveError => 'Hiba a mentés során';
+
+  @override
+  String get fuelPetrol => 'Benzin';
+
+  @override
+  String get fuelDiesel => 'Dízel';
+
+  @override
+  String get fuelHybrid => 'Hibrid';
+
+  @override
+  String get fuelElectric => 'Elektromos';
+
+  @override
+  String get fuelLpg => 'LPG';
+
+  @override
+  String addOf(String name) {
+    return '$name hozzáadása';
+  }
+
+  @override
+  String editOf(String name) {
+    return '$name szerkesztése';
+  }
+
+  @override
+  String expiresOnDate(String name) {
+    return 'Lejár: $name';
+  }
+
+  @override
+  String nextAtKm(String name) {
+    return 'Következő: $name km';
+  }
+
+  @override
+  String nextServiceOn(String name) {
+    return 'Következő szerviz: $name';
+  }
+
+  @override
+  String atKm(String name) {
+    return 'Ekkor: $name km';
+  }
+
+  @override
+  String get scanComplete => 'Beolvasás kész! Ellenőrizd az adatokat.';
+
+  @override
+  String get hintNickname => 'Pl.: A kis Daciám';
+
+  @override
+  String get hintCity => 'Bukarest';
+
+  @override
+  String get hintAddress => 'Példa utca 1., Bukarest';
+
+  @override
+  String get hintPerformedBy => 'Szerviz / személy';
+
+  @override
+  String get hintInterventionDetails => 'A beavatkozás részletei...';
 }

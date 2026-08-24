@@ -6,7 +6,7 @@ import '../../../core/models/user.dart';
 import '../../../core/theme/app_theme.dart';
 import '../widgets/car_card.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/l10n.dart';
 
 class CarsScreen extends ConsumerWidget {
   const CarsScreen({super.key});
@@ -20,7 +20,7 @@ class CarsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(t.myCars),
+        title: Text(tr(context).myCars),
         actions: [
           // Indicator limita masini
           carsAsync.whenOrNull(
@@ -36,7 +36,7 @@ class CarsScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    t.carsCount(cars.length, maxCars),
+                    tr(context).carsCount(cars.length, maxCars),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -58,7 +58,7 @@ class CarsScreen extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: Text(t.addCar),
+        label: Text(tr(context).addCar),
       ),
       body: carsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -68,11 +68,11 @@ class CarsScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.danger),
               const SizedBox(height: 12),
-              Text(t.errorWith('$e'), textAlign: TextAlign.center),
+              Text(tr(context).errorWith('$e'), textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.read(carsProvider.notifier).refresh(),
-                child: Text(t.retry),
+                child: Text(tr(context).retry),
               ),
             ],
           ),
@@ -101,17 +101,17 @@ class CarsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(t.deleteCar),
-        content: Text(t.deleteCarConfirm(car.displayName)),
+        title: Text(tr(context).deleteCar),
+        content: Text(tr(context).deleteCarConfirm(car.displayName)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(t.cancel)),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(tr(context).cancel)),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               ref.read(carsProvider.notifier).deleteCar(car.id);
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: Text(t.delete),
+            child: Text(tr(context).delete),
           ),
         ],
       ),
@@ -134,16 +134,16 @@ class _EmptyState extends StatelessWidget {
           children: [
             Icon(Icons.directions_car_outlined, size: 80, color: Colors.grey[300]),
             const SizedBox(height: 20),
-            Text(t.noCarsYet,
+            Text(tr(context).noCarsYet,
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(t.noCarsHint,
+            Text(tr(context).noCarsHint,
                 textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary)),
             const SizedBox(height: 28),
             ElevatedButton.icon(
               onPressed: onAdd,
               icon: const Icon(Icons.add),
-              label: Text(t.addCar),
+              label: Text(tr(context).addCar),
             ),
           ],
         ),

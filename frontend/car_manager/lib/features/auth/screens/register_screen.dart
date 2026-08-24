@@ -6,7 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/error_handler.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/l10n.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -61,7 +61,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final t = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(t.newAccount),
+        title: Text(tr(context).newAccount),
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
       ),
       body: SingleChildScrollView(
@@ -71,34 +71,34 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(t.register, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Text(tr(context).register, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text(t.fillDetails, style: const TextStyle(color: AppColors.textSecondary)),
+              Text(tr(context).fillDetails, style: const TextStyle(color: AppColors.textSecondary)),
               const SizedBox(height: 28),
               CmTextField(
                 controller: _nameCtrl,
-                label: t.fullName,
+                label: tr(context).fullName,
                 hint: 'Ion Popescu',
                 prefixIcon: Icons.person_outline,
-                validator: (v) => (v == null || v.length < 3) ? t.minChars3 : null,
+                validator: (v) => (v == null || v.length < 3) ? tr(context).minChars3 : null,
               ),
               const SizedBox(height: 16),
               CmTextField(
                 controller: _emailCtrl,
-                label: t.email,
+                label: tr(context).email,
                 hint: 'email@exemplu.ro',
                 keyboardType: TextInputType.emailAddress,
                 prefixIcon: Icons.email_outlined,
                 validator: (v) {
-                  if (v == null || v.isEmpty) return t.required;
-                  if (!v.contains('@')) return t.invalidEmail;
+                  if (v == null || v.isEmpty) return tr(context).required;
+                  if (!v.contains('@')) return tr(context).invalidEmail;
                   return null;
                 },
               ),
               const SizedBox(height: 16),
               CmTextField(
                 controller: _phoneCtrl,
-                label: t.phoneOptional,
+                label: tr(context).phoneOptional,
                 hint: '07XX XXX XXX',
                 keyboardType: TextInputType.phone,
                 prefixIcon: Icons.phone_outlined,
@@ -106,8 +106,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               const SizedBox(height: 16),
               CmTextField(
                 controller: _passCtrl,
-                label: t.password,
-                hint: t.passwordRulesHint,
+                label: tr(context).password,
+                hint: tr(context).passwordRulesHint,
                 obscureText: _obscurePass,
                 prefixIcon: Icons.lock_outline,
                 suffixIcon: IconButton(
@@ -115,30 +115,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   onPressed: () => setState(() => _obscurePass = !_obscurePass),
                 ),
                 validator: (v) {
-                  if (v == null || v.length < 8) return t.passwordTooShort;
-                  if (!v.contains(RegExp(r'[A-Z]'))) return t.passwordNeedsUpper;
-                  if (!v.contains(RegExp(r'[0-9]'))) return t.passwordNeedsDigit;
+                  if (v == null || v.length < 8) return tr(context).passwordTooShort;
+                  if (!v.contains(RegExp(r'[A-Z]'))) return tr(context).passwordNeedsUpper;
+                  if (!v.contains(RegExp(r'[0-9]'))) return tr(context).passwordNeedsDigit;
                   return null;
                 },
               ),
               const SizedBox(height: 16),
               CmTextField(
                 controller: _pass2Ctrl,
-                label: t.confirmPassword,
+                label: tr(context).confirmPassword,
                 hint: '••••••••',
                 obscureText: _obscurePass,
                 prefixIcon: Icons.lock_outline,
-                validator: (v) => v != _passCtrl.text ? t.passwordsDoNotMatch : null,
+                validator: (v) => v != _passCtrl.text ? tr(context).passwordsDoNotMatch : null,
               ),
               const SizedBox(height: 28),
-              CmButton(label: t.register, isLoading: isLoading, onPressed: isLoading ? null : _register),
+              CmButton(label: tr(context).register, isLoading: isLoading, onPressed: isLoading ? null : _register),
               const SizedBox(height: 16),
               Center(
                 child: TextButton(
                   onPressed: () => context.pop(),
                   child: Text.rich(TextSpan(children: [
-                    TextSpan(text: t.haveAccount, style: const TextStyle(color: AppColors.textSecondary)),
-                    TextSpan(text: t.login,
+                    TextSpan(text: tr(context).haveAccount, style: const TextStyle(color: AppColors.textSecondary)),
+                    TextSpan(text: tr(context).login,
                         style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                   ])),
                 ),

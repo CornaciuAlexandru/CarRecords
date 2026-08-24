@@ -98,5 +98,315 @@
     }
   },
   "language": "Nyelv",
-  "languageChoose": "Válassz nyelvet"
+  "languageChoose": "Válassz nyelvet",
+  "generalInfo": "Általános adatok",
+  "technicalDetails": "Műszaki adatok",
+  "validFrom": "Érvényes ettől",
+  "expires": "Lejár",
+  "expiresOn": "Lejárat",
+  "daysLeft": "Hátralévő napok",
+  "price": "Ár",
+  "priceRon": "Ár (RON)",
+  "scanFailed": "A beolvasás sikertelen: {msg}",
+  "@scanFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "extractedData": "Kinyert adatok",
+  "noDataExtracted": "Nem sikerült automatikusan adatot kinyerni a képből.",
+  "detectedText": "Felismert szöveg:",
+  "checkFirst": "Előbb ellenőrizd",
+  "saveDirectly": "Mentés azonnal",
+  "deleteConfirmGeneric": "Törlöd: \"{name}\"?",
+  "@deleteConfirmGeneric": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vignettes": "Matricák",
+  "vignette": "Matrica",
+  "addVignette": "Matrica hozzáadása",
+  "editVignette": "Matrica szerkesztése",
+  "saveVignette": "Matrica mentése",
+  "vignetteAdded": "Matrica hozzáadva!",
+  "vignetteUpdated": "Matrica frissítve!",
+  "noVignettes": "Nincs matrica hozzáadva",
+  "deleteVignette": "Matrica törlése",
+  "deleteVignetteConfirm": "Biztosan törlöd ezt a matricát?",
+  "purchaseDate": "Vásárlás dátuma",
+  "validityPeriod": "Érvényességi idő *",
+  "period": "Időszak",
+  "issuer": "Kibocsátó",
+  "issuerCompany": "Kibocsátó cég",
+  "invoiceSeries": "Számlasorozat",
+  "insurance": "Biztosítások",
+  "addInsurance": "Biztosítás hozzáadása",
+  "saveInsurance": "Biztosítás mentése",
+  "insuranceAdded": "Biztosítás hozzáadva!",
+  "insuranceUpdated": "Biztosítás frissítve!",
+  "noInsurance": "Nincs biztosítás hozzáadva",
+  "deleteInsurance": "Biztosítás törlése",
+  "insurerCompany": "Biztosítótársaság *",
+  "policyNumber": "Kötvényszám",
+  "premiumRon": "Díj (RON)",
+  "premium": "Díj",
+  "deductibleRon": "Önrész (RON)",
+  "paymentFrequency": "Fizetési gyakoriság",
+  "purchasedOn": "Vásárolva",
+  "agentName": "Ügynök neve",
+  "agentPhone": "Ügynök telefonszáma",
+  "agent": "Ügynök",
+  "roadsideAssistance": "Útmenti segítségnyújtás",
+  "roadsideIncluded": "Útmenti segítségnyújtás beleértve",
+  "included": "Tartalmazza",
+  "freqMonthly": "Havonta",
+  "freqQuarterly": "Negyedévente",
+  "freqBiannual": "Félévente",
+  "freqAnnual": "Évente",
+  "registrationDoc": "Forgalmi & Műszaki",
+  "registrationShort": "Forgalmi",
+  "addRegistration": "Forgalmi hozzáadása",
+  "editRegistration": "Forgalmi szerkesztése",
+  "registrationAdded": "Forgalmi hozzáadva!",
+  "registrationUpdated": "Forgalmi frissítve!",
+  "noRegistration": "Nincs forgalmi hozzáadva",
+  "deleteRegistration": "Forgalmi törlése",
+  "deleteRegistrationConfirm": "Biztosan törlöd ezt a forgalmit?",
+  "vehicleData": "Jármű adatai",
+  "registrationAndItp": "Forgalomba helyezés & Műszaki",
+  "brand": "Márka",
+  "model": "Modell",
+  "manufacturingYear": "Gyártási év",
+  "plateNumber": "Rendszám",
+  "vin": "Alvázszám (VIN)",
+  "ownerName": "Tulajdonos neve",
+  "ownerAddress": "Tulajdonos címe",
+  "owner": "Tulajdonos",
+  "address": "Cím",
+  "registrationDate": "Forgalomba helyezés dátuma",
+  "itpExpiryDate": "Műszaki lejárata",
+  "itpExpires": "Műszaki lejár",
+  "itpValid": "Műszaki érvényes",
+  "itpExpired": "Műszaki lejárt!",
+  "ocrFieldsFilled": "{count} mező kitöltve a beolvasásból — mentés előtt ellenőrizd.",
+  "@ocrFieldsFilled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanned": "beolvasva",
+  "maintenance": "Szerviz & Karbantartás",
+  "maintenanceShort": "Szerviz",
+  "addMaintenance": "Szerviz hozzáadása",
+  "editMaintenance": "Szerviz szerkesztése",
+  "maintenanceAdded": "Szerviz rögzítve!",
+  "maintenanceUpdated": "Szerviz frissítve!",
+  "noMaintenance": "Nincs rögzített szerviz",
+  "deleteMaintenance": "Bejegyzés törlése",
+  "interventionType": "Beavatkozás típusa *",
+  "performedDate": "Elvégzés dátuma *",
+  "description": "Leírás",
+  "mileageAtService": "Km a szervizkor",
+  "nextService": "Következő szerviz (opcionális)",
+  "nextMileage": "Következő km",
+  "nextDate": "Következő dátum",
+  "autoShop": "Autószerviz",
+  "svcOilChange": "Olajcsere",
+  "svcFilters": "Szűrők",
+  "svcBrakePads": "Fékbetétek",
+  "svcTyres": "Gumiabroncsok",
+  "svcTimingBelt": "Vezérműszíj",
+  "svcAltBelt": "Generátorszíj",
+  "svcBattery": "Akkumulátor",
+  "svcShocks": "Lengéscsillapítók",
+  "svcSparkPlugs": "Gyertyák",
+  "other": "Egyéb",
+  "modifications": "Módosítások",
+  "addModification": "Módosítás hozzáadása",
+  "editModification": "Módosítás szerkesztése",
+  "modificationAdded": "Módosítás hozzáadva!",
+  "modificationUpdated": "Módosítás frissítve!",
+  "noModifications": "Nincs módosítás hozzáadva",
+  "deleteModification": "Módosítás törlése",
+  "category": "Kategória *",
+  "modDescription": "Módosítás leírása *",
+  "modificationDate": "Módosítás dátuma (opcionális)",
+  "performedBy": "Elvégezte",
+  "homologated": "Hatóságilag jóváhagyva",
+  "homologatedShort": "Jóváhagyva",
+  "homologationNumber": "Jóváhagyási szám",
+  "catEngine": "Motor",
+  "catExterior": "Külső",
+  "catInterior": "Belső",
+  "catSuspension": "Futómű",
+  "catAudio": "Hangrendszer",
+  "catElectronic": "Elektronika",
+  "catBrakes": "Fékek",
+  "addPhoto": "Fotó hozzáadása",
+  "noPhotos": "Nincs fotó",
+  "photoCounter": "{count}. fotó / {max}",
+  "@photoCounter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadError": "Feltöltési hiba: {msg}",
+  "@uploadError": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsTitle": "Értesítések és riasztások",
+  "noNotifications": "Nincs értesítés",
+  "allInOrder": "Minden rendben!",
+  "checkNow": "Ellenőrzés most",
+  "checkDocuments": "Dokumentumok ellenőrzése",
+  "markRead": "Megjelölés olvasottként",
+  "markAllRead": "Összes olvasottként",
+  "unreadCount": "{count} olvasatlan értesítés",
+  "@unreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "administration": "Adminisztráció",
+  "users": "Felhasználók",
+  "accountsCount": "{count} fiók",
+  "@accountsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reload": "Újratöltés",
+  "accountActive": "Fiók aktív",
+  "accountActiveHint": "A felhasználó be tud jelentkezni",
+  "inactive": "Inaktív",
+  "role": "Szerepkör",
+  "subscription": "Előfizetés",
+  "carLimit": "Autók korlátja",
+  "createdOn": "Létrehozva: {name}",
+  "@createdOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docsShort": "{count} dok.",
+  "@docsShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteUser": "Felhasználó törlése",
+  "deleteUserConfirm": "Törlöd \"{name}\" fiókját?\n\nMinden autója és dokumentuma véglegesen törlődik.",
+  "@deleteUserConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userDeleted": "A(z) \"{name}\" fiók törölve.",
+  "@userDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userUpdated": "Felhasználó sikeresen frissítve!",
+  "carDetails": "Autó részletei",
+  "documents": "Dokumentumok",
+  "info": "Info",
+  "tapForDetails": "Koppints a részletekért",
+  "engineCapacity": "Hengerűrtartalom",
+  "enginePower": "Teljesítmény",
+  "fuelType": "Üzemanyag",
+  "color": "Szín",
+  "mileage": "Kilométeróra",
+  "nickname": "Becenév (opcionális)",
+  "saveCar": "Autó mentése",
+  "carAdded": "Autó hozzáadva!",
+  "invalidYear": "Érvénytelen év",
+  "saveError": "Hiba a mentés során",
+  "fuelPetrol": "Benzin",
+  "fuelDiesel": "Dízel",
+  "fuelHybrid": "Hibrid",
+  "fuelElectric": "Elektromos",
+  "fuelLpg": "LPG",
+  "addOf": "{name} hozzáadása",
+  "@addOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editOf": "{name} szerkesztése",
+  "@editOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresOnDate": "Lejár: {name}",
+  "@expiresOnDate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextAtKm": "Következő: {name} km",
+  "@nextAtKm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextServiceOn": "Következő szerviz: {name}",
+  "@nextServiceOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "atKm": "Ekkor: {name} km",
+  "@atKm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "Beolvasás kész! Ellenőrizd az adatokat.",
+  "hintNickname": "Pl.: A kis Daciám",
+  "hintCity": "Bukarest",
+  "hintAddress": "Példa utca 1., Bukarest",
+  "hintPerformedBy": "Szerviz / személy",
+  "hintInterventionDetails": "A beavatkozás részletei..."
 }

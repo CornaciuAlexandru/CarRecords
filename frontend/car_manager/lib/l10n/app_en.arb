@@ -98,5 +98,315 @@
     }
   },
   "language": "Language",
-  "languageChoose": "Choose language"
+  "languageChoose": "Choose language",
+  "generalInfo": "General information",
+  "technicalDetails": "Technical details",
+  "validFrom": "Valid from",
+  "expires": "Expires",
+  "expiresOn": "Expires on",
+  "daysLeft": "Days left",
+  "price": "Price",
+  "priceRon": "Price (RON)",
+  "scanFailed": "Scan failed: {msg}",
+  "@scanFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "extractedData": "Extracted data",
+  "noDataExtracted": "Could not read any data from the image automatically.",
+  "detectedText": "Detected text:",
+  "checkFirst": "Review first",
+  "saveDirectly": "Save directly",
+  "deleteConfirmGeneric": "Delete \"{name}\"?",
+  "@deleteConfirmGeneric": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vignettes": "Vignettes",
+  "vignette": "Vignette",
+  "addVignette": "Add vignette",
+  "editVignette": "Edit vignette",
+  "saveVignette": "Save vignette",
+  "vignetteAdded": "Vignette added!",
+  "vignetteUpdated": "Vignette updated!",
+  "noVignettes": "No vignettes added",
+  "deleteVignette": "Delete vignette",
+  "deleteVignetteConfirm": "Are you sure you want to delete this vignette?",
+  "purchaseDate": "Purchase date",
+  "validityPeriod": "Validity period *",
+  "period": "Period",
+  "issuer": "Issuer",
+  "issuerCompany": "Issuing company",
+  "invoiceSeries": "Invoice series",
+  "insurance": "Insurance",
+  "addInsurance": "Add insurance",
+  "saveInsurance": "Save insurance",
+  "insuranceAdded": "Insurance added!",
+  "insuranceUpdated": "Insurance updated!",
+  "noInsurance": "No insurance added",
+  "deleteInsurance": "Delete insurance",
+  "insurerCompany": "Insurance company *",
+  "policyNumber": "Policy no.",
+  "premiumRon": "Premium (RON)",
+  "premium": "Premium",
+  "deductibleRon": "Deductible (RON)",
+  "paymentFrequency": "Payment frequency",
+  "purchasedOn": "Purchased on",
+  "agentName": "Agent name",
+  "agentPhone": "Agent phone",
+  "agent": "Agent",
+  "roadsideAssistance": "Roadside assistance",
+  "roadsideIncluded": "Roadside assistance included",
+  "included": "Included",
+  "freqMonthly": "Monthly",
+  "freqQuarterly": "Quarterly",
+  "freqBiannual": "Every 6 months",
+  "freqAnnual": "Annually",
+  "registrationDoc": "Registration & Inspection",
+  "registrationShort": "Registration",
+  "addRegistration": "Add registration",
+  "editRegistration": "Edit registration",
+  "registrationAdded": "Registration added!",
+  "registrationUpdated": "Registration updated!",
+  "noRegistration": "No registration added",
+  "deleteRegistration": "Delete registration",
+  "deleteRegistrationConfirm": "Are you sure you want to delete this registration?",
+  "vehicleData": "Vehicle data",
+  "registrationAndItp": "Registration & Inspection",
+  "brand": "Make",
+  "model": "Model",
+  "manufacturingYear": "Year of manufacture",
+  "plateNumber": "Registration no.",
+  "vin": "Chassis number (VIN)",
+  "ownerName": "Owner name",
+  "ownerAddress": "Owner address",
+  "owner": "Owner",
+  "address": "Address",
+  "registrationDate": "Registration date",
+  "itpExpiryDate": "Inspection expiry date",
+  "itpExpires": "Inspection expires",
+  "itpValid": "Inspection valid",
+  "itpExpired": "Inspection expired!",
+  "ocrFieldsFilled": "{count} fields filled from the scan — check them before saving.",
+  "@ocrFieldsFilled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanned": "scanned",
+  "maintenance": "Service & Maintenance",
+  "maintenanceShort": "Service",
+  "addMaintenance": "Add service",
+  "editMaintenance": "Edit service",
+  "maintenanceAdded": "Service recorded!",
+  "maintenanceUpdated": "Service updated!",
+  "noMaintenance": "No service recorded",
+  "deleteMaintenance": "Delete record",
+  "interventionType": "Service type *",
+  "performedDate": "Date performed *",
+  "description": "Description",
+  "mileageAtService": "Mileage at service",
+  "nextService": "Next service (optional)",
+  "nextMileage": "Next mileage",
+  "nextDate": "Next date",
+  "autoShop": "Garage",
+  "svcOilChange": "Oil change",
+  "svcFilters": "Filters",
+  "svcBrakePads": "Brake pads",
+  "svcTyres": "Tyres",
+  "svcTimingBelt": "Timing belt",
+  "svcAltBelt": "Alternator belt",
+  "svcBattery": "Battery",
+  "svcShocks": "Shock absorbers",
+  "svcSparkPlugs": "Spark plugs",
+  "other": "Other",
+  "modifications": "Modifications",
+  "addModification": "Add modification",
+  "editModification": "Edit modification",
+  "modificationAdded": "Modification added!",
+  "modificationUpdated": "Modification updated!",
+  "noModifications": "No modifications added",
+  "deleteModification": "Delete modification",
+  "category": "Category *",
+  "modDescription": "Modification description *",
+  "modificationDate": "Modification date (optional)",
+  "performedBy": "Performed by",
+  "homologated": "Officially approved",
+  "homologatedShort": "Approved",
+  "homologationNumber": "Approval no.",
+  "catEngine": "Engine",
+  "catExterior": "Exterior",
+  "catInterior": "Interior",
+  "catSuspension": "Suspension",
+  "catAudio": "Audio",
+  "catElectronic": "Electronics",
+  "catBrakes": "Brakes",
+  "addPhoto": "Add photo",
+  "noPhotos": "No photos",
+  "photoCounter": "Photo {count} of {max}",
+  "@photoCounter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadError": "Upload error: {msg}",
+  "@uploadError": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsTitle": "Notifications & Alerts",
+  "noNotifications": "No notifications",
+  "allInOrder": "Everything is in order!",
+  "checkNow": "Check now",
+  "checkDocuments": "Check documents",
+  "markRead": "Mark as read",
+  "markAllRead": "Mark all read",
+  "unreadCount": "{count} unread notifications",
+  "@unreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "administration": "Administration",
+  "users": "Users",
+  "accountsCount": "{count} accounts",
+  "@accountsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reload": "Reload",
+  "accountActive": "Account active",
+  "accountActiveHint": "The user can sign in",
+  "inactive": "Inactive",
+  "role": "Role",
+  "subscription": "Subscription",
+  "carLimit": "Car limit",
+  "createdOn": "Created: {name}",
+  "@createdOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docsShort": "{count} docs",
+  "@docsShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteUser": "Delete user",
+  "deleteUserConfirm": "Delete the account of \"{name}\"?\n\nAll their cars and documents will be permanently removed.",
+  "@deleteUserConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userDeleted": "The account \"{name}\" has been deleted.",
+  "@userDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userUpdated": "User updated successfully!",
+  "carDetails": "Car details",
+  "documents": "Documents",
+  "info": "Info",
+  "tapForDetails": "Tap for details",
+  "engineCapacity": "Engine size",
+  "enginePower": "Power",
+  "fuelType": "Fuel",
+  "color": "Colour",
+  "mileage": "Mileage",
+  "nickname": "Nickname (optional)",
+  "saveCar": "Save car",
+  "carAdded": "Car added!",
+  "invalidYear": "Invalid year",
+  "saveError": "Error while saving",
+  "fuelPetrol": "Petrol",
+  "fuelDiesel": "Diesel",
+  "fuelHybrid": "Hybrid",
+  "fuelElectric": "Electric",
+  "fuelLpg": "LPG",
+  "addOf": "Add {name}",
+  "@addOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editOf": "Edit {name}",
+  "@editOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresOnDate": "Expires: {name}",
+  "@expiresOnDate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextAtKm": "Next: {name} km",
+  "@nextAtKm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextServiceOn": "Next service: {name}",
+  "@nextServiceOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "atKm": "At: {name} km",
+  "@atKm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "Scan complete! Please check the data.",
+  "hintNickname": "e.g. My little Dacia",
+  "hintCity": "Bucharest",
+  "hintAddress": "1 Example St., Bucharest",
+  "hintPerformedBy": "Garage / person",
+  "hintInterventionDetails": "Details of the work..."
 }

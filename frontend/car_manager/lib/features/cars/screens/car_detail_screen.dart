@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/models/user.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/cars_provider.dart';
+import '../../../core/utils/l10n.dart';
 
 class CarDetailScreen extends ConsumerWidget {
   final String carId;
@@ -15,18 +16,18 @@ class CarDetailScreen extends ConsumerWidget {
       length: 5,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Detalii mașină'),
-          bottom: const TabBar(
+          title: Text(tr(context).carDetails),
+          bottom: TabBar(
             isScrollable: true,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white60,
             indicatorColor: AppColors.accent,
             tabs: [
-              Tab(icon: Icon(Icons.description_outlined), text: 'Documente'),
-              Tab(icon: Icon(Icons.shield_outlined), text: 'Asigurare'),
-              Tab(icon: Icon(Icons.build_outlined), text: 'Service'),
-              Tab(icon: Icon(Icons.tune_outlined), text: 'Modificări'),
-              Tab(icon: Icon(Icons.info_outline), text: 'Info'),
+              Tab(icon: Icon(Icons.description_outlined), text: tr(context).documents),
+              Tab(icon: Icon(Icons.shield_outlined), text: tr(context).insurance),
+              Tab(icon: Icon(Icons.build_outlined), text: tr(context).maintenanceShort),
+              Tab(icon: Icon(Icons.tune_outlined), text: tr(context).modifications),
+              Tab(icon: Icon(Icons.info_outline), text: tr(context).info),
             ],
           ),
         ),
@@ -55,7 +56,7 @@ class _DocumentsTab extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         _SectionCard(
-          title: 'Rovinietă',
+          title: tr(context).vignette,
           icon: Icons.card_membership,
           iconColor: AppColors.accent,
           onAdd: () => context.push('/cars/$carId/vignette/add'),
@@ -63,7 +64,7 @@ class _DocumentsTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _SectionCard(
-          title: 'Talon / ITP',
+          title: tr(context).registrationDoc,
           icon: Icons.assignment,
           iconColor: Colors.teal,
           onAdd: () => context.push('/cars/$carId/registration/add'),
@@ -113,7 +114,7 @@ class _MaintenanceTab extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         _SectionCard(
-          title: 'Schimburi & Service',
+          title: tr(context).maintenance,
           icon: Icons.build,
           iconColor: Colors.orange,
           onAdd: () => context.push('/cars/$carId/maintenance/add'),
@@ -134,7 +135,7 @@ class _ModificationsTab extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         _SectionCard(
-          title: 'Modificări aduse',
+          title: tr(context).modifications,
           icon: Icons.tune,
           iconColor: Colors.purple,
           onAdd: () => context.push('/cars/$carId/modifications/add'),
@@ -158,26 +159,26 @@ class _InfoTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        _infoCard('Informații generale', [
-          _row('Marcă', car.brand),
-          _row('Model', car.model),
-          _row('An fabricație', '${car.year}'),
-          if (car.color != null) _row('Culoare', car.color!),
-          _row('Nr. înmatriculare', car.licensePlate),
+        _infoCard(tr(context).generalInfo, [
+          _row(tr(context).brand, car.brand),
+          _row(tr(context).model, car.model),
+          _row(tr(context).manufacturingYear, '${car.year}'),
+          if (car.color != null) _row(tr(context).color, car.color!),
+          _row(tr(context).plateNumber, car.licensePlate),
           if (car.registrationNumber != null)
-            _row('Nr. înregistrare', car.registrationNumber!),
+            _row(tr(context).plateNumber, car.registrationNumber!),
         ]),
         const SizedBox(height: 16),
         _infoCard('Date tehnice', [
           if (car.fuelType != null)
-            _row('Combustibil', car.fuelType!.toUpperCase()),
+            _row(tr(context).fuelType, car.fuelType!.toUpperCase()),
           if (car.engineCapacity != null)
-            _row('Cilindree', '${car.engineCapacity} cc'),
+            _row(tr(context).engineCapacity, '${car.engineCapacity} cc'),
           if (car.enginePower != null)
-            _row('Putere', '${car.enginePower} CP'),
+            _row(tr(context).enginePower, '${car.enginePower} CP'),
           if (car.mileage != null)
-            _row('Kilometraj', '${car.mileage} km'),
-          if (car.vinNumber != null) _row('Serie șasiu (VIN)', car.vinNumber!),
+            _row(tr(context).mileage, '${car.mileage} km'),
+          if (car.vinNumber != null) _row(tr(context).vin, car.vinNumber!),
         ]),
       ],
     );
@@ -246,7 +247,7 @@ class _SectionCard extends StatelessWidget {
           child: Icon(icon, color: iconColor, size: 24),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: const Text('Apasă pentru detalii', style: TextStyle(fontSize: 12)),
+        subtitle: Text(tr(context).tapForDetails, style: TextStyle(fontSize: 12)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

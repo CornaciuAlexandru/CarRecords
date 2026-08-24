@@ -6,6 +6,7 @@ import '../../../core/models/documents.dart';
 import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/status_badge.dart';
+import '../../../core/utils/l10n.dart';
 
 final insuranceFutureProvider =
     FutureProvider.family<List<InsurancePolicy>, String>(
@@ -19,26 +20,26 @@ class InsuranceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(insuranceFutureProvider(carId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Asigurări')),
+      appBar: AppBar(title: Text(tr(context).insurance)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/insurance/add'),
         icon: const Icon(Icons.add),
-        label: const Text('Adaugă'),
+        label: Text(tr(context).add),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Eroare: $e')),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
         data: (policies) => policies.isEmpty
             ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.shield_outlined, size: 64, color: Colors.grey[300]),
                 const SizedBox(height: 16),
-                const Text('Nicio asigurare adăugată', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(tr(context).noInsurance, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () => context.push('/cars/$carId/insurance/add'),
-                  icon: const Icon(Icons.add), label: const Text('Adaugă asigurare'),
+                  icon: const Icon(Icons.add), label: Text(tr(context).addInsurance),
                 ),
               ]))
             : ListView.separated(
@@ -66,14 +67,14 @@ class _InsuranceCard extends StatelessWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Șterge asigurarea'),
-        content: Text('Ștergi asigurarea ${policy.type} - ${policy.insurerCompany}?'),
+        title: Text(tr(context).deleteInsurance),
+        content: Text(tr(context).deleteConfirmGeneric('${policy.type} - ${policy.insurerCompany}')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Anulează')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr(context).cancel)),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('Șterge'),
+            child: Text(tr(context).delete),
           ),
         ],
       ),
@@ -84,7 +85,7 @@ class _InsuranceCard extends StatelessWidget {
       onChanged();
     } catch (e) {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
       );
     }
   }
@@ -119,13 +120,13 @@ class _InsuranceCard extends StatelessWidget {
                       if (v == 'delete') _delete(context);
                     },
                     itemBuilder: (_) => [
-                      const PopupMenuItem(value: 'edit', child: ListTile(
+                      PopupMenuItem(value: 'edit', child: ListTile(
                         leading: Icon(Icons.edit_outlined, color: AppColors.primary),
-                        title: Text('Editează'), dense: true,
+                        title: Text(tr(context).edit), dense: true,
                       )),
-                      const PopupMenuItem(value: 'delete', child: ListTile(
+                      PopupMenuItem(value: 'delete', child: ListTile(
                         leading: Icon(Icons.delete_outline, color: AppColors.danger),
-                        title: Text('Șterge', style: TextStyle(color: AppColors.danger)), dense: true,
+                        title: Text(tr(context).delete, style: TextStyle(color: AppColors.danger)), dense: true,
                       )),
                     ],
                   ),
@@ -133,15 +134,15 @@ class _InsuranceCard extends StatelessWidget {
               ],
             ),
             const Divider(height: 20),
-            _row(Icons.calendar_today, 'Valabilă de la', fmt.format(policy.validFrom)),
-            _row(Icons.event, 'Expiră', fmt.format(policy.validUntil)),
+            _row(Icons.calendar_today, tr(context).validFrom, fmt.format(policy.validFrom)),
+            _row(Icons.event, tr(context).expires, fmt.format(policy.validUntil)),
             if (!policy.isExpired)
-              _row(Icons.timelapse, 'Zile rămase', '${policy.daysLeft} zile',
+              _row(Icons.timelapse, tr(context).daysLeft, '${policy.daysLeft} zile',
                   color: policy.daysLeft < 14 ? AppColors.danger : null),
-            if (policy.policyNumber != null) _row(Icons.confirmation_number, 'Nr. poliță', policy.policyNumber!),
-            if (policy.premiumAmount != null) _row(Icons.payments_outlined, 'Primă', '${policy.premiumAmount} ${policy.currency}'),
-            if (policy.agentName != null) _row(Icons.person_outline, 'Agent', policy.agentName!),
-            if (policy.roadsideAssistance) _row(Icons.car_repair, 'Asistență rutieră', 'Inclusă', color: AppColors.success),
+            if (policy.policyNumber != null) _row(Icons.confirmation_number, tr(context).policyNumber, policy.policyNumber!),
+            if (policy.premiumAmount != null) _row(Icons.payments_outlined, tr(context).premium, '${policy.premiumAmount} ${policy.currency}'),
+            if (policy.agentName != null) _row(Icons.person_outline, tr(context).agent, policy.agentName!),
+            if (policy.roadsideAssistance) _row(Icons.car_repair, tr(context).roadsideAssistance, tr(context).included, color: AppColors.success),
           ],
         ),
       ),

@@ -8,7 +8,7 @@ import '../providers/locale_provider.dart';
 import '../theme/app_theme.dart';
 import '../services/update_service.dart';
 import '../services/server_discovery.dart';
-import '../../l10n/app_localizations.dart';
+import '../../core/utils/l10n.dart';
 
 /// Etapa in care se afla pornirea. Textul afisat se traduce la randare,
 /// nu se stocheaza — altfel ar ramane in limba veche la schimbarea limbii.
@@ -128,11 +128,11 @@ class _StartupWrapperState extends ConsumerState<StartupWrapper>
   /// Textul etapei curente, tradus la randare.
   String _statusText(AppLocalizations t) {
     switch (_phase) {
-      case _Phase.searching:        return t.searchingServer;
-      case _Phase.connecting:       return '${t.connecting} ($_attempt/$_maxAttempts)';
-      case _Phase.checkingUpdates:  return t.checkingUpdates;
-      case _Phase.connected:        return t.connected;
-      case _Phase.starting:         return t.startingService;
+      case _Phase.searching:        return tr(context).searchingServer;
+      case _Phase.connecting:       return '${tr(context).connecting} ($_attempt/$_maxAttempts)';
+      case _Phase.checkingUpdates:  return tr(context).checkingUpdates;
+      case _Phase.connected:        return tr(context).connected;
+      case _Phase.starting:         return tr(context).startingService;
     }
   }
 
@@ -197,7 +197,7 @@ class _StartupWrapperState extends ConsumerState<StartupWrapper>
                 const Icon(Icons.cloud_off, color: Colors.white54, size: 40),
                 const SizedBox(height: 12),
                 Text(
-                  t.serverNotFound,
+                  tr(context).serverNotFound,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 17,
@@ -209,8 +209,8 @@ class _StartupWrapperState extends ConsumerState<StartupWrapper>
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
                     Platform.isAndroid
-                        ? t.serverNotFoundHintMobile
-                        : t.serverNotFoundHintDesktop,
+                        ? tr(context).serverNotFoundHintMobile
+                        : tr(context).serverNotFoundHintDesktop,
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.white60, fontSize: 13),
                   ),
@@ -226,7 +226,7 @@ class _StartupWrapperState extends ConsumerState<StartupWrapper>
                     _start();
                   },
                   icon: const Icon(Icons.search),
-                  label: Text(t.searchAgain),
+                  label: Text(tr(context).searchAgain),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: AppColors.primary,

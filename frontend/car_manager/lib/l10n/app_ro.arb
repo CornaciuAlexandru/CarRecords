@@ -98,5 +98,315 @@
     }
   },
   "language": "Limbă",
-  "languageChoose": "Alege limba"
+  "languageChoose": "Alege limba",
+  "generalInfo": "Informații generale",
+  "technicalDetails": "Detalii tehnice",
+  "validFrom": "Valabilă de la",
+  "expires": "Expiră",
+  "expiresOn": "Expiră la",
+  "daysLeft": "Zile rămase",
+  "price": "Preț",
+  "priceRon": "Preț (RON)",
+  "scanFailed": "Scanare eșuată: {msg}",
+  "@scanFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "extractedData": "Date extrase",
+  "noDataExtracted": "Nu s-au putut extrage date automat din imagine.",
+  "detectedText": "Text detectat:",
+  "checkFirst": "Verifică mai întâi",
+  "saveDirectly": "Salvează direct",
+  "deleteConfirmGeneric": "Ștergi \"{name}\"?",
+  "@deleteConfirmGeneric": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vignettes": "Roviniete",
+  "vignette": "Rovinietă",
+  "addVignette": "Adaugă rovinietă",
+  "editVignette": "Editează rovinietă",
+  "saveVignette": "Salvează rovinieta",
+  "vignetteAdded": "Rovinietă adăugată!",
+  "vignetteUpdated": "Rovinietă actualizată!",
+  "noVignettes": "Nicio rovinietă adăugată",
+  "deleteVignette": "Șterge rovinieta",
+  "deleteVignetteConfirm": "Ești sigur că vrei să ștergi această rovinietă?",
+  "purchaseDate": "Dată cumpărare",
+  "validityPeriod": "Perioadă valabilitate *",
+  "period": "Perioadă",
+  "issuer": "Emitent",
+  "issuerCompany": "Firma emitentă",
+  "invoiceSeries": "Serie factură",
+  "insurance": "Asigurări",
+  "addInsurance": "Adaugă asigurare",
+  "saveInsurance": "Salvează asigurarea",
+  "insuranceAdded": "Asigurare adăugată!",
+  "insuranceUpdated": "Asigurare actualizată!",
+  "noInsurance": "Nicio asigurare adăugată",
+  "deleteInsurance": "Șterge asigurarea",
+  "insurerCompany": "Firma asigurătoare *",
+  "policyNumber": "Nr. poliță",
+  "premiumRon": "Primă (RON)",
+  "premium": "Primă",
+  "deductibleRon": "Franciză (RON)",
+  "paymentFrequency": "Frecvență plată",
+  "purchasedOn": "Cumpărată la",
+  "agentName": "Numele agentului",
+  "agentPhone": "Telefon agent",
+  "agent": "Agent",
+  "roadsideAssistance": "Asistență rutieră",
+  "roadsideIncluded": "Asistență rutieră inclusă",
+  "included": "Inclusă",
+  "freqMonthly": "Lunar",
+  "freqQuarterly": "Trimestrial",
+  "freqBiannual": "Semestrial",
+  "freqAnnual": "Anual",
+  "registrationDoc": "Talon & ITP",
+  "registrationShort": "Talon",
+  "addRegistration": "Adaugă Talon / ITP",
+  "editRegistration": "Editează talon",
+  "registrationAdded": "Talon adăugat!",
+  "registrationUpdated": "Talon actualizat!",
+  "noRegistration": "Niciun talon adăugat",
+  "deleteRegistration": "Șterge talonul",
+  "deleteRegistrationConfirm": "Ești sigur că vrei să ștergi acest talon?",
+  "vehicleData": "Date vehicul",
+  "registrationAndItp": "Înmatriculare & ITP",
+  "brand": "Marcă",
+  "model": "Model",
+  "manufacturingYear": "An fabricație",
+  "plateNumber": "Nr. înmatriculare",
+  "vin": "Serie șasiu (VIN)",
+  "ownerName": "Nume proprietar",
+  "ownerAddress": "Adresă proprietar",
+  "owner": "Proprietar",
+  "address": "Adresă",
+  "registrationDate": "Data înmatriculării",
+  "itpExpiryDate": "Data expirare ITP",
+  "itpExpires": "ITP expiră",
+  "itpValid": "ITP valabil",
+  "itpExpired": "ITP expirat!",
+  "ocrFieldsFilled": "{count} câmpuri completate din scanare — verifică-le înainte de salvare.",
+  "@ocrFieldsFilled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanned": "scanat",
+  "maintenance": "Service & Mentenanță",
+  "maintenanceShort": "Service",
+  "addMaintenance": "Adaugă service",
+  "editMaintenance": "Editează service",
+  "maintenanceAdded": "Service înregistrat!",
+  "maintenanceUpdated": "Service actualizat!",
+  "noMaintenance": "Niciun serviciu înregistrat",
+  "deleteMaintenance": "Șterge înregistrarea",
+  "interventionType": "Tip intervenție *",
+  "performedDate": "Data efectuării *",
+  "description": "Descriere",
+  "mileageAtService": "Km la service",
+  "nextService": "Următor service (opțional)",
+  "nextMileage": "Km următor",
+  "nextDate": "Data următor",
+  "autoShop": "Service auto",
+  "svcOilChange": "Schimb ulei",
+  "svcFilters": "Filtre",
+  "svcBrakePads": "Plăcuțe frână",
+  "svcTyres": "Anvelope",
+  "svcTimingBelt": "Distribuție",
+  "svcAltBelt": "Curea alternator",
+  "svcBattery": "Baterie",
+  "svcShocks": "Amortizoare",
+  "svcSparkPlugs": "Bujii",
+  "other": "Altul",
+  "modifications": "Modificări",
+  "addModification": "Adaugă modificare",
+  "editModification": "Editează modificare",
+  "modificationAdded": "Modificare adăugată!",
+  "modificationUpdated": "Modificare actualizată!",
+  "noModifications": "Nicio modificare adăugată",
+  "deleteModification": "Șterge modificarea",
+  "category": "Categorie *",
+  "modDescription": "Descriere modificare *",
+  "modificationDate": "Data modificării (opțional)",
+  "performedBy": "Realizată de",
+  "homologated": "Modificare omologată RAR",
+  "homologatedShort": "Omologat",
+  "homologationNumber": "Nr. omologare",
+  "catEngine": "Motor",
+  "catExterior": "Exterior",
+  "catInterior": "Interior",
+  "catSuspension": "Suspensie",
+  "catAudio": "Audio",
+  "catElectronic": "Electronic",
+  "catBrakes": "Frâne",
+  "addPhoto": "Adaugă poză",
+  "noPhotos": "Fără poze",
+  "photoCounter": "Poza {count} din {max}",
+  "@photoCounter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadError": "Eroare upload: {msg}",
+  "@uploadError": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsTitle": "Notificări & Alerte",
+  "noNotifications": "Nicio notificare",
+  "allInOrder": "Totul este în ordine!",
+  "checkNow": "Verifică acum",
+  "checkDocuments": "Verifică documente",
+  "markRead": "Marchează citit",
+  "markAllRead": "Marchează toate",
+  "unreadCount": "{count} notificări necitite",
+  "@unreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "administration": "Administrare",
+  "users": "Utilizatori",
+  "accountsCount": "{count} conturi",
+  "@accountsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reload": "Reîncarcă",
+  "accountActive": "Cont activ",
+  "accountActiveHint": "Utilizatorul se poate conecta",
+  "inactive": "Inactiv",
+  "role": "Rol",
+  "subscription": "Abonament",
+  "carLimit": "Limită mașini",
+  "createdOn": "Creat: {name}",
+  "@createdOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docsShort": "{count} doc.",
+  "@docsShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteUser": "Șterge utilizatorul",
+  "deleteUserConfirm": "Ești sigur că vrei să ștergi contul lui \"{name}\"?\n\nToate mașinile și documentele asociate vor fi șterse permanent.",
+  "@deleteUserConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userDeleted": "Contul \"{name}\" a fost șters.",
+  "@userDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userUpdated": "Utilizator actualizat cu succes!",
+  "carDetails": "Detalii mașină",
+  "documents": "Documente",
+  "info": "Info",
+  "tapForDetails": "Apasă pentru detalii",
+  "engineCapacity": "Cilindree",
+  "enginePower": "Putere",
+  "fuelType": "Combustibil",
+  "color": "Culoare",
+  "mileage": "Kilometraj",
+  "nickname": "Poreclă (opțional)",
+  "saveCar": "Salvează mașina",
+  "carAdded": "Mașina a fost adăugată!",
+  "invalidYear": "An invalid",
+  "saveError": "Eroare la salvare",
+  "fuelPetrol": "Benzină",
+  "fuelDiesel": "Motorină",
+  "fuelHybrid": "Hibrid",
+  "fuelElectric": "Electric",
+  "fuelLpg": "GPL",
+  "addOf": "Adaugă {name}",
+  "@addOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editOf": "Editează {name}",
+  "@editOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresOnDate": "Expiră: {name}",
+  "@expiresOnDate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextAtKm": "Următor: {name} km",
+  "@nextAtKm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextServiceOn": "Următoarea revizie: {name}",
+  "@nextServiceOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "atKm": "La: {name} km",
+  "@atKm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "Scanare completă! Verificați datele.",
+  "hintNickname": "Ex: Daciuța mea",
+  "hintCity": "București",
+  "hintAddress": "Str. Exemplu, nr. 1, București",
+  "hintPerformedBy": "Service / Persoană",
+  "hintInterventionDetails": "Detalii intervenție..."
 }

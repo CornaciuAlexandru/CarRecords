@@ -10,7 +10,7 @@ import '../../notifications/screens/notifications_screen.dart';
 import '../../admin/screens/admin_screen.dart';
 import '../../notifications/providers/notifications_provider.dart';
 import '../../../core/providers/locale_provider.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/l10n.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -50,11 +50,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           NavigationDestination(
               icon: const Icon(Icons.home_outlined),
               selectedIcon: const Icon(Icons.home),
-              label: t.navHome),
+              label: tr(context).navHome),
           NavigationDestination(
               icon: const Icon(Icons.directions_car_outlined),
               selectedIcon: const Icon(Icons.directions_car),
-              label: t.navCars),
+              label: tr(context).navCars),
           NavigationDestination(
             icon: Badge(
               isLabelVisible: unread > 0,
@@ -66,17 +66,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               label: Text('$unread', style: const TextStyle(fontSize: 10)),
               child: const Icon(Icons.notifications),
             ),
-            label: t.navAlerts,
+            label: tr(context).navAlerts,
           ),
           NavigationDestination(
               icon: const Icon(Icons.person_outline),
               selectedIcon: const Icon(Icons.person),
-              label: t.navProfile),
+              label: tr(context).navProfile),
           if (isAdmin)
             NavigationDestination(
                 icon: const Icon(Icons.admin_panel_settings_outlined),
                 selectedIcon: const Icon(Icons.admin_panel_settings),
-                label: t.navAdmin),
+                label: tr(context).navAdmin),
         ],
       ),
     );
@@ -96,7 +96,7 @@ class _HomeTab extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: authAsync.whenOrNull(
-          data: (user) => Text(t.greeting(user?.fullName.split(' ').first ?? '')),
+          data: (user) => Text(tr(context).greeting(user?.fullName.split(' ').first ?? '')),
         ) ?? const Text('CarRecords'),
         actions: [
           IconButton(
@@ -121,8 +121,8 @@ class _HomeTab extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(t.myCars, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                TextButton(onPressed: () {}, child: Text(t.viewAll)),
+                Text(tr(context).myCars, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                TextButton(onPressed: () {}, child: Text(tr(context).viewAll)),
               ],
             ),
             const SizedBox(height: 8),
@@ -151,13 +151,13 @@ class _SummarySection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: _StatCard(label: t.navCars, value: '${cars.length}',
+        Expanded(child: _StatCard(label: tr(context).navCars, value: '${cars.length}',
             icon: Icons.directions_car, color: AppColors.primary)),
         const SizedBox(width: 12),
-        Expanded(child: _StatCard(label: t.statActiveAlerts, value: '0',
+        Expanded(child: _StatCard(label: tr(context).statActiveAlerts, value: '0',
             icon: Icons.warning_amber_rounded, color: AppColors.warning)),
         const SizedBox(width: 12),
-        Expanded(child: _StatCard(label: t.statExpired, value: '0',
+        Expanded(child: _StatCard(label: tr(context).statExpired, value: '0',
             icon: Icons.error_outline, color: AppColors.danger)),
       ],
     );
@@ -251,7 +251,7 @@ class ProfilePage extends ConsumerWidget {
     final current = kSupportedLanguages.firstWhere((l) => l.code == lang,
         orElse: () => kSupportedLanguages.first);
     return Scaffold(
-      appBar: AppBar(title: Text(t.navProfile)),
+      appBar: AppBar(title: Text(tr(context).navProfile)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -267,14 +267,14 @@ class ProfilePage extends ConsumerWidget {
             margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
               leading: const Icon(Icons.language, color: AppColors.primary),
-              title: Text(t.language),
+              title: Text(tr(context).language),
               subtitle: Text('${current.flag}  ${current.label}'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 15),
               onTap: () => _showLanguagePicker(context, ref, t),
             ),
           ),
           ListTile(leading: const Icon(Icons.logout, color: AppColors.danger),
-              title: Text(t.logout, style: const TextStyle(color: AppColors.danger)),
+              title: Text(tr(context).logout, style: const TextStyle(color: AppColors.danger)),
               onTap: () async {
                 await ref.read(authStateProvider.notifier).logout();
                 if (context.mounted) context.go('/login');
@@ -293,7 +293,7 @@ class ProfilePage extends ConsumerWidget {
         title: Row(children: [
           const Icon(Icons.language, color: AppColors.primary),
           const SizedBox(width: 10),
-          Text(t.languageChoose),
+          Text(tr(context).languageChoose),
         ]),
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
         content: SizedBox(
@@ -321,7 +321,7 @@ class ProfilePage extends ConsumerWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t.cancel)),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr(context).cancel)),
         ],
       ),
     );

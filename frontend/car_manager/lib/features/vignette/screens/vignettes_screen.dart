@@ -6,6 +6,7 @@ import '../../../core/models/documents.dart';
 import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/status_badge.dart';
+import '../../../core/utils/l10n.dart';
 
 final vignettesFutureProvider =
     FutureProvider.family<List<Vignette>, String>((ref, carId) =>
@@ -19,17 +20,17 @@ class VignettesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(vignettesFutureProvider(carId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Roviniete')),
+      appBar: AppBar(title: Text(tr(context).vignettes)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/vignette/add'),
         icon: const Icon(Icons.add),
-        label: const Text('Adaugă'),
+        label: Text(tr(context).add),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Eroare: $e')),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
         data: (vignettes) => vignettes.isEmpty
             ? _empty(context)
             : ListView.separated(
@@ -50,11 +51,11 @@ class VignettesScreen extends ConsumerWidget {
     child: Column(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.card_membership, size: 64, color: Colors.grey[300]),
       const SizedBox(height: 16),
-      const Text('Nicio rovinietă adăugată', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+      Text(tr(context).noVignettes, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 20),
       ElevatedButton.icon(
         onPressed: () => context.push('/cars/$carId/vignette/add'),
-        icon: const Icon(Icons.add), label: const Text('Adaugă rovinietă'),
+        icon: const Icon(Icons.add), label: Text(tr(context).addVignette),
       ),
     ]),
   );
@@ -70,14 +71,14 @@ class _VignetteCard extends ConsumerWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Șterge rovinieta'),
-        content: const Text('Ești sigur că vrei să ștergi această rovinietă?'),
+        title: Text(tr(context).deleteVignette),
+        content: Text(tr(context).deleteVignetteConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Anulează')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr(context).cancel)),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('Șterge'),
+            child: Text(tr(context).delete),
           ),
         ],
       ),
@@ -88,7 +89,7 @@ class _VignetteCard extends ConsumerWidget {
       onChanged();
     } catch (e) {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
       );
     }
   }
@@ -108,7 +109,7 @@ class _VignetteCard extends ConsumerWidget {
                 Row(children: [
                   const Icon(Icons.card_membership, color: AppColors.accent),
                   const SizedBox(width: 8),
-                  Text('Rovinietă ${vignette.validityPeriod.replaceAll('_', ' ')}',
+                  Text('${tr(context).vignette} ${vignette.validityPeriod.replaceAll('_', ' ')}',
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ]),
                 Row(children: [
@@ -119,13 +120,13 @@ class _VignetteCard extends ConsumerWidget {
                       if (v == 'delete') _delete(context, ref);
                     },
                     itemBuilder: (_) => [
-                      const PopupMenuItem(value: 'edit', child: ListTile(
+                      PopupMenuItem(value: 'edit', child: ListTile(
                         leading: Icon(Icons.edit_outlined, color: AppColors.primary),
-                        title: Text('Editează'), dense: true,
+                        title: Text(tr(context).edit), dense: true,
                       )),
-                      const PopupMenuItem(value: 'delete', child: ListTile(
+                      PopupMenuItem(value: 'delete', child: ListTile(
                         leading: Icon(Icons.delete_outline, color: AppColors.danger),
-                        title: Text('Șterge', style: TextStyle(color: AppColors.danger)), dense: true,
+                        title: Text(tr(context).delete, style: TextStyle(color: AppColors.danger)), dense: true,
                       )),
                     ],
                   ),
@@ -133,14 +134,14 @@ class _VignetteCard extends ConsumerWidget {
               ],
             ),
             const Divider(height: 20),
-            _row(Icons.calendar_today, 'Valabilă de la', fmt.format(vignette.validFrom)),
-            _row(Icons.event, 'Expiră', fmt.format(vignette.validUntil)),
+            _row(Icons.calendar_today, tr(context).validFrom, fmt.format(vignette.validFrom)),
+            _row(Icons.event, tr(context).expires, fmt.format(vignette.validUntil)),
             if (!vignette.isExpired)
-              _row(Icons.timelapse, 'Zile rămase', '${vignette.daysLeft} zile',
+              _row(Icons.timelapse, tr(context).daysLeft, '${vignette.daysLeft} zile',
                   color: vignette.daysLeft < 7 ? AppColors.danger : null),
-            if (vignette.issuerCompany != null) _row(Icons.business, 'Emitent', vignette.issuerCompany!),
-            if (vignette.price != null) _row(Icons.payments_outlined, 'Preț', '${vignette.price} ${vignette.currency}'),
-            if (vignette.invoiceNumber != null) _row(Icons.receipt_long, 'Nr. factură', vignette.invoiceNumber!),
+            if (vignette.issuerCompany != null) _row(Icons.business, tr(context).issuer, vignette.issuerCompany!),
+            if (vignette.price != null) _row(Icons.payments_outlined, tr(context).price, '${vignette.price} ${vignette.currency}'),
+            if (vignette.invoiceNumber != null) _row(Icons.receipt_long, tr(context).invoiceNr, vignette.invoiceNumber!),
           ],
         ),
       ),

@@ -8,6 +8,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
 import 'maintenance_screen.dart';
+import '../../../core/utils/l10n.dart';
 
 class AddMaintenanceScreen extends ConsumerStatefulWidget {
   final String carId;
@@ -36,10 +37,18 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
 
   bool get _isEditing => widget.existing != null;
 
-  static const _types = {
-    'schimb_ulei': 'Schimb ulei', 'filtre': 'Filtre', 'placute_frana': 'Plăcuțe frână',
-    'anvelope': 'Anvelope', 'distributie': 'Distribuție', 'curea_alternator': 'Curea alternator',
-    'baterie': 'Baterie', 'amortizoare': 'Amortizoare', 'bujii': 'Bujii', 'altul': 'Altul',
+  /// Tipurile de interventie, cu etichete traduse.
+  Map<String, String> _types(BuildContext context) => {
+    'schimb_ulei':      tr(context).svcOilChange,
+    'filtre':           tr(context).svcFilters,
+    'placute_frana':    tr(context).svcBrakePads,
+    'anvelope':         tr(context).svcTyres,
+    'distributie':      tr(context).svcTimingBelt,
+    'curea_alternator': tr(context).svcAltBelt,
+    'baterie':          tr(context).svcBattery,
+    'amortizoare':      tr(context).svcShocks,
+    'bujii':            tr(context).svcSparkPlugs,
+    'altul':            tr(context).other,
   };
 
   @override
@@ -87,14 +96,14 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
       if (mounted) {
         ref.invalidate(maintenanceFutureProvider(widget.carId));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(_isEditing ? 'Service actualizat!' : 'Service înregistrat!'),
+          content: Text(_isEditing ? tr(context).maintenanceUpdated : tr(context).maintenanceAdded),
           backgroundColor: AppColors.success,
         ));
         context.pop();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -105,22 +114,22 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
   Widget build(BuildContext context) {
     final fmt = DateFormat('dd.MM.yyyy');
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Editează service' : 'Adaugă service')),
+      appBar: AppBar(title: Text(_isEditing ? tr(context).editMaintenance : tr(context).addMaintenance)),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            const Text('Tip intervenție *', style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+            Text(tr(context).interventionType, style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: _type,
               decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), filled: true, fillColor: Colors.white),
-              items: _types.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+              items: _types(context).entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
               onChanged: (v) => setState(() => _type = v!),
             ),
             const SizedBox(height: 16),
-            CmTextField(controller: _descCtrl, label: 'Descriere', hint: 'Detalii intervenție...', maxLines: 2, prefixIcon: Icons.description_outlined),
+            CmTextField(controller: _descCtrl, label: tr(context).description, hint: tr(context).hintInterventionDetails, maxLines: 2, prefixIcon: Icons.description_outlined),
             const SizedBox(height: 16),
             InkWell(
               onTap: () async {
@@ -128,19 +137,19 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
                 if (d != null) setState(() => _date = d);
               },
               child: InputDecorator(
-                decoration: InputDecoration(labelText: 'Data efectuării *', prefixIcon: const Icon(Icons.calendar_today),
+                decoration: InputDecoration(labelText: tr(context).performedDate, prefixIcon: const Icon(Icons.calendar_today),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), filled: true, fillColor: Colors.white),
                 child: Text(fmt.format(_date), style: const TextStyle(fontWeight: FontWeight.w500)),
               ),
             ),
             const SizedBox(height: 16),
             Row(children: [
-              Expanded(child: CmTextField(controller: _mileageCtrl, label: 'Km la service', hint: '45000', keyboardType: TextInputType.number, prefixIcon: Icons.speed)),
+              Expanded(child: CmTextField(controller: _mileageCtrl, label: tr(context).mileageAtService, hint: '45000', keyboardType: TextInputType.number, prefixIcon: Icons.speed)),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _costCtrl, label: 'Cost (RON)', hint: '350', keyboardType: TextInputType.number, prefixIcon: Icons.payments_outlined)),
+              Expanded(child: CmTextField(controller: _costCtrl, label: tr(context).cost, hint: '350', keyboardType: TextInputType.number, prefixIcon: Icons.payments_outlined)),
             ]),
             const SizedBox(height: 16),
-            const Text('Următor service (opțional)', style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary)),
+            Text(tr(context).nextService, style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary)),
             const SizedBox(height: 8),
             Row(children: [
               Expanded(
@@ -152,28 +161,28 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
                     if (d != null) setState(() => _nextDate = d);
                   },
                   child: InputDecorator(
-                    decoration: InputDecoration(labelText: 'Data următor', prefixIcon: const Icon(Icons.event_repeat),
+                    decoration: InputDecoration(labelText: tr(context).nextDate, prefixIcon: const Icon(Icons.event_repeat),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)), filled: true, fillColor: Colors.white),
-                    child: Text(_nextDate != null ? fmt.format(_nextDate!) : 'Alege dată',
+                    child: Text(_nextDate != null ? fmt.format(_nextDate!) : tr(context).chooseDate,
                         style: TextStyle(fontWeight: FontWeight.w500, color: _nextDate != null ? null : AppColors.textSecondary)),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _nextMileageCtrl, label: 'Km următor', hint: '50000', keyboardType: TextInputType.number, prefixIcon: Icons.speed_outlined)),
+              Expanded(child: CmTextField(controller: _nextMileageCtrl, label: tr(context).nextMileage, hint: '50000', keyboardType: TextInputType.number, prefixIcon: Icons.speed_outlined)),
             ]),
             const SizedBox(height: 16),
             Row(children: [
-              Expanded(child: CmTextField(controller: _shopCtrl, label: 'Service auto', hint: 'Dacia Service', prefixIcon: Icons.build_outlined)),
+              Expanded(child: CmTextField(controller: _shopCtrl, label: tr(context).autoShop, hint: 'Dacia Service', prefixIcon: Icons.build_outlined)),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _cityCtrl, label: 'Oraș', hint: 'București', prefixIcon: Icons.location_city_outlined)),
+              Expanded(child: CmTextField(controller: _cityCtrl, label: tr(context).city, hint: tr(context).hintCity, prefixIcon: Icons.location_city_outlined)),
             ]),
             const SizedBox(height: 14),
-            CmTextField(controller: _invoiceCtrl, label: 'Nr. factură', hint: 'F-001234', prefixIcon: Icons.receipt_long),
+            CmTextField(controller: _invoiceCtrl, label: tr(context).invoiceNr, hint: 'F-001234', prefixIcon: Icons.receipt_long),
             const SizedBox(height: 14),
-            CmTextField(controller: _notesCtrl, label: 'Note', hint: 'Observații...', maxLines: 2, prefixIcon: Icons.notes),
+            CmTextField(controller: _notesCtrl, label: tr(context).notes, hint: tr(context).notesHint, maxLines: 2, prefixIcon: Icons.notes),
             const SizedBox(height: 28),
-            CmButton(label: _isEditing ? 'Actualizează' : 'Salvează', icon: Icons.save,
+            CmButton(label: _isEditing ? tr(context).update : tr(context).save, icon: Icons.save,
                 isLoading: _isLoading, onPressed: _isLoading ? null : _save),
           ],
         ),

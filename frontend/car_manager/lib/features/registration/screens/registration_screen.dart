@@ -6,6 +6,7 @@ import '../../../core/models/documents.dart';
 import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/status_badge.dart';
+import '../../../core/utils/l10n.dart';
 
 final registrationFutureProvider =
     FutureProvider.family<List<VehicleRegistration>, String>(
@@ -19,24 +20,24 @@ class RegistrationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(registrationFutureProvider(carId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Talon & ITP')),
+      appBar: AppBar(title: Text(tr(context).registrationDoc)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/registration/add'),
-        icon: const Icon(Icons.add), label: const Text('Adaugă'),
+        icon: const Icon(Icons.add), label: Text(tr(context).add),
         backgroundColor: AppColors.primary, foregroundColor: Colors.white,
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Eroare: $e')),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
         data: (regs) => regs.isEmpty
             ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.assignment_outlined, size: 64, color: Colors.grey[300]),
                 const SizedBox(height: 16),
-                const Text('Niciun talon adăugat', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(tr(context).noRegistration, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () => context.push('/cars/$carId/registration/add'),
-                  icon: const Icon(Icons.add), label: const Text('Adaugă talon / ITP'),
+                  icon: const Icon(Icons.add), label: Text(tr(context).addRegistration),
                 ),
               ]))
             : ListView.separated(
@@ -68,12 +69,12 @@ class _RegistrationCard extends StatelessWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Șterge talonul'),
-        content: const Text('Ești sigur că vrei să ștergi acest talon?'),
+        title: Text(tr(context).deleteRegistration),
+        content: Text(tr(context).deleteRegistrationConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Anulează')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr(context).cancel)),
           TextButton(onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: AppColors.danger), child: const Text('Șterge')),
+              style: TextButton.styleFrom(foregroundColor: AppColors.danger), child: Text(tr(context).delete)),
         ],
       ),
     );
@@ -83,7 +84,7 @@ class _RegistrationCard extends StatelessWidget {
       onChanged();
     } catch (e) {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
       );
     }
   }
@@ -119,21 +120,21 @@ class _RegistrationCard extends StatelessWidget {
                   if (v == 'delete') _delete(context);
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit_outlined, color: AppColors.primary), title: Text('Editează'), dense: true)),
-                  const PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete_outline, color: AppColors.danger), title: Text('Șterge', style: TextStyle(color: AppColors.danger)), dense: true)),
+                  PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit_outlined, color: AppColors.primary), title: Text(tr(context).edit), dense: true)),
+                  PopupMenuItem(value: 'delete', child: ListTile(leading: Icon(Icons.delete_outline, color: AppColors.danger), title: Text(tr(context).delete, style: TextStyle(color: AppColors.danger)), dense: true)),
                 ],
               ),
           ]),
           const Divider(height: 20),
-          if (reg.manufacturingYear != null) _row(Icons.factory_outlined, 'An fabricație', reg.manufacturingYear!),
+          if (reg.manufacturingYear != null) _row(Icons.factory_outlined, tr(context).manufacturingYear, reg.manufacturingYear!),
           if (reg.carSeries != null) _row(Icons.pin_outlined, 'VIN', reg.carSeries!),
           if (reg.registrationDate != null)
-            _row(Icons.calendar_today, 'Data înmatriculării', fmt.format(reg.registrationDate!)),
+            _row(Icons.calendar_today, tr(context).registrationDate, fmt.format(reg.registrationDate!)),
           if (reg.itpExpiryDate != null)
-            _row(Icons.event, 'ITP expiră', fmt.format(reg.itpExpiryDate!),
+            _row(Icons.event, tr(context).itpExpires, fmt.format(reg.itpExpiryDate!),
                 color: reg.itpExpiryDate!.isBefore(DateTime.now()) ? AppColors.danger : null),
-          if (reg.ownerName != null) _row(Icons.person_outline, 'Proprietar', reg.ownerName!),
-          if (reg.ownerAddress != null) _row(Icons.home_outlined, 'Adresă', reg.ownerAddress!),
+          if (reg.ownerName != null) _row(Icons.person_outline, tr(context).owner, reg.ownerName!),
+          if (reg.ownerAddress != null) _row(Icons.home_outlined, tr(context).address, reg.ownerAddress!),
         ]),
       ),
     );

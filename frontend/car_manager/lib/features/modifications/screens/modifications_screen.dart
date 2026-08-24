@@ -8,16 +8,23 @@ import '../../../core/models/documents.dart';
 import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/api/api_client.dart';
+import '../../../core/utils/l10n.dart';
 
 final modificationsFutureProvider =
     FutureProvider.family<List<CarModification>, String>(
         (ref, carId) => CarService().getModifications(carId));
 
-const _categoryLabels = {
-  'motor': 'Motor', 'exterior': 'Exterior', 'interior': 'Interior',
-  'suspensie': 'Suspensie', 'audio': 'Audio', 'electronic': 'Electronic',
-  'frane': 'Frâne', 'altul': 'Altul',
-};
+/// Eticheta tradusa pentru categoria modificarii.
+String _categoryLabel(BuildContext context, String cat) => {
+  'motor':      tr(context).catEngine,
+  'exterior':   tr(context).catExterior,
+  'interior':   tr(context).catInterior,
+  'suspensie':  tr(context).catSuspension,
+  'audio':      tr(context).catAudio,
+  'electronic': tr(context).catElectronic,
+  'frane':      tr(context).catBrakes,
+  'altul':      tr(context).other,
+}[cat] ?? cat;
 const _categoryColors = {
   'motor': Colors.red, 'exterior': Colors.blue, 'interior': Colors.teal,
   'suspensie': Colors.orange, 'audio': Colors.purple, 'electronic': Colors.cyan,
@@ -32,24 +39,24 @@ class ModificationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(modificationsFutureProvider(carId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Modificări')),
+      appBar: AppBar(title: Text(tr(context).modifications)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/modifications/add'),
-        icon: const Icon(Icons.add), label: const Text('Adaugă'),
+        icon: const Icon(Icons.add), label: Text(tr(context).add),
         backgroundColor: AppColors.primary, foregroundColor: Colors.white,
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Eroare: $e')),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
         data: (mods) => mods.isEmpty
             ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.tune_outlined, size: 64, color: Colors.grey[300]),
                 const SizedBox(height: 16),
-                const Text('Nicio modificare adăugată', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(tr(context).noModifications, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () => context.push('/cars/$carId/modifications/add'),
-                  icon: const Icon(Icons.add), label: const Text('Adaugă modificare'),
+                  icon: const Icon(Icons.add), label: Text(tr(context).addModification),
                 ),
               ]))
             : ListView.separated(
@@ -91,16 +98,16 @@ class _ModCardState extends State<_ModCard> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Șterge modificarea'),
-        content: Text('Ștergi "${widget.mod.description}"?'),
+        title: Text(tr(context).deleteModification),
+        content: Text(tr(context).deleteConfirmGeneric(widget.mod.description)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Anulează')),
+              child: Text(tr(context).cancel)),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
               style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-              child: const Text('Șterge')),
+              child: Text(tr(context).delete)),
         ],
       ),
     );
@@ -112,7 +119,7 @@ class _ModCardState extends State<_ModCard> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Eroare: $e'),
+              content: Text(tr(context).errorWith('\$e')),
               backgroundColor: AppColors.danger),
         );
       }
@@ -134,7 +141,7 @@ class _ModCardState extends State<_ModCard> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Eroare upload: $e'),
+              content: Text(tr(context).uploadError('\$e')),
               backgroundColor: AppColors.danger),
         );
       }
@@ -158,7 +165,7 @@ class _ModCardState extends State<_ModCard> {
     final color =
         (_categoryColors[widget.mod.category] ?? Colors.grey) as Color;
     final label =
-        _categoryLabels[widget.mod.category] ?? widget.mod.category;
+        _categoryLabel(context, widget.mod.category);
     final baseHost = backendBaseUrl.replaceFirst('/api/v1', '');
 
     return Card(
@@ -184,10 +191,10 @@ class _ModCardState extends State<_ModCard> {
             ),
             Row(children: [
               if (widget.mod.isHomologated)
-                const Row(children: [
+                Row(children: [
                   Icon(Icons.verified, color: AppColors.success, size: 16),
                   SizedBox(width: 4),
-                  Text('Omologat',
+                  Text(tr(context).homologatedShort,
                       style: TextStyle(
                           color: AppColors.success,
                           fontSize: 12,
@@ -204,19 +211,19 @@ class _ModCardState extends State<_ModCard> {
                   if (v == 'delete') _delete();
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                       value: 'edit',
                       child: ListTile(
                           leading: Icon(Icons.edit_outlined,
                               color: AppColors.primary),
-                          title: Text('Editează'),
+                          title: Text(tr(context).edit),
                           dense: true)),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                       value: 'delete',
                       child: ListTile(
                           leading: Icon(Icons.delete_outline,
                               color: AppColors.danger),
-                          title: Text('Șterge',
+                          title: Text(tr(context).delete,
                               style: TextStyle(color: AppColors.danger)),
                           dense: true)),
                 ],
@@ -276,7 +283,7 @@ class _ModCardState extends State<_ModCard> {
             children: [
               Text(
                 _photos.isEmpty
-                    ? 'Fără poze'
+                    ? tr(context).noPhotos
                     : '${_photos.length} ${_photos.length == 1 ? 'poză' : 'poze'}',
                 style: const TextStyle(
                     fontSize: 12, color: AppColors.textSecondary),
@@ -288,13 +295,13 @@ class _ModCardState extends State<_ModCard> {
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Row(
+                    : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.add_photo_alternate_outlined,
                               size: 16, color: AppColors.primary),
                           SizedBox(width: 4),
-                          Text('Adaugă poză',
+                          Text(tr(context).addPhoto,
                               style: TextStyle(
                                   fontSize: 12,
                                   color: AppColors.primary,

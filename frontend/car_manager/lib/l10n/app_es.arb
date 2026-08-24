@@ -98,5 +98,315 @@
     }
   },
   "language": "Idioma",
-  "languageChoose": "Elegir idioma"
+  "languageChoose": "Elegir idioma",
+  "generalInfo": "Información general",
+  "technicalDetails": "Detalles técnicos",
+  "validFrom": "Válida desde",
+  "expires": "Caduca",
+  "expiresOn": "Caduca el",
+  "daysLeft": "Días restantes",
+  "price": "Precio",
+  "priceRon": "Precio (RON)",
+  "scanFailed": "Error al escanear: {msg}",
+  "@scanFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "extractedData": "Datos extraídos",
+  "noDataExtracted": "No se pudieron extraer datos automáticamente de la imagen.",
+  "detectedText": "Texto detectado:",
+  "checkFirst": "Revisar primero",
+  "saveDirectly": "Guardar directamente",
+  "deleteConfirmGeneric": "¿Eliminar \"{name}\"?",
+  "@deleteConfirmGeneric": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vignettes": "Viñetas",
+  "vignette": "Viñeta",
+  "addVignette": "Añadir viñeta",
+  "editVignette": "Editar viñeta",
+  "saveVignette": "Guardar viñeta",
+  "vignetteAdded": "¡Viñeta añadida!",
+  "vignetteUpdated": "¡Viñeta actualizada!",
+  "noVignettes": "No hay viñetas añadidas",
+  "deleteVignette": "Eliminar viñeta",
+  "deleteVignetteConfirm": "¿Seguro que quieres eliminar esta viñeta?",
+  "purchaseDate": "Fecha de compra",
+  "validityPeriod": "Periodo de validez *",
+  "period": "Periodo",
+  "issuer": "Emisor",
+  "issuerCompany": "Empresa emisora",
+  "invoiceSeries": "Serie de factura",
+  "insurance": "Seguros",
+  "addInsurance": "Añadir seguro",
+  "saveInsurance": "Guardar seguro",
+  "insuranceAdded": "¡Seguro añadido!",
+  "insuranceUpdated": "¡Seguro actualizado!",
+  "noInsurance": "No hay seguros añadidos",
+  "deleteInsurance": "Eliminar seguro",
+  "insurerCompany": "Aseguradora *",
+  "policyNumber": "N.º de póliza",
+  "premiumRon": "Prima (RON)",
+  "premium": "Prima",
+  "deductibleRon": "Franquicia (RON)",
+  "paymentFrequency": "Frecuencia de pago",
+  "purchasedOn": "Comprada el",
+  "agentName": "Nombre del agente",
+  "agentPhone": "Teléfono del agente",
+  "agent": "Agente",
+  "roadsideAssistance": "Asistencia en carretera",
+  "roadsideIncluded": "Asistencia en carretera incluida",
+  "included": "Incluida",
+  "freqMonthly": "Mensual",
+  "freqQuarterly": "Trimestral",
+  "freqBiannual": "Semestral",
+  "freqAnnual": "Anual",
+  "registrationDoc": "Permiso & ITV",
+  "registrationShort": "Permiso",
+  "addRegistration": "Añadir permiso",
+  "editRegistration": "Editar permiso",
+  "registrationAdded": "¡Permiso añadido!",
+  "registrationUpdated": "¡Permiso actualizado!",
+  "noRegistration": "No hay permisos añadidos",
+  "deleteRegistration": "Eliminar permiso",
+  "deleteRegistrationConfirm": "¿Seguro que quieres eliminar este permiso?",
+  "vehicleData": "Datos del vehículo",
+  "registrationAndItp": "Matriculación & ITV",
+  "brand": "Marca",
+  "model": "Modelo",
+  "manufacturingYear": "Año de fabricación",
+  "plateNumber": "Matrícula",
+  "vin": "Número de bastidor (VIN)",
+  "ownerName": "Nombre del propietario",
+  "ownerAddress": "Dirección del propietario",
+  "owner": "Propietario",
+  "address": "Dirección",
+  "registrationDate": "Fecha de matriculación",
+  "itpExpiryDate": "Caducidad de la ITV",
+  "itpExpires": "ITV caduca",
+  "itpValid": "ITV válida",
+  "itpExpired": "¡ITV caducada!",
+  "ocrFieldsFilled": "{count} campos rellenados con el escaneo: revísalos antes de guardar.",
+  "@ocrFieldsFilled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanned": "escaneado",
+  "maintenance": "Servicio y mantenimiento",
+  "maintenanceShort": "Servicio",
+  "addMaintenance": "Añadir servicio",
+  "editMaintenance": "Editar servicio",
+  "maintenanceAdded": "¡Servicio registrado!",
+  "maintenanceUpdated": "¡Servicio actualizado!",
+  "noMaintenance": "No hay servicios registrados",
+  "deleteMaintenance": "Eliminar registro",
+  "interventionType": "Tipo de intervención *",
+  "performedDate": "Fecha de realización *",
+  "description": "Descripción",
+  "mileageAtService": "Kilometraje",
+  "nextService": "Próximo servicio (opcional)",
+  "nextMileage": "Próximo kilometraje",
+  "nextDate": "Próxima fecha",
+  "autoShop": "Taller",
+  "svcOilChange": "Cambio de aceite",
+  "svcFilters": "Filtros",
+  "svcBrakePads": "Pastillas de freno",
+  "svcTyres": "Neumáticos",
+  "svcTimingBelt": "Distribución",
+  "svcAltBelt": "Correa del alternador",
+  "svcBattery": "Batería",
+  "svcShocks": "Amortiguadores",
+  "svcSparkPlugs": "Bujías",
+  "other": "Otro",
+  "modifications": "Modificaciones",
+  "addModification": "Añadir modificación",
+  "editModification": "Editar modificación",
+  "modificationAdded": "¡Modificación añadida!",
+  "modificationUpdated": "¡Modificación actualizada!",
+  "noModifications": "No hay modificaciones añadidas",
+  "deleteModification": "Eliminar modificación",
+  "category": "Categoría *",
+  "modDescription": "Descripción de la modificación *",
+  "modificationDate": "Fecha de modificación (opcional)",
+  "performedBy": "Realizada por",
+  "homologated": "Homologada",
+  "homologatedShort": "Homologado",
+  "homologationNumber": "N.º de homologación",
+  "catEngine": "Motor",
+  "catExterior": "Exterior",
+  "catInterior": "Interior",
+  "catSuspension": "Suspensión",
+  "catAudio": "Audio",
+  "catElectronic": "Electrónica",
+  "catBrakes": "Frenos",
+  "addPhoto": "Añadir foto",
+  "noPhotos": "Sin fotos",
+  "photoCounter": "Foto {count} de {max}",
+  "@photoCounter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadError": "Error de subida: {msg}",
+  "@uploadError": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsTitle": "Notificaciones y alertas",
+  "noNotifications": "Sin notificaciones",
+  "allInOrder": "¡Todo está en orden!",
+  "checkNow": "Comprobar ahora",
+  "checkDocuments": "Comprobar documentos",
+  "markRead": "Marcar como leído",
+  "markAllRead": "Marcar todo como leído",
+  "unreadCount": "{count} notificaciones sin leer",
+  "@unreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "administration": "Administración",
+  "users": "Usuarios",
+  "accountsCount": "{count} cuentas",
+  "@accountsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reload": "Recargar",
+  "accountActive": "Cuenta activa",
+  "accountActiveHint": "El usuario puede iniciar sesión",
+  "inactive": "Inactivo",
+  "role": "Rol",
+  "subscription": "Suscripción",
+  "carLimit": "Límite de coches",
+  "createdOn": "Creado: {name}",
+  "@createdOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docsShort": "{count} doc.",
+  "@docsShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteUser": "Eliminar usuario",
+  "deleteUserConfirm": "¿Eliminar la cuenta de \"{name}\"?\n\nSe borrarán permanentemente todos sus coches y documentos.",
+  "@deleteUserConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userDeleted": "La cuenta \"{name}\" ha sido eliminada.",
+  "@userDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "userUpdated": "¡Usuario actualizado correctamente!",
+  "carDetails": "Detalles del coche",
+  "documents": "Documentos",
+  "info": "Info",
+  "tapForDetails": "Toca para ver detalles",
+  "engineCapacity": "Cilindrada",
+  "enginePower": "Potencia",
+  "fuelType": "Combustible",
+  "color": "Color",
+  "mileage": "Kilometraje",
+  "nickname": "Apodo (opcional)",
+  "saveCar": "Guardar coche",
+  "carAdded": "¡Coche añadido!",
+  "invalidYear": "Año no válido",
+  "saveError": "Error al guardar",
+  "fuelPetrol": "Gasolina",
+  "fuelDiesel": "Diésel",
+  "fuelHybrid": "Híbrido",
+  "fuelElectric": "Eléctrico",
+  "fuelLpg": "GLP",
+  "addOf": "Añadir {name}",
+  "@addOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editOf": "Editar {name}",
+  "@editOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresOnDate": "Caduca: {name}",
+  "@expiresOnDate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextAtKm": "Próximo: {name} km",
+  "@nextAtKm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextServiceOn": "Próximo servicio: {name}",
+  "@nextServiceOn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "atKm": "A: {name} km",
+  "@atKm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "scanComplete": "¡Escaneo completo! Revisa los datos.",
+  "hintNickname": "p. ej. Mi Dacia",
+  "hintCity": "Bucarest",
+  "hintAddress": "C/ Ejemplo 1, Bucarest",
+  "hintPerformedBy": "Taller / persona",
+  "hintInterventionDetails": "Detalles de la intervención..."
 }

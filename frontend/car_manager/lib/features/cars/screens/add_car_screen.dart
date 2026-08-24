@@ -6,6 +6,7 @@ import '../providers/cars_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
+import '../../../core/utils/l10n.dart';
 
 class AddCarScreen extends ConsumerStatefulWidget {
   const AddCarScreen({super.key});
@@ -56,13 +57,13 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Mașina a fost adăugată!'), backgroundColor: AppColors.success),
+          SnackBar(content: Text(tr(context).carAdded), backgroundColor: AppColors.success),
         );
         context.pop();
       }
     } catch (e) {
       final msg = e is DioException
-          ? (e.response?.data?['detail'] ?? 'Eroare la salvare')
+          ? (e.response?.data?['detail'] ?? tr(context).saveError)
           : e.toString();
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg.toString()), backgroundColor: AppColors.danger),
@@ -75,27 +76,27 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Adaugă mașină')),
+      appBar: AppBar(title: Text(tr(context).addCar)),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            _sectionTitle('Informații generale'),
-            CmTextField(controller: _nicknameCtrl, label: 'Poreclă (opțional)', hint: 'Ex: Daciuța mea',
+            _sectionTitle(tr(context).generalInfo),
+            CmTextField(controller: _nicknameCtrl, label: tr(context).nickname, hint: tr(context).hintNickname,
                 prefixIcon: Icons.label_outline),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: CmTextField(controller: _brandCtrl, label: 'Marcă *', hint: 'Dacia',
+              Expanded(child: CmTextField(controller: _brandCtrl, label: tr(context).brand, hint: 'Dacia',
                   prefixIcon: Icons.branding_watermark_outlined,
-                  validator: (v) => (v == null || v.isEmpty) ? 'Obligatoriu' : null)),
+                  validator: (v) => (v == null || v.isEmpty) ? tr(context).required : null)),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _modelCtrl, label: 'Model *', hint: 'Logan',
-                  validator: (v) => (v == null || v.isEmpty) ? 'Obligatoriu' : null)),
+              Expanded(child: CmTextField(controller: _modelCtrl, label: tr(context).model, hint: 'Logan',
+                  validator: (v) => (v == null || v.isEmpty) ? tr(context).required : null)),
             ]),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: CmTextField(controller: _yearCtrl, label: 'An fabricație *',
+              Expanded(child: CmTextField(controller: _yearCtrl, label: tr(context).manufacturingYear,
                   hint: '2020', keyboardType: TextInputType.number,
                   prefixIcon: Icons.calendar_today,
                   validator: (v) {
@@ -104,16 +105,16 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
                     return null;
                   })),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _plateCtrl, label: 'Număr înmatr. *',
+              Expanded(child: CmTextField(controller: _plateCtrl, label: tr(context).plateNumber,
                   hint: 'B-123-XYZ',
-                  validator: (v) => (v == null || v.isEmpty) ? 'Obligatoriu' : null)),
+                  validator: (v) => (v == null || v.isEmpty) ? tr(context).required : null)),
             ]),
             const SizedBox(height: 20),
-            _sectionTitle('Detalii tehnice'),
+            _sectionTitle(tr(context).technicalDetails),
             DropdownButtonFormField<String>(
               value: _fuelType,
               decoration: InputDecoration(
-                labelText: 'Combustibil',
+                labelText: tr(context).fuelType,
                 prefixIcon: const Icon(Icons.local_gas_station_outlined),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true, fillColor: Colors.white,
@@ -124,20 +125,20 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
             ),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: CmTextField(controller: _capacityCtrl, label: 'Cilindree (cc)',
+              Expanded(child: CmTextField(controller: _capacityCtrl, label: tr(context).engineCapacity,
                   hint: '1000', keyboardType: TextInputType.number, prefixIcon: Icons.settings_outlined)),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _powerCtrl, label: 'Putere (CP)',
+              Expanded(child: CmTextField(controller: _powerCtrl, label: tr(context).enginePower,
                   hint: '90', keyboardType: TextInputType.number, prefixIcon: Icons.speed)),
             ]),
             const SizedBox(height: 14),
-            CmTextField(controller: _mileageCtrl, label: 'Kilometraj actual', hint: '45000',
+            CmTextField(controller: _mileageCtrl, label: tr(context).mileage, hint: '45000',
                 keyboardType: TextInputType.number, prefixIcon: Icons.speed_outlined),
             const SizedBox(height: 14),
-            CmTextField(controller: _vinCtrl, label: 'Serie șasiu (VIN)', hint: '1HGBH41JXMN109186',
+            CmTextField(controller: _vinCtrl, label: tr(context).vin, hint: '1HGBH41JXMN109186',
                 prefixIcon: Icons.confirmation_number_outlined),
             const SizedBox(height: 28),
-            CmButton(label: 'Salvează mașina', isLoading: _isLoading,
+            CmButton(label: tr(context).saveCar, isLoading: _isLoading,
                 icon: Icons.check, onPressed: _isLoading ? null : _save),
           ],
         ),

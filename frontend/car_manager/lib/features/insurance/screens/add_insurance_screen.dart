@@ -10,6 +10,7 @@ import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
 import '../../../shared/widgets/scan_card.dart';
 import 'insurance_screen.dart';
+import '../../../core/utils/l10n.dart';
 
 class AddInsuranceScreen extends ConsumerStatefulWidget {
   final String carId;
@@ -103,12 +104,12 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
       });
 
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Scanare completă! Verificați datele.'),
+        SnackBar(content: Text(tr(context).scanComplete),
             backgroundColor: AppColors.success),
       );
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Scanare eșuată: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).scanFailed('\$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isScanning = false);
@@ -155,13 +156,13 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
       if (mounted) {
         ref.invalidate(insuranceFutureProvider(widget.carId));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(_isEditing ? 'Asigurare actualizată!' : 'Asigurare adăugată!'),
+            content: Text(_isEditing ? tr(context).insuranceUpdated : tr(context).insuranceAdded),
             backgroundColor: AppColors.success));
         context.pop();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Eroare: $e'), backgroundColor: AppColors.danger));
+          content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -190,7 +191,7 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Editează $_type' : 'Adaugă $_type')),
+      appBar: AppBar(title: Text(_isEditing ? tr(context).editOf(_type) : tr(context).addOf(_type))),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -224,7 +225,7 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
             DropdownButtonFormField<String>(
               value: _insurerCtrl.text.isEmpty ? null : _insurers.contains(_insurerCtrl.text) ? _insurerCtrl.text : null,
               decoration: InputDecoration(
-                labelText: 'Firma asigurătoare *',
+                labelText: tr(context).insurerCompany,
                 prefixIcon: const Icon(Icons.business_outlined),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true, fillColor: Colors.white,
@@ -232,33 +233,33 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
               items: _insurers.map((i) =>
                   DropdownMenuItem(value: i, child: Text(i))).toList(),
               onChanged: (v) => setState(() => _insurerCtrl.text = v ?? ''),
-              validator: (_) => _insurerCtrl.text.isEmpty ? 'Obligatoriu' : null,
+              validator: (_) => _insurerCtrl.text.isEmpty ? tr(context).required : null,
             ),
             const SizedBox(height: 14),
-            CmTextField(controller: _policyNrCtrl, label: 'Nr. poliță',
+            CmTextField(controller: _policyNrCtrl, label: tr(context).policyNumber,
                 hint: 'RCA-2026-XXXXX', prefixIcon: Icons.confirmation_number_outlined),
             const SizedBox(height: 16),
             Row(children: [
-              Expanded(child: _datePicker('Cumpărată la', _purchaseDate,
+              Expanded(child: _datePicker(tr(context).purchasedOn, _purchaseDate,
                   (d) => setState(() => _purchaseDate = d))),
               const SizedBox(width: 12),
-              Expanded(child: _datePicker('Valabilă de la', _validFrom,
+              Expanded(child: _datePicker(tr(context).validFrom, _validFrom,
                   (d) => setState(() => _validFrom = d))),
             ]),
             const SizedBox(height: 12),
-            _datePicker('Expiră la', _validUntil,
+            _datePicker(tr(context).expiresOn, _validUntil,
                 (d) => setState(() => _validUntil = d)),
             const SizedBox(height: 16),
             Row(children: [
               Expanded(child: CmTextField(
-                  controller: _premiumCtrl, label: 'Primă (RON)',
+                  controller: _premiumCtrl, label: tr(context).premiumRon,
                   hint: '650', keyboardType: TextInputType.number,
                   prefixIcon: Icons.payments_outlined)),
               const SizedBox(width: 12),
               Expanded(child: DropdownButtonFormField<String>(
                 value: _frequency,
                 decoration: InputDecoration(
-                  labelText: 'Frecvență plată',
+                  labelText: tr(context).paymentFrequency,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   filled: true, fillColor: Colors.white,
                 ),
@@ -268,17 +269,17 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
               )),
             ]),
             const SizedBox(height: 14),
-            CmTextField(controller: _deductibleCtrl, label: 'Franciză (RON)',
+            CmTextField(controller: _deductibleCtrl, label: tr(context).deductibleRon,
                 hint: '500', keyboardType: TextInputType.number,
                 prefixIcon: Icons.money_off_outlined),
             const SizedBox(height: 14),
             Row(children: [
               Expanded(child: CmTextField(
-                  controller: _agentNameCtrl, label: 'Numele agentului',
+                  controller: _agentNameCtrl, label: tr(context).agentName,
                   hint: 'Ion Popescu', prefixIcon: Icons.person_outline)),
               const SizedBox(width: 12),
               Expanded(child: CmTextField(
-                  controller: _agentPhoneCtrl, label: 'Telefon agent',
+                  controller: _agentPhoneCtrl, label: tr(context).agentPhone,
                   hint: '07XX XXX XXX', keyboardType: TextInputType.phone,
                   prefixIcon: Icons.phone_outlined)),
             ]),
@@ -286,7 +287,7 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
             SwitchListTile(
               value: _roadsideAssistance,
               onChanged: (v) => setState(() => _roadsideAssistance = v),
-              title: const Text('Asistență rutieră inclusă'),
+              title: Text(tr(context).roadsideIncluded),
               secondary: const Icon(Icons.car_repair, color: AppColors.primary),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -294,10 +295,10 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
               tileColor: Colors.white,
             ),
             const SizedBox(height: 14),
-            CmTextField(controller: _notesCtrl, label: 'Note', hint: 'Observații...',
+            CmTextField(controller: _notesCtrl, label: tr(context).notes, hint: tr(context).notesHint,
                 maxLines: 2, prefixIcon: Icons.notes),
             const SizedBox(height: 28),
-            CmButton(label: 'Salvează asigurarea', icon: Icons.save,
+            CmButton(label: tr(context).saveInsurance, icon: Icons.save,
                 isLoading: _isLoading, onPressed: _isLoading ? null : _save),
           ],
         ),

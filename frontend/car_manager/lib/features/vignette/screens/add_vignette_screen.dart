@@ -10,6 +10,7 @@ import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
 import '../../../shared/widgets/scan_card.dart';
 import 'vignettes_screen.dart';
+import '../../../core/utils/l10n.dart';
 
 class AddVignetteScreen extends ConsumerStatefulWidget {
   final String carId;
@@ -91,7 +92,7 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
       if (mounted) _showQuickSaveDialog(data);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Scanare eșuată: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).scanFailed('\$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isScanning = false);
@@ -117,9 +118,9 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Row(children: [
+        title: Row(children: [
           Icon(Icons.document_scanner, color: AppColors.primary),
-          SizedBox(width: 8), Text('Date extrase'),
+          SizedBox(width: 8), Text(tr(context).extractedData),
         ]),
         content: SingleChildScrollView(
           child: Column(
@@ -130,21 +131,21 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
                 const Text('Câmpurile au fost completate automat. Salvezi direct sau verifici mai întâi?',
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 const SizedBox(height: 12),
-                if (data['issuer_company'] != null) _ocrRow('Emitent', data['issuer_company']),
-                if (data['validity_period'] != null) _ocrRow('Perioadă', _periods[data['validity_period']] ?? data['validity_period']),
-                if (data['valid_from'] != null) _ocrRow('Valabilă de la', data['valid_from']),
-                if (data['price'] != null) _ocrRow('Preț', '${data['price']} RON'),
+                if (data['issuer_company'] != null) _ocrRow(tr(context).issuer, data['issuer_company']),
+                if (data['validity_period'] != null) _ocrRow(tr(context).period, _periods[data['validity_period']] ?? data['validity_period']),
+                if (data['valid_from'] != null) _ocrRow(tr(context).validFrom, data['valid_from']),
+                if (data['price'] != null) _ocrRow(tr(context).price, '${data['price']} RON'),
               ] else ...[
                 const Icon(Icons.info_outline, color: AppColors.warning, size: 32),
                 const SizedBox(height: 8),
-                const Text('Nu s-au putut extrage date automat din imagine.',
+                Text(tr(context).noDataExtracted,
                     style: TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 6),
                 const Text('Completați câmpurile manual. Sfaturi pentru o scanare mai bună:\n• Iluminare bună\n• Document drept, fără umbre\n• Imagine clară, nedistorsionată',
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 if (rawText.isNotEmpty) ...[
                   const SizedBox(height: 10),
-                  const Text('Text detectat:', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                  Text(tr(context).detectedText, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
                   Container(
                     margin: const EdgeInsets.only(top: 4),
                     padding: const EdgeInsets.all(8),
@@ -159,11 +160,11 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Verifică mai întâi'),
+            child: Text(tr(context).checkFirst),
           ),
           ElevatedButton.icon(
             icon: const Icon(Icons.save, size: 18),
-            label: const Text('Salvează direct'),
+            label: Text(tr(context).saveDirectly),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
             onPressed: () { Navigator.pop(context); _save(); },
           ),
@@ -192,14 +193,14 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
       if (mounted) {
         ref.invalidate(vignettesFutureProvider(widget.carId));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(_isEditing ? 'Rovinietă actualizată!' : 'Rovinietă adăugată!'),
+          content: Text(_isEditing ? tr(context).vignetteUpdated : tr(context).vignetteAdded),
           backgroundColor: AppColors.success,
         ));
         context.pop();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Eroare: $e'), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -209,7 +210,7 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Editează rovinietă' : 'Adaugă rovinietă')),
+      appBar: AppBar(title: Text(_isEditing ? tr(context).editVignette : tr(context).addVignette)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -217,7 +218,7 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
           children: [
             ScanCard(scannedImage: _scannedImage, isScanning: _isScanning, onScan: _scan),
             const SizedBox(height: 20),
-            const Text('Perioadă valabilitate *', style: TextStyle(fontWeight: FontWeight.w600)),
+            Text(tr(context).validityPeriod, style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -231,10 +232,10 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
             ),
             const SizedBox(height: 20),
             Row(children: [
-              Expanded(child: _DateField(label: 'Dată cumpărare', date: _purchaseDate,
+              Expanded(child: _DateField(label: tr(context).purchaseDate, date: _purchaseDate,
                   onPick: (d) => setState(() => _purchaseDate = d))),
               const SizedBox(width: 12),
-              Expanded(child: _DateField(label: 'Valabilă de la', date: _validFrom,
+              Expanded(child: _DateField(label: tr(context).validFrom, date: _validFrom,
                   onPick: (d) { setState(() => _validFrom = d); _updateUntilDate(); })),
             ]),
             if (_validUntil != null) ...[
@@ -249,29 +250,29 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
                 child: Row(children: [
                   const Icon(Icons.check_circle, color: AppColors.success, size: 16),
                   const SizedBox(width: 8),
-                  Text('Expiră: ${_fmt.format(_validUntil!)}',
+                  Text(tr(context).expiresOnDate(_fmt.format(_validUntil!)),
                       style: const TextStyle(color: AppColors.success, fontWeight: FontWeight.w600)),
                 ]),
               ),
             ],
             const SizedBox(height: 20),
-            CmTextField(controller: _companyCtrl, label: 'Firma emitentă', hint: 'CNAIR', prefixIcon: Icons.business_outlined),
+            CmTextField(controller: _companyCtrl, label: tr(context).issuerCompany, hint: 'CNAIR', prefixIcon: Icons.business_outlined),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: CmTextField(controller: _cityCtrl, label: 'Oraș', hint: 'București', prefixIcon: Icons.location_city_outlined)),
+              Expanded(child: CmTextField(controller: _cityCtrl, label: tr(context).city, hint: tr(context).hintCity, prefixIcon: Icons.location_city_outlined)),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _priceCtrl, label: 'Preț (RON)', hint: '28.50', keyboardType: TextInputType.number, prefixIcon: Icons.payments_outlined)),
+              Expanded(child: CmTextField(controller: _priceCtrl, label: tr(context).priceRon, hint: '28.50', keyboardType: TextInputType.number, prefixIcon: Icons.payments_outlined)),
             ]),
             const SizedBox(height: 14),
             Row(children: [
-              Expanded(child: CmTextField(controller: _invoiceSeriesCtrl, label: 'Serie factură', hint: 'RO')),
+              Expanded(child: CmTextField(controller: _invoiceSeriesCtrl, label: tr(context).invoiceSeries, hint: 'RO')),
               const SizedBox(width: 12),
-              Expanded(child: CmTextField(controller: _invoiceNrCtrl, label: 'Nr. factură', hint: '1234567', keyboardType: TextInputType.number)),
+              Expanded(child: CmTextField(controller: _invoiceNrCtrl, label: tr(context).invoiceNr, hint: '1234567', keyboardType: TextInputType.number)),
             ]),
             const SizedBox(height: 14),
-            CmTextField(controller: _notesCtrl, label: 'Note', hint: 'Observații...', maxLines: 2, prefixIcon: Icons.notes),
+            CmTextField(controller: _notesCtrl, label: tr(context).notes, hint: tr(context).notesHint, maxLines: 2, prefixIcon: Icons.notes),
             const SizedBox(height: 28),
-            CmButton(label: _isEditing ? 'Actualizează' : 'Salvează rovinieta', icon: Icons.save,
+            CmButton(label: _isEditing ? tr(context).update : tr(context).saveVignette, icon: Icons.save,
                 isLoading: _isLoading, onPressed: _isLoading ? null : _save),
           ],
         ),

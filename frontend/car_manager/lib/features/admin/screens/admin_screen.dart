@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/user.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/admin_provider.dart';
+import '../../../core/utils/l10n.dart';
 
 class AdminScreen extends ConsumerWidget {
   const AdminScreen({super.key});
@@ -15,11 +16,11 @@ class AdminScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Administrare'),
+        title: Text(tr(context).administration),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Reîncarcă',
+            tooltip: tr(context).reload,
             onPressed: () {
               ref.invalidate(adminStatsProvider);
               ref.read(adminUsersProvider.notifier).refresh();
@@ -50,7 +51,7 @@ class AdminScreen extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Utilizatori',
+                Text(tr(context).users,
                     style: TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold)),
                 usersAsync.whenOrNull(
@@ -79,12 +80,12 @@ class AdminScreen extends ConsumerWidget {
                       const Icon(Icons.error_outline,
                           size: 48, color: AppColors.danger),
                       const SizedBox(height: 12),
-                      Text('Eroare: $e', textAlign: TextAlign.center),
+                      Text(tr(context).errorWith('\$e'), textAlign: TextAlign.center),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () =>
                             ref.read(adminUsersProvider.notifier).refresh(),
-                        child: const Text('Reîncearcă'),
+                        child: Text(tr(context).retry),
                       ),
                     ],
                   ),
@@ -120,13 +121,13 @@ class AdminScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Șterge utilizatorul'),
+        title: Text(tr(context).deleteUser),
         content: Text(
             'Ești sigur că vrei să ștergi contul lui "${user.fullName}"?\n\nToate mașinile și documentele asociate vor fi șterse permanent.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Anulează')),
+              child: Text(tr(context).cancel)),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
@@ -138,7 +139,7 @@ class AdminScreen extends ConsumerWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                          'Contul "${user.fullName}" a fost șters.'),
+                          tr(context).userDeleted(user.fullName)),
                       backgroundColor: AppColors.success,
                     ),
                   );
@@ -146,7 +147,7 @@ class AdminScreen extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   final msg = e is DioException
-                      ? (e.response?.data?['detail'] ?? 'Eroare')
+                      ? (e.response?.data?['detail'] ?? tr(context).error)
                       : e.toString();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -157,7 +158,7 @@ class AdminScreen extends ConsumerWidget {
               }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('Șterge'),
+            child: Text(tr(context).delete),
           ),
         ],
       ),
@@ -177,21 +178,21 @@ class _StatsRow extends StatelessWidget {
       children: [
         Expanded(
             child: _StatCard(
-                label: 'Utilizatori',
+                label: tr(context).users,
                 value: '${stats['total_users'] ?? 0}',
                 icon: Icons.people_outline,
                 color: AppColors.primary)),
         const SizedBox(width: 10),
         Expanded(
             child: _StatCard(
-                label: 'Mașini',
+                label: tr(context).navCars,
                 value: '${stats['total_cars'] ?? 0}',
                 icon: Icons.directions_car_outlined,
                 color: AppColors.success)),
         const SizedBox(width: 10),
         Expanded(
             child: _StatCard(
-                label: 'Asigurări',
+                label: tr(context).insurance,
                 value: '${stats['total_insurance_policies'] ?? 0}',
                 icon: Icons.security_outlined,
                 color: AppColors.warning)),
@@ -309,8 +310,8 @@ class _UserCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           // Badge status
                           if (!user.isActive)
-                            const _Badge(
-                                label: 'Inactiv',
+                            _Badge(
+                                label: tr(context).inactive,
                                 color: AppColors.danger),
                         ],
                       ),
@@ -338,7 +339,7 @@ class _UserCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 _InfoChip(
                     icon: Icons.directions_car_outlined,
-                    label: '${user.carCount}/${user.maxCars} mașini'),
+                    label: tr(context).carsCount(user.carCount, user.maxCars)),
                 const SizedBox(width: 8),
                 _InfoChip(
                     icon: Icons.description_outlined,
@@ -354,7 +355,7 @@ class _UserCard extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: const Text('Editează'),
+                  label: Text(tr(context).edit),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     side: const BorderSide(color: AppColors.primary),
@@ -368,7 +369,7 @@ class _UserCard extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onDelete,
                     icon: const Icon(Icons.delete_outline, size: 16),
-                    label: const Text('Șterge'),
+                    label: Text(tr(context).delete),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.danger,
                       side: const BorderSide(color: AppColors.danger),
@@ -428,15 +429,15 @@ class _EditUserDialogState extends State<_EditUserDialog> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Utilizator actualizat cu succes!'),
+          SnackBar(
+              content: Text(tr(context).userUpdated),
               backgroundColor: AppColors.success),
         );
       }
     } catch (e) {
       if (mounted) {
         final msg = e is DioException
-            ? (e.response?.data?['detail'] ?? 'Eroare')
+            ? (e.response?.data?['detail'] ?? tr(context).error)
             : e.toString();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -478,8 +479,8 @@ class _EditUserDialogState extends State<_EditUserDialog> {
             // Cont activ
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Cont activ'),
-              subtitle: const Text('Utilizatorul se poate conecta',
+              title: Text(tr(context).accountActive),
+              subtitle: Text(tr(context).accountActiveHint,
                   style: TextStyle(fontSize: 12)),
               value: _isActive,
               onChanged: (v) => setState(() => _isActive = v),
@@ -488,7 +489,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
             const Divider(),
 
             // Rol
-            const Text('Rol',
+            Text(tr(context).role,
                 style: TextStyle(
                     fontWeight: FontWeight.w600, fontSize: 13)),
             const SizedBox(height: 6),
@@ -517,7 +518,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
             const SizedBox(height: 16),
 
             // Abonament
-            const Text('Abonament',
+            Text(tr(context).subscription,
                 style: TextStyle(
                     fontWeight: FontWeight.w600, fontSize: 13)),
             const SizedBox(height: 6),
@@ -550,7 +551,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Limită mașini',
+                Text(tr(context).carLimit,
                     style: TextStyle(
                         fontWeight: FontWeight.w600, fontSize: 13)),
                 Row(
@@ -592,7 +593,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
       actions: [
         TextButton(
           onPressed: _loading ? null : () => Navigator.pop(context),
-          child: const Text('Anulează'),
+          child: Text(tr(context).cancel),
         ),
         ElevatedButton.icon(
           onPressed: _loading ? null : _save,
@@ -603,7 +604,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
                   child: CircularProgressIndicator(
                       strokeWidth: 2, color: Colors.white))
               : const Icon(Icons.save_outlined, size: 18),
-          label: const Text('Salvează'),
+          label: Text(tr(context).save),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../core/models/documents.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/notifications_provider.dart';
+import '../../../core/utils/l10n.dart';
 
 const _typeIcons = {
   'rovinieta_expira': (Icons.card_membership, AppColors.accent),
@@ -23,17 +24,17 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notificări & Alerte'),
+        title: Text(tr(context).notificationsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Verifică acum',
+            tooltip: tr(context).checkNow,
             onPressed: () => ref.read(notificationsProvider.notifier).refresh(),
           ),
           TextButton(
             onPressed: () =>
                 ref.read(notificationsProvider.notifier).markAllRead(),
-            child: const Text('Marchează citite',
+            child: Text(tr(context).markAllRead,
                 style: TextStyle(color: Colors.white70)),
           ),
         ],
@@ -46,12 +47,12 @@ class NotificationsScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.danger),
               const SizedBox(height: 12),
-              Text('Eroare: $e', textAlign: TextAlign.center),
+              Text(tr(context).errorWith('\$e'), textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () =>
                     ref.read(notificationsProvider.notifier).refresh(),
-                child: const Text('Reîncearcă'),
+                child: Text(tr(context).retry),
               ),
             ],
           ),
@@ -65,18 +66,18 @@ class NotificationsScreen extends ConsumerWidget {
                   Icon(Icons.notifications_none,
                       size: 64, color: Colors.grey[300]),
                   const SizedBox(height: 16),
-                  const Text('Nicio notificare',
+                  Text(tr(context).noNotifications,
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  const Text('Totul este în ordine!',
+                  Text(tr(context).allInOrder,
                       style: TextStyle(color: AppColors.textSecondary)),
                   const SizedBox(height: 24),
                   OutlinedButton.icon(
                     onPressed: () =>
                         ref.read(notificationsProvider.notifier).refresh(),
                     icon: const Icon(Icons.search),
-                    label: const Text('Verifică documente'),
+                    label: Text(tr(context).checkDocuments),
                   ),
                 ],
               ),
@@ -95,7 +96,7 @@ class NotificationsScreen extends ConsumerWidget {
                     const Icon(Icons.circle,
                         color: AppColors.primary, size: 10),
                     const SizedBox(width: 8),
-                    Text('$unread notificări necitite',
+                    Text(tr(context).unreadCount(unread),
                         style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.primary)),
@@ -104,7 +105,7 @@ class NotificationsScreen extends ConsumerWidget {
                       onTap: () => ref
                           .read(notificationsProvider.notifier)
                           .markAllRead(),
-                      child: const Text('Marchează toate',
+                      child: Text(tr(context).markAllRead,
                           style: TextStyle(
                               fontSize: 12,
                               color: AppColors.primary,
@@ -209,7 +210,7 @@ class _NotifCard extends StatelessWidget {
                       if (!notif.isRead)
                         GestureDetector(
                           onTap: onRead,
-                          child: const Text('Marchează citit',
+                          child: Text(tr(context).markRead,
                               style: TextStyle(
                                   fontSize: 11,
                                   color: AppColors.primary,

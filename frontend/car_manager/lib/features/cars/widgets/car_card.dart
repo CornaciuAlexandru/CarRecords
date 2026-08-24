@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/user.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/l10n.dart';
 
 const _fuelIcons = {
   'benzina': Icons.local_gas_station,
@@ -96,11 +97,11 @@ class CarCard extends StatelessWidget {
               PopupMenuButton<String>(
                 onSelected: (v) { if (v == 'delete') onDelete(); },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(value: 'delete',
+                  PopupMenuItem(value: 'delete',
                       child: Row(children: [
                         Icon(Icons.delete_outline, color: AppColors.danger, size: 18),
                         SizedBox(width: 8),
-                        Text('Șterge', style: TextStyle(color: AppColors.danger)),
+                        Text(tr(context).delete, style: TextStyle(color: AppColors.danger)),
                       ])),
                 ],
               ),

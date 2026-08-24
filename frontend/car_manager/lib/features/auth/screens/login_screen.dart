@@ -6,7 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/error_handler.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/l10n.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -75,7 +75,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const Text('CarRecords',
                         style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
                     const SizedBox(height: 8),
-                    Text(t.loginSubtitle,
+                    Text(tr(context).loginSubtitle,
                         style: const TextStyle(fontSize: 16, color: Colors.white70)),
                   ],
                 ),
@@ -95,29 +95,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(t.loginTitle,
+                      Text(tr(context).loginTitle,
                           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary)),
                       const SizedBox(height: 4),
-                      Text(t.loginSubtitle,
+                      Text(tr(context).loginSubtitle,
                           style: const TextStyle(color: AppColors.textSecondary)),
                       const SizedBox(height: 24),
                       CmTextField(
                         controller: _emailCtrl,
-                        label: t.email,
+                        label: tr(context).email,
                         hint: 'email@exemplu.ro',
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: Icons.email_outlined,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return t.required;
-                          if (!v.contains('@')) return t.invalidEmail;
+                          if (v == null || v.isEmpty) return tr(context).required;
+                          if (!v.contains('@')) return tr(context).invalidEmail;
                           return null;
                         },
                       ),
                       const SizedBox(height: 16),
                       CmTextField(
                         controller: _passCtrl,
-                        label: t.password,
+                        label: tr(context).password,
                         hint: '••••••••',
                         obscureText: _obscurePass,
                         prefixIcon: Icons.lock_outline,
@@ -125,11 +125,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           icon: Icon(_obscurePass ? Icons.visibility_off : Icons.visibility),
                           onPressed: () => setState(() => _obscurePass = !_obscurePass),
                         ),
-                        validator: (v) => (v == null || v.isEmpty) ? t.required : null,
+                        validator: (v) => (v == null || v.isEmpty) ? tr(context).required : null,
                       ),
                       const SizedBox(height: 24),
                       CmButton(
-                        label: t.login,
+                        label: tr(context).login,
                         isLoading: isLoading,
                         onPressed: isLoading ? null : _login,
                       ),
@@ -138,8 +138,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: TextButton(
                           onPressed: () => context.push('/register'),
                           child: Text.rich(TextSpan(children: [
-                            TextSpan(text: t.noAccount, style: const TextStyle(color: AppColors.textSecondary)),
-                            TextSpan(text: t.register,
+                            TextSpan(text: tr(context).noAccount, style: const TextStyle(color: AppColors.textSecondary)),
+                            TextSpan(text: tr(context).register,
                                 style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                           ])),
                         ),
