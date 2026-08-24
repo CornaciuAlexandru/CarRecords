@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/error_handler.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
+import '../../../l10n/app_localizations.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -54,6 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final isLoading = ref.watch(authStateProvider).isLoading;
 
     return Scaffold(
@@ -62,19 +64,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           children: [
             // Header
-            const Expanded(
+            Expanded(
               flex: 2,
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.directions_car_rounded, size: 72, color: Colors.white),
-                    SizedBox(height: 12),
-                    Text('CarRecords',
+                    const Icon(Icons.directions_car_rounded, size: 72, color: Colors.white),
+                    const SizedBox(height: 12),
+                    const Text('CarRecords',
                         style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
-                    SizedBox(height: 8),
-                    Text('Gestionează-ți mașinile cu ușurință',
-                        style: TextStyle(fontSize: 16, color: Colors.white70)),
+                    const SizedBox(height: 8),
+                    Text(t.loginSubtitle,
+                        style: const TextStyle(fontSize: 16, color: Colors.white70)),
                   ],
                 ),
               ),
@@ -93,29 +95,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Bun venit!',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,
+                      Text(t.loginTitle,
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary)),
                       const SizedBox(height: 4),
-                      const Text('Autentifică-te pentru a continua',
-                          style: TextStyle(color: AppColors.textSecondary)),
+                      Text(t.loginSubtitle,
+                          style: const TextStyle(color: AppColors.textSecondary)),
                       const SizedBox(height: 24),
                       CmTextField(
                         controller: _emailCtrl,
-                        label: 'Email',
+                        label: t.email,
                         hint: 'email@exemplu.ro',
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: Icons.email_outlined,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Câmp obligatoriu';
-                          if (!v.contains('@')) return 'Email invalid';
+                          if (v == null || v.isEmpty) return t.required;
+                          if (!v.contains('@')) return t.invalidEmail;
                           return null;
                         },
                       ),
                       const SizedBox(height: 16),
                       CmTextField(
                         controller: _passCtrl,
-                        label: 'Parolă',
+                        label: t.password,
                         hint: '••••••••',
                         obscureText: _obscurePass,
                         prefixIcon: Icons.lock_outline,
@@ -123,11 +125,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           icon: Icon(_obscurePass ? Icons.visibility_off : Icons.visibility),
                           onPressed: () => setState(() => _obscurePass = !_obscurePass),
                         ),
-                        validator: (v) => (v == null || v.isEmpty) ? 'Câmp obligatoriu' : null,
+                        validator: (v) => (v == null || v.isEmpty) ? t.required : null,
                       ),
                       const SizedBox(height: 24),
                       CmButton(
-                        label: 'Autentificare',
+                        label: t.login,
                         isLoading: isLoading,
                         onPressed: isLoading ? null : _login,
                       ),
@@ -135,10 +137,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Center(
                         child: TextButton(
                           onPressed: () => context.push('/register'),
-                          child: const Text.rich(TextSpan(children: [
-                            TextSpan(text: 'Nu ai cont? ', style: TextStyle(color: AppColors.textSecondary)),
-                            TextSpan(text: 'Înregistrează-te',
-                                style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                          child: Text.rich(TextSpan(children: [
+                            TextSpan(text: t.noAccount, style: const TextStyle(color: AppColors.textSecondary)),
+                            TextSpan(text: t.register,
+                                style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                           ])),
                         ),
                       ),

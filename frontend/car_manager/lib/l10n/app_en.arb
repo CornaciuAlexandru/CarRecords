@@ -1,0 +1,102 @@
+{
+  "@@locale": "en",
+  "appName": "CarRecords",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "update": "Update",
+  "retry": "Try again",
+  "error": "Error",
+  "errorWith": "Error: {msg}",
+  "@errorWith": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "required": "Required",
+  "optional": "optional",
+  "notes": "Notes",
+  "notesHint": "Remarks...",
+  "chooseDate": "Choose date",
+  "city": "City",
+  "cost": "Cost (RON)",
+  "invoiceNr": "Invoice no.",
+  "loginTitle": "Welcome back",
+  "loginSubtitle": "Sign in to continue",
+  "email": "Email",
+  "password": "Password",
+  "login": "Sign in",
+  "register": "Create account",
+  "noAccount": "No account? ",
+  "haveAccount": "Already have an account? ",
+  "fullName": "Full name",
+  "phone": "Phone",
+  "confirmPassword": "Confirm password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "invalidEmail": "Invalid email address",
+  "passwordTooShort": "At least 8 characters",
+  "logout": "Sign out",
+  "newAccount": "New account",
+  "fillDetails": "Fill in the details below",
+  "minChars3": "At least 3 characters",
+  "phoneOptional": "Phone (optional)",
+  "passwordRulesHint": "Min. 8 characters, 1 uppercase, 1 digit",
+  "passwordNeedsUpper": "Must contain at least one uppercase letter",
+  "passwordNeedsDigit": "Must contain at least one digit",
+  "navHome": "Home",
+  "navCars": "Cars",
+  "navAlerts": "Alerts",
+  "navProfile": "Profile",
+  "navAdmin": "Admin",
+  "startingService": "Starting service...",
+  "searchingServer": "Searching for the server...",
+  "connecting": "Connecting...",
+  "checkingUpdates": "Checking for updates...",
+  "connected": "Connected!",
+  "serverNotFound": "Server not found",
+  "serverNotFoundHintMobile": "Make sure your computer is on and connected to the same Wi-Fi network.",
+  "serverNotFoundHintDesktop": "Make sure the app is installed correctly and try again.",
+  "searchAgain": "Search again",
+  "greeting": "Hi, {name}! 👋",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "myCars": "My cars",
+  "viewAll": "View all",
+  "statActiveAlerts": "Active alerts",
+  "statExpired": "Expired",
+  "addFirstCar": "Add your first car",
+  "noCarsYet": "No cars added yet",
+  "noCarsHint": "Add your first car to keep track of all its documents",
+  "addCar": "Add car",
+  "carsCount": "{count}/{max} cars",
+  "@carsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteCar": "Delete car",
+  "deleteCarConfirm": "Delete \"{name}\"? All related data will be removed.",
+  "@deleteCarConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Language",
+  "languageChoose": "Choose language"
+}

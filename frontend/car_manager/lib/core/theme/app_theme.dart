@@ -20,6 +20,48 @@ class AppColors {
 }
 
 class AppTheme {
+  /// Configuratia campurilor de introducere. Aceeasi in ambele teme:
+  /// fundal alb si text negru, ca sa fie lizibile indiferent daca sistemul
+  /// e in mod luminos sau intunecat.
+  static InputDecorationTheme get _inputTheme => InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        labelStyle: const TextStyle(
+          color: Color(0xFF1A3A5C), // albastru închis — vizibil pe fond alb
+          fontWeight: FontWeight.w500,
+          fontSize: 15,
+        ),
+        floatingLabelStyle: const TextStyle(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
+        ),
+        hintStyle: const TextStyle(
+          color: Color(0xFF9CA3AF), // gri mediu — distinguibil dar subtil
+          fontSize: 14,
+        ),
+        iconColor: AppColors.primary,
+        prefixIconColor: const Color(0xFF1A3A5C),
+        suffixIconColor: const Color(0xFF1A3A5C),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.danger),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      );
+
   static ThemeData get light => ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -57,43 +99,7 @@ class AppTheme {
             textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          labelStyle: const TextStyle(
-            color: Color(0xFF1A3A5C),   // albastru închis — vizibil pe fond alb
-            fontWeight: FontWeight.w500,
-            fontSize: 15,
-          ),
-          floatingLabelStyle: const TextStyle(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
-          hintStyle: const TextStyle(
-            color: Color(0xFF9CA3AF),   // gri mediu — distinguibil dar subtil
-            fontSize: 14,
-          ),
-          iconColor: AppColors.primary,
-          prefixIconColor: Color(0xFF1A3A5C),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.border),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.border),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.primary, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.danger),
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        ),
+        inputDecorationTheme: _inputTheme,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: AppColors.surface,
           selectedItemColor: AppColors.primary,
@@ -123,5 +129,9 @@ class AppTheme {
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
+        // Aceleasi campuri albe cu text negru ca in tema luminoasa —
+        // altfel, in mod intunecat, textul tastat devenea gri deschis
+        // pe fundal alb si nu se mai citea.
+        inputDecorationTheme: _inputTheme,
       );
 }

@@ -2,7 +2,7 @@
 ; Generat automat
 
 #define AppName      "CarRecords"
-#define AppVersion      "1.0.16"
+#define AppVersion      "1.0.17"
 #define AppPublisher "CarRecords"
 #define AppURL       "https://carrecords.ro"
 #define AppExeName   "CarRecords.exe"
@@ -21,7 +21,7 @@ DefaultGroupName={#AppName}
 AllowNoIcons=yes
 ; Iesire installer
 OutputDir=.
-OutputBaseFilename=CarRecords_Setup_v1.0.16
+OutputBaseFilename=CarRecords_Setup_v1.0.17
 ; Icon installer
 SetupIconFile=app_icon.ico
 Compression=lzma2/ultra64

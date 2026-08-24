@@ -1,0 +1,8 @@
+# Configurarea traducerilor.
+# Fisierele .arb sunt generate din tools/build_translations.py — nu le edita
+# direct; modifica sursa si ruleaza scriptul.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false

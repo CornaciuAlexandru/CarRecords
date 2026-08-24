@@ -38,6 +38,15 @@ class CmTextField extends StatelessWidget {
       readOnly: readOnly,
       onTap: onTap,
       validator: validator,
+      // Culoare explicita pentru textul tastat. Fara ea, culoarea vine din
+      // tema sistemului si devine gri deschis pe fundalul alb al campului
+      // (mai ales cand telefonul e in mod intunecat).
+      style: const TextStyle(
+        color: Colors.black,
+        fontSize: 15.5,
+        fontWeight: FontWeight.w500,
+      ),
+      cursorColor: Colors.black87,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,

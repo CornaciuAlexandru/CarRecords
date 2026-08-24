@@ -1,0 +1,102 @@
+{
+  "@@locale": "it",
+  "appName": "CarRecords",
+  "save": "Salva",
+  "cancel": "Annulla",
+  "delete": "Elimina",
+  "edit": "Modifica",
+  "add": "Aggiungi",
+  "update": "Aggiorna",
+  "retry": "Riprova",
+  "error": "Errore",
+  "errorWith": "Errore: {msg}",
+  "@errorWith": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "required": "Obbligatorio",
+  "optional": "facoltativo",
+  "notes": "Note",
+  "notesHint": "Osservazioni...",
+  "chooseDate": "Scegli data",
+  "city": "Città",
+  "cost": "Costo (RON)",
+  "invoiceNr": "N. fattura",
+  "loginTitle": "Bentornato",
+  "loginSubtitle": "Accedi per continuare",
+  "email": "Email",
+  "password": "Password",
+  "login": "Accedi",
+  "register": "Crea account",
+  "noAccount": "Non hai un account? ",
+  "haveAccount": "Hai già un account? ",
+  "fullName": "Nome completo",
+  "phone": "Telefono",
+  "confirmPassword": "Conferma password",
+  "passwordsDoNotMatch": "Le password non coincidono",
+  "invalidEmail": "Indirizzo email non valido",
+  "passwordTooShort": "Almeno 8 caratteri",
+  "logout": "Esci",
+  "newAccount": "Nuovo account",
+  "fillDetails": "Compila i dati qui sotto",
+  "minChars3": "Almeno 3 caratteri",
+  "phoneOptional": "Telefono (facoltativo)",
+  "passwordRulesHint": "Min. 8 caratteri, 1 maiuscola, 1 cifra",
+  "passwordNeedsUpper": "Deve contenere almeno una maiuscola",
+  "passwordNeedsDigit": "Deve contenere almeno una cifra",
+  "navHome": "Home",
+  "navCars": "Auto",
+  "navAlerts": "Avvisi",
+  "navProfile": "Profilo",
+  "navAdmin": "Admin",
+  "startingService": "Avvio del servizio...",
+  "searchingServer": "Ricerca del server...",
+  "connecting": "Connessione...",
+  "checkingUpdates": "Ricerca aggiornamenti...",
+  "connected": "Connesso!",
+  "serverNotFound": "Server non trovato",
+  "serverNotFoundHintMobile": "Assicurati che il computer sia acceso e collegato alla stessa rete Wi-Fi.",
+  "serverNotFoundHintDesktop": "Verifica che l'app sia installata correttamente e riprova.",
+  "searchAgain": "Cerca di nuovo",
+  "greeting": "Ciao, {name}! 👋",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "myCars": "Le mie auto",
+  "viewAll": "Vedi tutti",
+  "statActiveAlerts": "Avvisi attivi",
+  "statExpired": "Scaduti",
+  "addFirstCar": "Aggiungi la prima auto",
+  "noCarsYet": "Nessuna auto aggiunta",
+  "noCarsHint": "Aggiungi la prima auto per gestire tutti i suoi documenti",
+  "addCar": "Aggiungi auto",
+  "carsCount": "{count}/{max} auto",
+  "@carsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteCar": "Elimina auto",
+  "deleteCarConfirm": "Eliminare \"{name}\"? Tutti i dati associati verranno rimossi.",
+  "@deleteCarConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Lingua",
+  "languageChoose": "Scegli la lingua"
+}

@@ -1,0 +1,102 @@
+{
+  "@@locale": "de",
+  "appName": "CarRecords",
+  "save": "Speichern",
+  "cancel": "Abbrechen",
+  "delete": "Löschen",
+  "edit": "Bearbeiten",
+  "add": "Hinzufügen",
+  "update": "Aktualisieren",
+  "retry": "Erneut versuchen",
+  "error": "Fehler",
+  "errorWith": "Fehler: {msg}",
+  "@errorWith": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "required": "Erforderlich",
+  "optional": "optional",
+  "notes": "Notizen",
+  "notesHint": "Anmerkungen...",
+  "chooseDate": "Datum wählen",
+  "city": "Stadt",
+  "cost": "Kosten (RON)",
+  "invoiceNr": "Rechnungsnr.",
+  "loginTitle": "Willkommen zurück",
+  "loginSubtitle": "Melde dich an, um fortzufahren",
+  "email": "E-Mail",
+  "password": "Passwort",
+  "login": "Anmelden",
+  "register": "Konto erstellen",
+  "noAccount": "Kein Konto? ",
+  "haveAccount": "Schon ein Konto? ",
+  "fullName": "Vollständiger Name",
+  "phone": "Telefon",
+  "confirmPassword": "Passwort bestätigen",
+  "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+  "invalidEmail": "Ungültige E-Mail-Adresse",
+  "passwordTooShort": "Mindestens 8 Zeichen",
+  "logout": "Abmelden",
+  "newAccount": "Neues Konto",
+  "fillDetails": "Fülle die folgenden Daten aus",
+  "minChars3": "Mindestens 3 Zeichen",
+  "phoneOptional": "Telefon (optional)",
+  "passwordRulesHint": "Mind. 8 Zeichen, 1 Großbuchstabe, 1 Ziffer",
+  "passwordNeedsUpper": "Muss mindestens einen Großbuchstaben enthalten",
+  "passwordNeedsDigit": "Muss mindestens eine Ziffer enthalten",
+  "navHome": "Start",
+  "navCars": "Fahrzeuge",
+  "navAlerts": "Warnungen",
+  "navProfile": "Profil",
+  "navAdmin": "Admin",
+  "startingService": "Dienst wird gestartet...",
+  "searchingServer": "Server wird gesucht...",
+  "connecting": "Verbindung wird hergestellt...",
+  "checkingUpdates": "Suche nach Updates...",
+  "connected": "Verbunden!",
+  "serverNotFound": "Server nicht gefunden",
+  "serverNotFoundHintMobile": "Stelle sicher, dass dein PC eingeschaltet und im selben WLAN ist.",
+  "serverNotFoundHintDesktop": "Stelle sicher, dass die App korrekt installiert ist, und versuche es erneut.",
+  "searchAgain": "Erneut suchen",
+  "greeting": "Hallo, {name}! 👋",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "myCars": "Meine Fahrzeuge",
+  "viewAll": "Alle anzeigen",
+  "statActiveAlerts": "Aktive Warnungen",
+  "statExpired": "Abgelaufen",
+  "addFirstCar": "Erstes Fahrzeug hinzufügen",
+  "noCarsYet": "Noch keine Fahrzeuge",
+  "noCarsHint": "Füge dein erstes Fahrzeug hinzu, um alle Dokumente zu verwalten",
+  "addCar": "Fahrzeug hinzufügen",
+  "carsCount": "{count}/{max} Fahrzeuge",
+  "@carsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteCar": "Fahrzeug löschen",
+  "deleteCarConfirm": "\"{name}\" löschen? Alle zugehörigen Daten werden entfernt.",
+  "@deleteCarConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Sprache",
+  "languageChoose": "Sprache wählen"
+}

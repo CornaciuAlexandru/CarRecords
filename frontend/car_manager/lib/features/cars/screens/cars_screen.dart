@@ -6,19 +6,21 @@ import '../../../core/models/user.dart';
 import '../../../core/theme/app_theme.dart';
 import '../widgets/car_card.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../l10n/app_localizations.dart';
 
 class CarsScreen extends ConsumerWidget {
   const CarsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = AppLocalizations.of(context);
     final carsAsync = ref.watch(carsProvider);
     final user = ref.watch(authStateProvider).value;
     final maxCars = user?.maxCars ?? 3;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mașinile mele'),
+        title: Text(t.myCars),
         actions: [
           // Indicator limita masini
           carsAsync.whenOrNull(
@@ -34,7 +36,7 @@ class CarsScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '${cars.length}/$maxCars mașini',
+                    t.carsCount(cars.length, maxCars),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -56,7 +58,7 @@ class CarsScreen extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: const Text('Adaugă mașină'),
+        label: Text(t.addCar),
       ),
       body: carsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -66,17 +68,17 @@ class CarsScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.danger),
               const SizedBox(height: 12),
-              Text('Eroare: $e', textAlign: TextAlign.center),
+              Text(t.errorWith('$e'), textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.read(carsProvider.notifier).refresh(),
-                child: const Text('Reîncearcă'),
+                child: Text(t.retry),
               ),
             ],
           ),
         ),
         data: (cars) => cars.isEmpty
-            ? _EmptyState(onAdd: () => context.push('/cars/add'))
+            ? _EmptyState(onAdd: () => context.push('/cars/add'), t: t)
             : ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: cars.length,
@@ -95,20 +97,21 @@ class CarsScreen extends ConsumerWidget {
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref, Car car) {
+    final t = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Șterge mașina'),
-        content: Text('Ești sigur că vrei să ștergi "${car.displayName}"?\nToate datele asociate vor fi șterse.'),
+        title: Text(t.deleteCar),
+        content: Text(t.deleteCarConfirm(car.displayName)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Anulează')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(t.cancel)),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               ref.read(carsProvider.notifier).deleteCar(car.id);
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('Șterge'),
+            child: Text(t.delete),
           ),
         ],
       ),
@@ -118,7 +121,8 @@ class CarsScreen extends ConsumerWidget {
 
 class _EmptyState extends StatelessWidget {
   final VoidCallback onAdd;
-  const _EmptyState({required this.onAdd});
+  final AppLocalizations t;
+  const _EmptyState({required this.onAdd, required this.t});
 
   @override
   Widget build(BuildContext context) {
@@ -130,16 +134,16 @@ class _EmptyState extends StatelessWidget {
           children: [
             Icon(Icons.directions_car_outlined, size: 80, color: Colors.grey[300]),
             const SizedBox(height: 20),
-            const Text('Nu ai mașini adăugate',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(t.noCarsYet,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            const Text('Adaugă prima ta mașină pentru a gestiona toate documentele',
-                textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondary)),
+            Text(t.noCarsHint,
+                textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary)),
             const SizedBox(height: 28),
             ElevatedButton.icon(
               onPressed: onAdd,
               icon: const Icon(Icons.add),
-              label: const Text('Adaugă mașină'),
+              label: Text(t.addCar),
             ),
           ],
         ),

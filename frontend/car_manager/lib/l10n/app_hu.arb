@@ -1,0 +1,102 @@
+{
+  "@@locale": "hu",
+  "appName": "CarRecords",
+  "save": "Mentés",
+  "cancel": "Mégse",
+  "delete": "Törlés",
+  "edit": "Szerkesztés",
+  "add": "Hozzáadás",
+  "update": "Frissítés",
+  "retry": "Újra",
+  "error": "Hiba",
+  "errorWith": "Hiba: {msg}",
+  "@errorWith": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "required": "Kötelező",
+  "optional": "opcionális",
+  "notes": "Jegyzetek",
+  "notesHint": "Megjegyzések...",
+  "chooseDate": "Válassz dátumot",
+  "city": "Város",
+  "cost": "Költség (RON)",
+  "invoiceNr": "Számlaszám",
+  "loginTitle": "Üdv újra",
+  "loginSubtitle": "Jelentkezz be a folytatáshoz",
+  "email": "E-mail",
+  "password": "Jelszó",
+  "login": "Bejelentkezés",
+  "register": "Fiók létrehozása",
+  "noAccount": "Nincs fiókod? ",
+  "haveAccount": "Van már fiókod? ",
+  "fullName": "Teljes név",
+  "phone": "Telefon",
+  "confirmPassword": "Jelszó megerősítése",
+  "passwordsDoNotMatch": "A jelszavak nem egyeznek",
+  "invalidEmail": "Érvénytelen e-mail cím",
+  "passwordTooShort": "Legalább 8 karakter",
+  "logout": "Kijelentkezés",
+  "newAccount": "Új fiók",
+  "fillDetails": "Töltsd ki az alábbi adatokat",
+  "minChars3": "Legalább 3 karakter",
+  "phoneOptional": "Telefon (opcionális)",
+  "passwordRulesHint": "Min. 8 karakter, 1 nagybetű, 1 számjegy",
+  "passwordNeedsUpper": "Legalább egy nagybetűt kell tartalmaznia",
+  "passwordNeedsDigit": "Legalább egy számjegyet kell tartalmaznia",
+  "navHome": "Kezdőlap",
+  "navCars": "Autók",
+  "navAlerts": "Riasztások",
+  "navProfile": "Profil",
+  "navAdmin": "Admin",
+  "startingService": "Szolgáltatás indítása...",
+  "searchingServer": "Szerver keresése...",
+  "connecting": "Csatlakozás...",
+  "checkingUpdates": "Frissítések keresése...",
+  "connected": "Csatlakozva!",
+  "serverNotFound": "A szerver nem található",
+  "serverNotFoundHintMobile": "Győződj meg róla, hogy a számítógép be van kapcsolva és ugyanazon a Wi-Fi hálózaton van.",
+  "serverNotFoundHintDesktop": "Ellenőrizd, hogy az alkalmazás helyesen van telepítve, majd próbáld újra.",
+  "searchAgain": "Keresés újra",
+  "greeting": "Szia, {name}! 👋",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "myCars": "Autóim",
+  "viewAll": "Összes",
+  "statActiveAlerts": "Aktív riasztások",
+  "statExpired": "Lejárt",
+  "addFirstCar": "Add hozzá az első autót",
+  "noCarsYet": "Még nincs autó hozzáadva",
+  "noCarsHint": "Add hozzá az első autót az összes dokumentum kezeléséhez",
+  "addCar": "Autó hozzáadása",
+  "carsCount": "{count}/{max} autó",
+  "@carsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteCar": "Autó törlése",
+  "deleteCarConfirm": "Törlöd: \"{name}\"? Minden kapcsolódó adat törlődik.",
+  "@deleteCarConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Nyelv",
+  "languageChoose": "Válassz nyelvet"
+}

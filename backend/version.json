@@ -1,8 +1,8 @@
 {
-  "version": "1.0.16",
+  "version": "1.0.17",
   "min_version": "1.0.0",
-  "changelog": "Sigla noua CarRecords pe iconitele de aplicatie (Windows si Android)",
-  "installer_filename": "CarRecords_Setup_v1.0.16.exe",
+  "changelog": "Text negru in campuri + alegerea limbii (7 limbi, implicit engleza)",
+  "installer_filename": "CarRecords_Setup_v1.0.17.exe",
   "force_update": false,
-  "sha256": "565da280aa801f62e088c7446767c9a14fe9e28a05940b5c72261ffbbba832b3"
+  "sha256": "497f75d556595f012f42080fa986b1870db1c52c7f642d54af55c681aff8f09d"
 }

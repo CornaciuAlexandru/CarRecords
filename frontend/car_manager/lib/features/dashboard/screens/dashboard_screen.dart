@@ -9,6 +9,8 @@ import '../../cars/screens/cars_screen.dart';
 import '../../notifications/screens/notifications_screen.dart';
 import '../../admin/screens/admin_screen.dart';
 import '../../notifications/providers/notifications_provider.dart';
+import '../../../core/providers/locale_provider.dart';
+import '../../../l10n/app_localizations.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -22,6 +24,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final user = ref.watch(authStateProvider).value;
     final isAdmin = user?.isAdmin ?? false;
 
@@ -44,14 +47,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         selectedIndex: safeIndex,
         onDestinationSelected: (i) => setState(() => _selectedIndex = i),
         destinations: [
-          const NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: 'Acasă'),
-          const NavigationDestination(
-              icon: Icon(Icons.directions_car_outlined),
-              selectedIcon: Icon(Icons.directions_car),
-              label: 'Mașini'),
+          NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: const Icon(Icons.home),
+              label: t.navHome),
+          NavigationDestination(
+              icon: const Icon(Icons.directions_car_outlined),
+              selectedIcon: const Icon(Icons.directions_car),
+              label: t.navCars),
           NavigationDestination(
             icon: Badge(
               isLabelVisible: unread > 0,
@@ -63,17 +66,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               label: Text('$unread', style: const TextStyle(fontSize: 10)),
               child: const Icon(Icons.notifications),
             ),
-            label: 'Alerte',
+            label: t.navAlerts,
           ),
-          const NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: 'Profil'),
+          NavigationDestination(
+              icon: const Icon(Icons.person_outline),
+              selectedIcon: const Icon(Icons.person),
+              label: t.navProfile),
           if (isAdmin)
-            const NavigationDestination(
-                icon: Icon(Icons.admin_panel_settings_outlined),
-                selectedIcon: Icon(Icons.admin_panel_settings),
-                label: 'Admin'),
+            NavigationDestination(
+                icon: const Icon(Icons.admin_panel_settings_outlined),
+                selectedIcon: const Icon(Icons.admin_panel_settings),
+                label: t.navAdmin),
         ],
       ),
     );
@@ -86,14 +89,15 @@ class _HomeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = AppLocalizations.of(context);
     final authAsync = ref.watch(authStateProvider);
     final carsAsync = ref.watch(carsProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: authAsync.whenOrNull(
-          data: (user) => Text('Bună, ${user?.fullName.split(' ').first ?? ''}! 👋'),
-        ) ?? const Text('CarManager'),
+          data: (user) => Text(t.greeting(user?.fullName.split(' ').first ?? '')),
+        ) ?? const Text('CarRecords'),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -110,15 +114,15 @@ class _HomeTab extends ConsumerWidget {
             carsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (_, __) => const SizedBox(),
-              data: (cars) => _SummarySection(cars: cars),
+              data: (cars) => _SummarySection(cars: cars, t: t),
             ),
             const SizedBox(height: 20),
             // Recent cars
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Mașinile mele', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                TextButton(onPressed: () {}, child: const Text('Vezi toate')),
+                Text(t.myCars, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                TextButton(onPressed: () {}, child: Text(t.viewAll)),
               ],
             ),
             const SizedBox(height: 8),
@@ -140,19 +144,20 @@ class _HomeTab extends ConsumerWidget {
 
 class _SummarySection extends StatelessWidget {
   final List<Car> cars;
-  const _SummarySection({required this.cars});
+  final AppLocalizations t;
+  const _SummarySection({required this.cars, required this.t});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: _StatCard(label: 'Mașini', value: '${cars.length}',
+        Expanded(child: _StatCard(label: t.navCars, value: '${cars.length}',
             icon: Icons.directions_car, color: AppColors.primary)),
         const SizedBox(width: 12),
-        Expanded(child: _StatCard(label: 'Alerte active', value: '0',
+        Expanded(child: _StatCard(label: t.statActiveAlerts, value: '0',
             icon: Icons.warning_amber_rounded, color: AppColors.warning)),
         const SizedBox(width: 12),
-        Expanded(child: _StatCard(label: 'Expirate', value: '0',
+        Expanded(child: _StatCard(label: t.statExpired, value: '0',
             icon: Icons.error_outline, color: AppColors.danger)),
       ],
     );
@@ -220,13 +225,13 @@ class _QuickAddCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: const Padding(
-          padding: EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Icon(Icons.add_circle_outline, color: AppColors.primary, size: 28),
-              SizedBox(width: 12),
-              Text('Adaugă prima mașină', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+              const Icon(Icons.add_circle_outline, color: AppColors.primary, size: 28),
+              const SizedBox(width: 12),
+              Text(AppLocalizations.of(context).addFirstCar, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
             ],
           ),
         ),
@@ -240,9 +245,13 @@ class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = AppLocalizations.of(context);
     final user = ref.watch(authStateProvider).value;
+    final lang = ref.watch(localeProvider).languageCode;
+    final current = kSupportedLanguages.firstWhere((l) => l.code == lang,
+        orElse: () => kSupportedLanguages.first);
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil')),
+      appBar: AppBar(title: Text(t.navProfile)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -253,12 +262,66 @@ class ProfilePage extends ConsumerWidget {
           Center(child: Text(user?.fullName ?? '', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
           Center(child: Text(user?.email ?? '', style: const TextStyle(color: AppColors.textSecondary))),
           const SizedBox(height: 32),
+          // Selector de limba
+          Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: const Icon(Icons.language, color: AppColors.primary),
+              title: Text(t.language),
+              subtitle: Text('${current.flag}  ${current.label}'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 15),
+              onTap: () => _showLanguagePicker(context, ref, t),
+            ),
+          ),
           ListTile(leading: const Icon(Icons.logout, color: AppColors.danger),
-              title: const Text('Deconectare', style: TextStyle(color: AppColors.danger)),
+              title: Text(t.logout, style: const TextStyle(color: AppColors.danger)),
               onTap: () async {
                 await ref.read(authStateProvider.notifier).logout();
                 if (context.mounted) context.go('/login');
               }),
+        ],
+      ),
+    );
+  }
+
+  /// Dialog de alegere a limbii aplicatiei.
+  void _showLanguagePicker(BuildContext context, WidgetRef ref, AppLocalizations t) {
+    final currentCode = ref.read(localeProvider).languageCode;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(children: [
+          const Icon(Icons.language, color: AppColors.primary),
+          const SizedBox(width: 10),
+          Text(t.languageChoose),
+        ]),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        content: SizedBox(
+          width: 320,
+          child: ListView(
+            shrinkWrap: true,
+            children: kSupportedLanguages.map((l) {
+              final selected = l.code == currentCode;
+              return ListTile(
+                leading: Text(l.flag, style: const TextStyle(fontSize: 24)),
+                title: Text(l.label,
+                    style: TextStyle(
+                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                      color: selected ? AppColors.primary : null,
+                    )),
+                trailing: selected
+                    ? const Icon(Icons.check_circle, color: AppColors.primary)
+                    : null,
+                onTap: () {
+                  ref.read(localeProvider.notifier).setLanguage(l.code);
+                  Navigator.pop(ctx);
+                },
+              );
+            }).toList(),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t.cancel)),
         ],
       ),
     );

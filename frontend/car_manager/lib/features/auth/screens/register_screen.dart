@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/error_handler.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
+import '../../../l10n/app_localizations.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -57,9 +58,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(authStateProvider).isLoading;
+    final t = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cont nou'),
+        title: Text(t.newAccount),
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
       ),
       body: SingleChildScrollView(
@@ -69,34 +71,34 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Creează cont', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Text(t.register, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              const Text('Completează datele de mai jos', style: TextStyle(color: AppColors.textSecondary)),
+              Text(t.fillDetails, style: const TextStyle(color: AppColors.textSecondary)),
               const SizedBox(height: 28),
               CmTextField(
                 controller: _nameCtrl,
-                label: 'Nume complet',
+                label: t.fullName,
                 hint: 'Ion Popescu',
                 prefixIcon: Icons.person_outline,
-                validator: (v) => (v == null || v.length < 3) ? 'Minim 3 caractere' : null,
+                validator: (v) => (v == null || v.length < 3) ? t.minChars3 : null,
               ),
               const SizedBox(height: 16),
               CmTextField(
                 controller: _emailCtrl,
-                label: 'Email',
+                label: t.email,
                 hint: 'email@exemplu.ro',
                 keyboardType: TextInputType.emailAddress,
                 prefixIcon: Icons.email_outlined,
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Câmp obligatoriu';
-                  if (!v.contains('@')) return 'Email invalid';
+                  if (v == null || v.isEmpty) return t.required;
+                  if (!v.contains('@')) return t.invalidEmail;
                   return null;
                 },
               ),
               const SizedBox(height: 16),
               CmTextField(
                 controller: _phoneCtrl,
-                label: 'Telefon (opțional)',
+                label: t.phoneOptional,
                 hint: '07XX XXX XXX',
                 keyboardType: TextInputType.phone,
                 prefixIcon: Icons.phone_outlined,
@@ -104,8 +106,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               const SizedBox(height: 16),
               CmTextField(
                 controller: _passCtrl,
-                label: 'Parolă',
-                hint: 'Min. 8 caractere, 1 majusculă, 1 cifră',
+                label: t.password,
+                hint: t.passwordRulesHint,
                 obscureText: _obscurePass,
                 prefixIcon: Icons.lock_outline,
                 suffixIcon: IconButton(
@@ -113,31 +115,31 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   onPressed: () => setState(() => _obscurePass = !_obscurePass),
                 ),
                 validator: (v) {
-                  if (v == null || v.length < 8) return 'Minim 8 caractere';
-                  if (!v.contains(RegExp(r'[A-Z]'))) return 'Trebuie cel puțin o literă mare';
-                  if (!v.contains(RegExp(r'[0-9]'))) return 'Trebuie cel puțin o cifră';
+                  if (v == null || v.length < 8) return t.passwordTooShort;
+                  if (!v.contains(RegExp(r'[A-Z]'))) return t.passwordNeedsUpper;
+                  if (!v.contains(RegExp(r'[0-9]'))) return t.passwordNeedsDigit;
                   return null;
                 },
               ),
               const SizedBox(height: 16),
               CmTextField(
                 controller: _pass2Ctrl,
-                label: 'Confirmă parola',
+                label: t.confirmPassword,
                 hint: '••••••••',
                 obscureText: _obscurePass,
                 prefixIcon: Icons.lock_outline,
-                validator: (v) => v != _passCtrl.text ? 'Parolele nu coincid' : null,
+                validator: (v) => v != _passCtrl.text ? t.passwordsDoNotMatch : null,
               ),
               const SizedBox(height: 28),
-              CmButton(label: 'Înregistrare', isLoading: isLoading, onPressed: isLoading ? null : _register),
+              CmButton(label: t.register, isLoading: isLoading, onPressed: isLoading ? null : _register),
               const SizedBox(height: 16),
               Center(
                 child: TextButton(
                   onPressed: () => context.pop(),
-                  child: const Text.rich(TextSpan(children: [
-                    TextSpan(text: 'Ai deja cont? ', style: TextStyle(color: AppColors.textSecondary)),
-                    TextSpan(text: 'Autentifică-te',
-                        style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                  child: Text.rich(TextSpan(children: [
+                    TextSpan(text: t.haveAccount, style: const TextStyle(color: AppColors.textSecondary)),
+                    TextSpan(text: t.login,
+                        style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                   ])),
                 ),
               ),

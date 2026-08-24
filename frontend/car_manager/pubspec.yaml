@@ -1,13 +1,15 @@
 name: car_manager
 description: CarRecords - Aplicatie pentru gestionarea documentelor si datelor auto
 publish_to: 'none'
-version: 1.0.16+1016
+version: 1.0.17+1017
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   # State management
@@ -54,6 +56,8 @@ dependency_overrides:
 
 flutter:
   uses-material-design: true
+  # Genereaza clasa AppLocalizations din fisierele .arb (vezi l10n.yaml)
+  generate: true
   assets:
     - assets/images/
     - assets/animations/

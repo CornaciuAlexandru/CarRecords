@@ -2,25 +2,32 @@ import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/api_client.dart';
+import '../providers/locale_provider.dart';
 import '../theme/app_theme.dart';
 import '../services/update_service.dart';
 import '../services/server_discovery.dart';
+import '../../l10n/app_localizations.dart';
+
+/// Etapa in care se afla pornirea. Textul afisat se traduce la randare,
+/// nu se stocheaza — altfel ar ramane in limba veche la schimbarea limbii.
+enum _Phase { starting, searching, connecting, checkingUpdates, connected }
 
 /// Wrapper afisat la pornire — descopera backend-ul si verifica disponibilitatea.
-class StartupWrapper extends StatefulWidget {
+class StartupWrapper extends ConsumerStatefulWidget {
   final Widget child;
   const StartupWrapper({super.key, required this.child});
 
   @override
-  State<StartupWrapper> createState() => _StartupWrapperState();
+  ConsumerState<StartupWrapper> createState() => _StartupWrapperState();
 }
 
-class _StartupWrapperState extends State<StartupWrapper>
+class _StartupWrapperState extends ConsumerState<StartupWrapper>
     with SingleTickerProviderStateMixin {
   bool   _ready   = false;
   bool   _failed  = false;
-  String _status  = 'Se pornește serviciul...';
+  _Phase _phase   = _Phase.starting;
   int    _attempt = 0;
 
   // Pe Windows asteptam mai mult (backend porneste local)
@@ -56,21 +63,12 @@ class _StartupWrapperState extends State<StartupWrapper>
   /// Descopera IP-ul serverului prin UDP broadcast (doar Android).
   Future<void> _discoverServer() async {
     if (!mounted) return;
+    setState(() => _phase = _Phase.searching);
 
-    final ip = await ServerDiscovery.discover(
-      onStatus: (msg) {
-        if (mounted) setState(() => _status = msg);
-      },
-    );
+    final ip = await ServerDiscovery.discover();
+    if (ip != null) setDiscoveredServerIp(ip);
 
-    if (ip != null) {
-      setDiscoveredServerIp(ip);
-      if (mounted) setState(() => _status = 'Server găsit la $ip');
-    } else {
-      // Discovery a esuat — vom incerca oricum health-check
-      // (poate cache-ul din API client e deja bun)
-      if (mounted) setState(() => _status = 'Se conectează direct...');
-    }
+    if (mounted) setState(() => _phase = _Phase.connecting);
   }
 
   Future<void> _checkBackend() async {
@@ -84,9 +82,7 @@ class _StartupWrapperState extends State<StartupWrapper>
       if (!mounted) return;
 
       setState(() {
-        _status = _attempt == 1
-            ? (Platform.isAndroid ? 'Se conectează la server...' : 'Se pornește serviciul...')
-            : 'Se conectează... ($_attempt/$_maxAttempts)';
+        _phase = _attempt == 1 ? _Phase.starting : _Phase.connecting;
       });
 
       try {
@@ -94,11 +90,11 @@ class _StartupWrapperState extends State<StartupWrapper>
         await dio.get(url);
         if (!mounted) return;
 
-        setState(() => _status = 'Se verifică actualizări...');
+        setState(() => _phase = _Phase.checkingUpdates);
         await _checkUpdate();
         if (!mounted) return;
 
-        setState(() { _ready = true; _status = 'Conectat!'; });
+        setState(() { _ready = true; _phase = _Phase.connected; });
         return;
       } catch (_) {
         // In retea locala, daca health-check-ul esueaza, IP-ul serverului
@@ -129,14 +125,32 @@ class _StartupWrapperState extends State<StartupWrapper>
     );
   }
 
+  /// Textul etapei curente, tradus la randare.
+  String _statusText(AppLocalizations t) {
+    switch (_phase) {
+      case _Phase.searching:        return t.searchingServer;
+      case _Phase.connecting:       return '${t.connecting} ($_attempt/$_maxAttempts)';
+      case _Phase.checkingUpdates:  return t.checkingUpdates;
+      case _Phase.connected:        return t.connected;
+      case _Phase.starting:         return t.startingService;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_ready) return widget.child;
 
+    final locale = ref.watch(localeProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: Scaffold(
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: Builder(builder: (context) {
+        final t = AppLocalizations.of(context);
+        return Scaffold(
         backgroundColor: AppColors.primary,
         body: Center(
           child: Column(
@@ -174,7 +188,7 @@ class _StartupWrapperState extends State<StartupWrapper>
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Text(
-                    _status,
+                    _statusText(t),
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.white70, fontSize: 14),
                   ),
@@ -182,21 +196,24 @@ class _StartupWrapperState extends State<StartupWrapper>
               ] else ...[
                 const Icon(Icons.cloud_off, color: Colors.white54, size: 40),
                 const SizedBox(height: 12),
-                const Text(
-                  'Server negăsit',
-                  style: TextStyle(
+                Text(
+                  t.serverNotFound,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  Platform.isAndroid
-                      ? 'Asigură-te că PC-ul este pornit și\nconectat la aceeași rețea Wi-Fi.'
-                      : 'Asigură-te că aplicația este instalată\ncorect și încearcă din nou.',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white60, fontSize: 13),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Text(
+                    Platform.isAndroid
+                        ? t.serverNotFoundHintMobile
+                        : t.serverNotFoundHintDesktop,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
@@ -204,12 +221,12 @@ class _StartupWrapperState extends State<StartupWrapper>
                     setState(() {
                       _failed  = false;
                       _attempt = 0;
-                      _status  = 'Se reconectează...';
+                      _phase   = _Phase.connecting;
                     });
                     _start();
                   },
                   icon: const Icon(Icons.search),
-                  label: const Text('Caută din nou'),
+                  label: Text(t.searchAgain),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: AppColors.primary,
@@ -222,7 +239,8 @@ class _StartupWrapperState extends State<StartupWrapper>
             ],
           ),
         ),
-      ),
+        );
+      }),
     );
   }
 }

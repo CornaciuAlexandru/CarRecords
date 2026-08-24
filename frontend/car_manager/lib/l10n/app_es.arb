@@ -1,0 +1,102 @@
+{
+  "@@locale": "es",
+  "appName": "CarRecords",
+  "save": "Guardar",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  "edit": "Editar",
+  "add": "Añadir",
+  "update": "Actualizar",
+  "retry": "Reintentar",
+  "error": "Error",
+  "errorWith": "Error: {msg}",
+  "@errorWith": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "required": "Obligatorio",
+  "optional": "opcional",
+  "notes": "Notas",
+  "notesHint": "Observaciones...",
+  "chooseDate": "Elegir fecha",
+  "city": "Ciudad",
+  "cost": "Coste (RON)",
+  "invoiceNr": "N.º factura",
+  "loginTitle": "Bienvenido de nuevo",
+  "loginSubtitle": "Inicia sesión para continuar",
+  "email": "Correo electrónico",
+  "password": "Contraseña",
+  "login": "Iniciar sesión",
+  "register": "Crear cuenta",
+  "noAccount": "¿No tienes cuenta? ",
+  "haveAccount": "¿Ya tienes cuenta? ",
+  "fullName": "Nombre completo",
+  "phone": "Teléfono",
+  "confirmPassword": "Confirmar contraseña",
+  "passwordsDoNotMatch": "Las contraseñas no coinciden",
+  "invalidEmail": "Dirección de correo no válida",
+  "passwordTooShort": "Mínimo 8 caracteres",
+  "logout": "Cerrar sesión",
+  "newAccount": "Cuenta nueva",
+  "fillDetails": "Completa los datos siguientes",
+  "minChars3": "Mínimo 3 caracteres",
+  "phoneOptional": "Teléfono (opcional)",
+  "passwordRulesHint": "Mín. 8 caracteres, 1 mayúscula, 1 dígito",
+  "passwordNeedsUpper": "Debe contener al menos una mayúscula",
+  "passwordNeedsDigit": "Debe contener al menos un dígito",
+  "navHome": "Inicio",
+  "navCars": "Coches",
+  "navAlerts": "Alertas",
+  "navProfile": "Perfil",
+  "navAdmin": "Admin",
+  "startingService": "Iniciando servicio...",
+  "searchingServer": "Buscando el servidor...",
+  "connecting": "Conectando...",
+  "checkingUpdates": "Buscando actualizaciones...",
+  "connected": "¡Conectado!",
+  "serverNotFound": "Servidor no encontrado",
+  "serverNotFoundHintMobile": "Asegúrate de que tu ordenador está encendido y conectado a la misma red Wi-Fi.",
+  "serverNotFoundHintDesktop": "Comprueba que la aplicación está instalada correctamente e inténtalo de nuevo.",
+  "searchAgain": "Buscar de nuevo",
+  "greeting": "¡Hola, {name}! 👋",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "myCars": "Mis coches",
+  "viewAll": "Ver todo",
+  "statActiveAlerts": "Alertas activas",
+  "statExpired": "Caducados",
+  "addFirstCar": "Añade tu primer coche",
+  "noCarsYet": "Aún no hay coches",
+  "noCarsHint": "Añade tu primer coche para gestionar todos sus documentos",
+  "addCar": "Añadir coche",
+  "carsCount": "{count}/{max} coches",
+  "@carsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteCar": "Eliminar coche",
+  "deleteCarConfirm": "¿Eliminar \"{name}\"? Se borrarán todos los datos asociados.",
+  "@deleteCarConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Idioma",
+  "languageChoose": "Elegir idioma"
+}

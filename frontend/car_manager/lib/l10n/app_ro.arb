@@ -1,0 +1,102 @@
+{
+  "@@locale": "ro",
+  "appName": "CarRecords",
+  "save": "Salvează",
+  "cancel": "Anulează",
+  "delete": "Șterge",
+  "edit": "Editează",
+  "add": "Adaugă",
+  "update": "Actualizează",
+  "retry": "Încearcă din nou",
+  "error": "Eroare",
+  "errorWith": "Eroare: {msg}",
+  "@errorWith": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "required": "Obligatoriu",
+  "optional": "opțional",
+  "notes": "Note",
+  "notesHint": "Observații...",
+  "chooseDate": "Alege dată",
+  "city": "Oraș",
+  "cost": "Cost (RON)",
+  "invoiceNr": "Nr. factură",
+  "loginTitle": "Bine ai revenit",
+  "loginSubtitle": "Autentifică-te pentru a continua",
+  "email": "Email",
+  "password": "Parolă",
+  "login": "Autentificare",
+  "register": "Creează cont",
+  "noAccount": "Nu ai cont? ",
+  "haveAccount": "Ai deja cont? ",
+  "fullName": "Nume complet",
+  "phone": "Telefon",
+  "confirmPassword": "Confirmă parola",
+  "passwordsDoNotMatch": "Parolele nu coincid",
+  "invalidEmail": "Adresă de email invalidă",
+  "passwordTooShort": "Minim 8 caractere",
+  "logout": "Deconectare",
+  "newAccount": "Cont nou",
+  "fillDetails": "Completează datele de mai jos",
+  "minChars3": "Minim 3 caractere",
+  "phoneOptional": "Telefon (opțional)",
+  "passwordRulesHint": "Min. 8 caractere, 1 majusculă, 1 cifră",
+  "passwordNeedsUpper": "Trebuie cel puțin o literă mare",
+  "passwordNeedsDigit": "Trebuie cel puțin o cifră",
+  "navHome": "Acasă",
+  "navCars": "Mașini",
+  "navAlerts": "Alerte",
+  "navProfile": "Profil",
+  "navAdmin": "Admin",
+  "startingService": "Se pornește serviciul...",
+  "searchingServer": "Se caută serverul în rețea...",
+  "connecting": "Se conectează...",
+  "checkingUpdates": "Se verifică actualizări...",
+  "connected": "Conectat!",
+  "serverNotFound": "Server negăsit",
+  "serverNotFoundHintMobile": "Asigură-te că PC-ul este pornit și conectat la aceeași rețea Wi-Fi.",
+  "serverNotFoundHintDesktop": "Asigură-te că aplicația este instalată corect și încearcă din nou.",
+  "searchAgain": "Caută din nou",
+  "greeting": "Bună, {name}! 👋",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "myCars": "Mașinile mele",
+  "viewAll": "Vezi toate",
+  "statActiveAlerts": "Alerte active",
+  "statExpired": "Expirate",
+  "addFirstCar": "Adaugă prima mașină",
+  "noCarsYet": "Nu ai mașini adăugate",
+  "noCarsHint": "Adaugă prima ta mașină pentru a gestiona toate documentele",
+  "addCar": "Adaugă mașină",
+  "carsCount": "{count}/{max} mașini",
+  "@carsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteCar": "Șterge mașina",
+  "deleteCarConfirm": "Ștergi \"{name}\"? Toate datele asociate vor fi șterse.",
+  "@deleteCarConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "language": "Limbă",
+  "languageChoose": "Alege limba"
+}
