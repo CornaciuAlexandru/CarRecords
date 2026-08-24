@@ -1,0 +1,97 @@
+/* CarRecords — stil comun pentru site-ul public */
+:root {
+  --navy: #003377;
+  --navy-dark: #002455;
+  --blue: #6699dd;
+  --text: #1c2733;
+  --muted: #5a6875;
+  --line: #e3e8ee;
+  --bg: #ffffff;
+  --bg-soft: #f5f8fc;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Antet ─────────────────────────────────────────── */
+header {
+  background: var(--navy);
+  color: #fff;
+  padding: 18px 0;
+}
+header .wrap { display: flex; align-items: center; gap: 14px; }
+header img { width: 40px; height: 40px; border-radius: 9px; }
+header .name { font-weight: 700; font-size: 19px; letter-spacing: .2px; }
+header nav { margin-left: auto; display: flex; gap: 22px; flex-wrap: wrap; }
+header nav a {
+  color: #cfe0f5; text-decoration: none; font-size: 14.5px;
+}
+header nav a:hover { color: #fff; }
+
+/* ── Sectiunea de prezentare ───────────────────────── */
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-dark) 100%);
+  color: #fff;
+  padding: 72px 0 80px;
+  text-align: center;
+}
+.hero h1 { font-size: 40px; margin: 0 0 16px; line-height: 1.2; }
+.hero p { font-size: 18.5px; color: #c8dcf3; margin: 0 auto; max-width: 560px; }
+.hero .cta {
+  display: inline-block; margin-top: 32px; padding: 14px 30px;
+  background: #fff; color: var(--navy); border-radius: 10px;
+  font-weight: 700; text-decoration: none;
+}
+.hero .cta:hover { background: #eaf1fb; }
+
+/* ── Continut ──────────────────────────────────────── */
+main { padding: 56px 0 72px; }
+h2 { font-size: 25px; margin: 44px 0 14px; }
+h3 { font-size: 18px; margin: 28px 0 8px; }
+p, li { color: var(--text); }
+a { color: var(--navy); }
+
+.features { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-top: 34px; }
+.feature { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+.feature h3 { margin: 0 0 6px; font-size: 16.5px; color: var(--navy); }
+.feature p { margin: 0; font-size: 14.5px; color: var(--muted); }
+
+.note {
+  background: var(--bg-soft); border-left: 4px solid var(--blue);
+  border-radius: 8px; padding: 16px 20px; margin: 26px 0;
+}
+.note strong { color: var(--navy); }
+
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 15px; }
+th, td { text-align: left; padding: 11px 13px; border: 1px solid var(--line); vertical-align: top; }
+th { background: var(--bg-soft); font-weight: 600; }
+
+.updated { color: var(--muted); font-size: 14px; font-style: italic; }
+
+/* ── Subsol ────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 30px 0 44px;
+  color: var(--muted);
+  font-size: 14px;
+}
+footer .wrap { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--navy); }
+footer .spacer { margin-left: auto; }
+
+@media (max-width: 600px) {
+  .hero { padding: 52px 0 58px; }
+  .hero h1 { font-size: 30px; }
+  header nav { gap: 14px; }
+}

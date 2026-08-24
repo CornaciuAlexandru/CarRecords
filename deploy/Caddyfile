@@ -1,7 +1,8 @@
-# Caddy obtine si reinnoieste singur certificatul TLS de la Let's Encrypt.
-# Nu e nevoie de nicio configurare manuala de certificate.
+# Caddy obtine si reinnoieste singur certificatele TLS de la Let's Encrypt,
+# pentru ambele domenii. Nu e nevoie de configurare manuala de certificate.
 
-{$DOMAIN} {
+# ── API-ul aplicatiei ─────────────────────────────────────────────
+api.{$DOMAIN} {
 	encode gzip
 
 	# Limita de marime pentru incarcarea documentelor scanate
@@ -13,7 +14,6 @@
 		header_up X-Real-IP {remote_host}
 	}
 
-	# Antete de securitate
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
@@ -23,7 +23,32 @@
 	}
 
 	log {
-		output file /data/access.log {
+		output file /data/api-access.log {
+			roll_size 10MB
+			roll_keep 5
+		}
+	}
+}
+
+# ── Site-ul public ────────────────────────────────────────────────
+# Gazduieste si paginile obligatorii pentru Google Play:
+#   /confidentialitate  — politica de confidentialitate
+#   /stergere-cont      — cerere de stergere a contului
+{$DOMAIN}, www.{$DOMAIN} {
+	encode gzip
+	root * /srv/site
+	try_files {path} {path}.html {path}/index.html /index.html
+	file_server
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output file /data/site-access.log {
 			roll_size 10MB
 			roll_keep 5
 		}

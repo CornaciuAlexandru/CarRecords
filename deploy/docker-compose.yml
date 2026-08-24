@@ -54,6 +54,7 @@ services:
       DOMAIN: ${DOMAIN}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../site:/srv/site:ro          # site-ul public (fisiere statice)
       - caddy_data:/data
       - caddy_config:/config
 
