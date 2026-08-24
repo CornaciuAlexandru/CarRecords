@@ -7,31 +7,37 @@ PC-ul tău să fie pornit.
 
 ## Ce îți trebuie înainte
 
-| | Detaliu | Cost aproximativ |
+| | Detaliu | Cost |
 |---|---|---|
-| **VPS** | 2 GB RAM, Ubuntu 24.04 (Hetzner CX22, DigitalOcean, Contabo…) | 4–6 €/lună |
-| **Domeniu** | ex. `carrecords.ro` sau un subdomeniu al unuia existent | 10–15 €/an |
+| **VPS** | Hetzner **CX22** (2 vCPU, 4 GB RAM, 40 GB SSD), Ubuntu 24.04 | ~4,5 €/lună |
+| **Domeniu** | `carrecords.ro` — API-ul va sta pe `api.carrecords.ro` | ~13 €/an |
 
-> Un VPS de 2 GB e suficient: OCR-ul cu Tesseract e partea cea mai
+> CX22 e mai mult decât suficient: OCR-ul cu Tesseract e partea cea mai
 > solicitantă, dar rulează doar câteva secunde per document scanat.
+> Alege locația **Nürnberg** sau **Falkenstein** (Germania) — latență bună
+> din România și date în UE, ceea ce simplifică partea de GDPR.
 
 ---
 
 ## Pasul 1 — Îndreaptă domeniul spre server
 
-La furnizorul domeniului, adaugă un record DNS:
+În panoul registrarului de la care ai cumpărat `carrecords.ro`, la secțiunea
+**DNS / Zone management**, adaugă:
 
 ```
-Tip:    A
-Nume:   api          (rezultă api.domeniul-tau.ro)
-Valoare: <IP-ul VPS-ului>
-TTL:    3600
+Tip:     A
+Nume:    api
+Valoare: <IP-ul public al serverului Hetzner>
+TTL:     3600
 ```
 
-Verifică propagarea (poate dura până la o oră):
+Rezultă `api.carrecords.ro`. Verifică propagarea (poate dura până la o oră):
 ```bash
-nslookup api.domeniul-tau.ro
+nslookup api.carrecords.ro
 ```
+
+Nu trece la pasul 5 până când comanda de mai sus nu returnează IP-ul
+serverului — Let's Encrypt nu poate emite certificatul altfel.
 
 ---
 
@@ -68,7 +74,7 @@ nano .env
 Completează:
 
 ```env
-DOMAIN=api.domeniul-tau.ro
+DOMAIN=api.carrecords.ro
 POSTGRES_USER=carrecords
 POSTGRES_DB=carrecords
 POSTGRES_PASSWORD=<rezultatul din: openssl rand -hex 24>
@@ -95,7 +101,7 @@ Caddy obține automat certificatul HTTPS de la Let's Encrypt.
 
 Verifică:
 ```bash
-curl https://api.domeniul-tau.ro/health
+curl https://api.carrecords.ro/health
 # {"status":"ok","version":"1.0.15"}
 ```
 
@@ -127,8 +133,8 @@ Pe PC-ul tău, indică adresa serverului la compilare:
 ```bash
 cd frontend/car_manager
 
-flutter build apk --release --dart-define=API_URL=https://api.domeniul-tau.ro
-flutter build windows --release --dart-define=API_URL=https://api.domeniul-tau.ro
+flutter build apk --release --dart-define=API_URL=https://api.carrecords.ro
+flutter build windows --release --dart-define=API_URL=https://api.carrecords.ro
 ```
 
 Fără `--dart-define`, aplicația se comportă ca înainte: caută backend-ul în
