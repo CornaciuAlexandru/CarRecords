@@ -9,13 +9,14 @@ PC-ul tău să fie pornit.
 
 | | Detaliu | Cost |
 |---|---|---|
-| **VPS** | Hetzner **CX22** (2 vCPU, 4 GB RAM, 40 GB SSD), Ubuntu 24.04 | ~4,5 €/lună |
-| **Domeniu** | `carrecords.ro` — API-ul va sta pe `api.carrecords.ro` | ~13 €/an |
+| **VPS** | Contabo **Cloud VPS** (min. 4 GB RAM), Ubuntu 24.04, locație Germania | ~5–7 €/lună |
+| **Domeniu** | `carrecords.ro` — API-ul va sta pe `api.carrecords.ro` | 8,99 €/an |
 
-> CX22 e mai mult decât suficient: OCR-ul cu Tesseract e partea cea mai
-> solicitantă, dar rulează doar câteva secunde per document scanat.
-> Alege locația **Nürnberg** sau **Falkenstein** (Germania) — latență bună
-> din România și date în UE, ceea ce simplifică partea de GDPR.
+> Instrucțiunile funcționează pe orice VPS cu Ubuntu și acces root
+> (Contabo, Hetzner, DigitalOcean, OVH, ROMARG…). Singurele cerințe reale:
+> minimum 2 GB RAM (OCR-ul cu Tesseract e partea solicitantă), IP public
+> și locație în UE — datele personale rămân astfel sub jurisdicția GDPR
+> fără formalități suplimentare.
 
 ---
 
