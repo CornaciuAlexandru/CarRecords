@@ -5,10 +5,14 @@ from pathlib import Path
 
 import pytest
 
-# Baza de date de test: fisier temporar, sters dupa rulare.
+# Baza de date de test. Implicit un fisier SQLite temporar, sters dupa rulare.
+# Daca se furnizeaza TEST_DATABASE_URL, testele ruleaza pe acea baza — util
+# pentru a verifica aceleasi teste pe PostgreSQL, ca in productie:
+#   TEST_DATABASE_URL=postgresql+psycopg2://user:parola@host:5432/db pytest
 # Trebuie setat INAINTE de importul aplicatiei.
+_EXTERNAL_DB = os.environ.get("TEST_DATABASE_URL")
 _TMP_DB = Path(tempfile.gettempdir()) / "carrecords_test.db"
-os.environ["DATABASE_URL"] = f"sqlite:///{_TMP_DB.as_posix()}"
+os.environ["DATABASE_URL"] = _EXTERNAL_DB or f"sqlite:///{_TMP_DB.as_posix()}"
 
 from fastapi.testclient import TestClient  # noqa: E402
 from app.main import app                    # noqa: E402
@@ -18,16 +22,23 @@ from app.models.user import User            # noqa: E402
 
 @pytest.fixture(scope="session", autouse=True)
 def _clean_db():
-    """Sterge baza de test inainte si dupa intreaga sesiune."""
-    if _TMP_DB.exists():
-        _TMP_DB.unlink()
-    yield
-    engine.dispose()
-    if _TMP_DB.exists():
-        try:
+    """Porneste de la o baza de date goala si curata dupa rulare."""
+    if _EXTERNAL_DB:
+        # Baza externa (ex. PostgreSQL): golim schema, nu stergem fisiere
+        Base.metadata.drop_all(bind=engine)
+        yield
+        Base.metadata.drop_all(bind=engine)
+        engine.dispose()
+    else:
+        if _TMP_DB.exists():
             _TMP_DB.unlink()
-        except PermissionError:
-            pass
+        yield
+        engine.dispose()
+        if _TMP_DB.exists():
+            try:
+                _TMP_DB.unlink()
+            except PermissionError:
+                pass
 
 
 @pytest.fixture(scope="session")
