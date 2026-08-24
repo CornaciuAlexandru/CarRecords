@@ -7,6 +7,7 @@ import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/status_badge.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/widgets/ad_banner.dart';
 
 final insuranceFutureProvider =
     FutureProvider.family<List<InsurancePolicy>, String>(
@@ -20,6 +21,7 @@ class InsuranceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(insuranceFutureProvider(carId));
     return Scaffold(
+      bottomNavigationBar: const AdBanner(),
       appBar: AppBar(title: Text(tr(context).insurance)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/insurance/add'),
@@ -30,7 +32,7 @@ class InsuranceScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('$e'))),
         data: (policies) => policies.isEmpty
             ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.shield_outlined, size: 64, color: Colors.grey[300]),
@@ -85,7 +87,7 @@ class _InsuranceCard extends StatelessWidget {
       onChanged();
     } catch (e) {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('$e')), backgroundColor: AppColors.danger),
       );
     }
   }
@@ -137,7 +139,7 @@ class _InsuranceCard extends StatelessWidget {
             _row(Icons.calendar_today, tr(context).validFrom, fmt.format(policy.validFrom)),
             _row(Icons.event, tr(context).expires, fmt.format(policy.validUntil)),
             if (!policy.isExpired)
-              _row(Icons.timelapse, tr(context).daysLeft, '${policy.daysLeft} zile',
+              _row(Icons.timelapse, tr(context).daysLeft, tr(context).daysSuffix(policy.daysLeft),
                   color: policy.daysLeft < 14 ? AppColors.danger : null),
             if (policy.policyNumber != null) _row(Icons.confirmation_number, tr(context).policyNumber, policy.policyNumber!),
             if (policy.premiumAmount != null) _row(Icons.payments_outlined, tr(context).premium, '${policy.premiumAmount} ${policy.currency}'),

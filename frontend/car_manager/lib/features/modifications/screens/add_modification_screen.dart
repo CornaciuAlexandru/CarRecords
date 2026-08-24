@@ -9,6 +9,7 @@ import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
 import 'modifications_screen.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/services/ads_service.dart';
 
 class AddModificationScreen extends ConsumerStatefulWidget {
   final String carId;
@@ -89,10 +90,12 @@ class _AddModificationScreenState extends ConsumerState<AddModificationScreen> {
           backgroundColor: AppColors.success,
         ));
         context.pop();
+        // Ocazional, o reclama pe tot ecranul (nu la fiecare salvare)
+        AdsService.instance.onUserAction();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);

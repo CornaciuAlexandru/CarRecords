@@ -6,6 +6,7 @@ import '../../../core/models/documents.dart';
 import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/widgets/ad_banner.dart';
 
 final maintenanceFutureProvider =
     FutureProvider.family<List<MaintenanceRecord>, String>((ref, carId) =>
@@ -39,6 +40,7 @@ class MaintenanceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(maintenanceFutureProvider(carId));
     return Scaffold(
+      bottomNavigationBar: const AdBanner(),
       appBar: AppBar(title: Text(tr(context).maintenance)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/maintenance/add'),
@@ -47,7 +49,7 @@ class MaintenanceScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('$e'))),
         data: (records) => records.isEmpty
             ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.build_outlined, size: 64, color: Colors.grey[300]),
@@ -98,7 +100,7 @@ class _MaintenanceCard extends StatelessWidget {
       onChanged();
     } catch (e) {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('$e')), backgroundColor: AppColors.danger),
       );
     }
   }

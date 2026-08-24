@@ -1,8 +1,8 @@
 {
-  "version": "1.0.18",
+  "version": "1.0.19",
   "min_version": "1.0.0",
-  "changelog": "Traducere completa a aplicatiei in 7 limbi",
-  "installer_filename": "CarRecords_Setup_v1.0.18.exe",
+  "changelog": "Reclame AdMob cu consimtamant GDPR + pachet MSIX pentru Microsoft Store",
+  "installer_filename": "CarRecords_Setup_v1.0.19.exe",
   "force_update": false,
-  "sha256": "a1efb1aa98756d37dcceba520d5f9ad73bd5785e64fdc01d4958830dae09e52c"
+  "sha256": "d7ce166cf1e76e23c6f3ce1e05d7b492abb13a6f8982edf926d36dca5b8dd8c2"
 }

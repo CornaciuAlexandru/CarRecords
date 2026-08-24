@@ -45,7 +45,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         data: (user) { if (user != null) context.go('/dashboard'); },
         error: (e, _) => ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(parseError(e)),
+            content: Text(parseError(context, e)),
             backgroundColor: AppColors.danger,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

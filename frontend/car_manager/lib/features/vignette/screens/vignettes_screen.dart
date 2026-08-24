@@ -7,6 +7,7 @@ import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/status_badge.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/widgets/ad_banner.dart';
 
 final vignettesFutureProvider =
     FutureProvider.family<List<Vignette>, String>((ref, carId) =>
@@ -20,6 +21,7 @@ class VignettesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(vignettesFutureProvider(carId));
     return Scaffold(
+      bottomNavigationBar: const AdBanner(),
       appBar: AppBar(title: Text(tr(context).vignettes)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/vignette/add'),
@@ -30,7 +32,7 @@ class VignettesScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('$e'))),
         data: (vignettes) => vignettes.isEmpty
             ? _empty(context)
             : ListView.separated(
@@ -89,7 +91,7 @@ class _VignetteCard extends ConsumerWidget {
       onChanged();
     } catch (e) {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('$e')), backgroundColor: AppColors.danger),
       );
     }
   }
@@ -137,7 +139,7 @@ class _VignetteCard extends ConsumerWidget {
             _row(Icons.calendar_today, tr(context).validFrom, fmt.format(vignette.validFrom)),
             _row(Icons.event, tr(context).expires, fmt.format(vignette.validUntil)),
             if (!vignette.isExpired)
-              _row(Icons.timelapse, tr(context).daysLeft, '${vignette.daysLeft} zile',
+              _row(Icons.timelapse, tr(context).daysLeft, tr(context).daysSuffix(vignette.daysLeft),
                   color: vignette.daysLeft < 7 ? AppColors.danger : null),
             if (vignette.issuerCompany != null) _row(Icons.business, tr(context).issuer, vignette.issuerCompany!),
             if (vignette.price != null) _row(Icons.payments_outlined, tr(context).price, '${vignette.price} ${vignette.currency}'),

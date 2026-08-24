@@ -408,5 +408,54 @@
   "hintCity": "Bucarest",
   "hintAddress": "Via Esempio 1, Bucarest",
   "hintPerformedBy": "Officina / persona",
-  "hintInterventionDetails": "Dettagli dell'intervento..."
+  "errNoConnection": "Impossibile raggiungere il server. Controlla la connessione.",
+  "errServerDown": "Server non disponibile. Verifica che il backend sia attivo.",
+  "errAccountDisabled": "Il tuo account è stato disattivato. Contatta l'assistenza.",
+  "errBadCredentials": "Email o password errati.",
+  "errInvalidData": "Dati non validi. Controlla i campi.",
+  "errForbidden": "Non hai i permessi per questa azione.",
+  "errNotFound": "Risorsa non trovata.",
+  "errServer": "Errore del server. Riprova.",
+  "errWithCode": "Si è verificato un errore (codice {name}).",
+  "@errWithCode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errUnexpected": "Si è verificato un errore imprevisto.",
+  "updateAvailable": "Aggiornamento disponibile",
+  "updateRequired": "Aggiornamento obbligatorio",
+  "newVersion": "Nuova versione: ",
+  "whatsNew": "Novità:",
+  "updateNow": "Aggiorna ora",
+  "later": "Più tardi",
+  "downloadingUpdate": "Download dell'aggiornamento",
+  "updateMandatory": "Questa versione non è più supportata. L'aggiornamento è obbligatorio.",
+  "downloadFailed": "Download non riuscito. Controlla la connessione e riprova.",
+  "integrityFailed": "Verifica di integrità non riuscita — il file è danneggiato o modificato. Installazione annullata.",
+  "updateError": "Errore di aggiornamento",
+  "fieldsAutoFilled": "I campi sono stati compilati automaticamente. Salvare o controllare prima?",
+  "daysSuffix": "{count} giorni",
+  "@daysSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hintInterventionDetails": "Dettagli dell'intervento...",
+  "scanDocument": "Scansiona documento",
+  "photographDocument": "Fotografa il documento",
+  "cameraOrGallery": "Fotocamera / Galleria",
+  "selectImage": "Seleziona immagine",
+  "selectExistingPhoto": "Scegli una foto esistente",
+  "selectImageSource": "Scegli la sorgente",
+  "scanHintCamera": "Fotografa o scegli il documento per la compilazione automatica.",
+  "scanHintGallery": "Seleziona un'immagine del documento per compilare i campi.",
+  "processing": "Elaborazione...",
+  "checkingKnownServer": "Verifica del server noto...",
+  "privacyOptions": "Opzioni sulla privacy",
+  "privacyOptionsHint": "Gestisci la scelta sugli annunci personalizzati"
 }

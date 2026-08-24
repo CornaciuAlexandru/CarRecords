@@ -10,6 +10,7 @@ import '../../notifications/screens/notifications_screen.dart';
 import '../../admin/screens/admin_screen.dart';
 import '../../notifications/providers/notifications_provider.dart';
 import '../../../core/providers/locale_provider.dart';
+import '../../../core/services/ads_service.dart';
 import '../../../core/utils/l10n.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -272,6 +273,27 @@ class ProfilePage extends ConsumerWidget {
               trailing: const Icon(Icons.arrow_forward_ios, size: 15),
               onTap: () => _showLanguagePicker(context, ref, t),
             ),
+          ),
+          // Optiuni de confidentialitate pentru reclame (cerinta GDPR).
+          // Apare doar pe platformele cu reclame si doar daca Google
+          // considera ca utilizatorul trebuie sa poata reveni asupra alegerii.
+          FutureBuilder<bool>(
+            future: AdsService.instance.privacyOptionsRequired,
+            builder: (context, snap) {
+              if (snap.data != true) return const SizedBox.shrink();
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined,
+                      color: AppColors.primary),
+                  title: Text(tr(context).privacyOptions),
+                  subtitle: Text(tr(context).privacyOptionsHint,
+                      style: const TextStyle(fontSize: 12)),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 15),
+                  onTap: () => AdsService.instance.showPrivacyOptions(),
+                ),
+              );
+            },
           ),
           ListTile(leading: const Icon(Icons.logout, color: AppColors.danger),
               title: Text(tr(context).logout, style: const TextStyle(color: AppColors.danger)),

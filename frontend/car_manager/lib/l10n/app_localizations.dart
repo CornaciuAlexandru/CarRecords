@@ -1638,11 +1638,221 @@ abstract class AppLocalizations {
   /// **'Garage / person'**
   String get hintPerformedBy;
 
+  /// No description provided for @errNoConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot reach the server. Check your connection.'**
+  String get errNoConnection;
+
+  /// No description provided for @errServerDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Server unavailable. Make sure the backend is running.'**
+  String get errServerDown;
+
+  /// No description provided for @errAccountDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been disabled. Please contact support.'**
+  String get errAccountDisabled;
+
+  /// No description provided for @errBadCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect email or password.'**
+  String get errBadCredentials;
+
+  /// No description provided for @errInvalidData.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid data. Please check the fields.'**
+  String get errInvalidData;
+
+  /// No description provided for @errForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission for this action.'**
+  String get errForbidden;
+
+  /// No description provided for @errNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource not found.'**
+  String get errNotFound;
+
+  /// No description provided for @errServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error. Please try again.'**
+  String get errServer;
+
+  /// No description provided for @errWithCode.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred (code {name}).'**
+  String errWithCode(String name);
+
+  /// No description provided for @errUnexpected.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get errUnexpected;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available'**
+  String get updateAvailable;
+
+  /// No description provided for @updateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Update required'**
+  String get updateRequired;
+
+  /// No description provided for @newVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'New version: '**
+  String get newVersion;
+
+  /// No description provided for @whatsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new:'**
+  String get whatsNew;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update now'**
+  String get updateNow;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @downloadingUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading the update'**
+  String get downloadingUpdate;
+
+  /// No description provided for @updateMandatory.
+  ///
+  /// In en, this message translates to:
+  /// **'This version is no longer supported. Updating is required.'**
+  String get updateMandatory;
+
+  /// No description provided for @downloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed. Check your connection and try again.'**
+  String get downloadFailed;
+
+  /// No description provided for @integrityFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Integrity check failed — the downloaded file is corrupt or modified. Installation cancelled.'**
+  String get integrityFailed;
+
+  /// No description provided for @updateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Update error'**
+  String get updateError;
+
+  /// No description provided for @fieldsAutoFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'The fields were filled automatically. Save now or review first?'**
+  String get fieldsAutoFilled;
+
+  /// No description provided for @daysSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String daysSuffix(int count);
+
   /// No description provided for @hintInterventionDetails.
   ///
   /// In en, this message translates to:
   /// **'Details of the work...'**
   String get hintInterventionDetails;
+
+  /// No description provided for @scanDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan document'**
+  String get scanDocument;
+
+  /// No description provided for @photographDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Photograph the document'**
+  String get photographDocument;
+
+  /// No description provided for @cameraOrGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera / Gallery'**
+  String get cameraOrGallery;
+
+  /// No description provided for @selectImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select image'**
+  String get selectImage;
+
+  /// No description provided for @selectExistingPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an existing photo'**
+  String get selectExistingPhoto;
+
+  /// No description provided for @selectImageSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose image source'**
+  String get selectImageSource;
+
+  /// No description provided for @scanHintCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo or pick one to fill the fields automatically.'**
+  String get scanHintCamera;
+
+  /// No description provided for @scanHintGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an image of the document to fill the fields automatically.'**
+  String get scanHintGallery;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get processing;
+
+  /// No description provided for @checkingKnownServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking the known server...'**
+  String get checkingKnownServer;
+
+  /// No description provided for @privacyOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy options'**
+  String get privacyOptions;
+
+  /// No description provided for @privacyOptionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your choice about personalised ads'**
+  String get privacyOptionsHint;
 }
 
 class _AppLocalizationsDelegate

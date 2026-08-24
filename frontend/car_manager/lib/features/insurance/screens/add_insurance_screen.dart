@@ -11,6 +11,7 @@ import '../../../shared/widgets/cm_button.dart';
 import '../../../shared/widgets/scan_card.dart';
 import 'insurance_screen.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/services/ads_service.dart';
 
 class AddInsuranceScreen extends ConsumerStatefulWidget {
   final String carId;
@@ -109,7 +110,7 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
       );
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).scanFailed('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).scanFailed('$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isScanning = false);
@@ -159,10 +160,12 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
             content: Text(_isEditing ? tr(context).insuranceUpdated : tr(context).insuranceAdded),
             backgroundColor: AppColors.success));
         context.pop();
+        // Ocazional, o reclama pe tot ecranul (nu la fiecare salvare)
+        AdsService.instance.onUserAction();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger));
+          content: Text(tr(context).errorWith('$e')), backgroundColor: AppColors.danger));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

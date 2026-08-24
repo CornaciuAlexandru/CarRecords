@@ -111,7 +111,8 @@ class _StartupWrapperState extends ConsumerState<StartupWrapper>
   }
 
   Future<void> _checkUpdate() async {
-    if (!Platform.isWindows) return;
+    // In pachetul pentru Microsoft Store actualizarile vin prin magazin.
+    if (!Platform.isWindows || kStoreBuild) return;
     final info = await UpdateService().checkForUpdate();
     if (info == null || !info.updateAvailable) return;
     if (!mounted) return;

@@ -408,5 +408,54 @@
   "hintCity": "Bukarest",
   "hintAddress": "Beispielstr. 1, Bukarest",
   "hintPerformedBy": "Werkstatt / Person",
-  "hintInterventionDetails": "Details der Arbeiten..."
+  "errNoConnection": "Server nicht erreichbar. Prüfe deine Verbindung.",
+  "errServerDown": "Server nicht verfügbar. Läuft das Backend?",
+  "errAccountDisabled": "Dein Konto wurde deaktiviert. Bitte den Support kontaktieren.",
+  "errBadCredentials": "E-Mail oder Passwort falsch.",
+  "errInvalidData": "Ungültige Daten. Bitte Felder prüfen.",
+  "errForbidden": "Du hast keine Berechtigung für diese Aktion.",
+  "errNotFound": "Ressource nicht gefunden.",
+  "errServer": "Serverfehler. Bitte erneut versuchen.",
+  "errWithCode": "Ein Fehler ist aufgetreten (Code {name}).",
+  "@errWithCode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errUnexpected": "Ein unerwarteter Fehler ist aufgetreten.",
+  "updateAvailable": "Update verfügbar",
+  "updateRequired": "Update erforderlich",
+  "newVersion": "Neue Version: ",
+  "whatsNew": "Neuerungen:",
+  "updateNow": "Jetzt aktualisieren",
+  "later": "Später",
+  "downloadingUpdate": "Update wird heruntergeladen",
+  "updateMandatory": "Diese Version wird nicht mehr unterstützt. Ein Update ist erforderlich.",
+  "downloadFailed": "Download fehlgeschlagen. Prüfe die Verbindung und versuche es erneut.",
+  "integrityFailed": "Integritätsprüfung fehlgeschlagen — die Datei ist beschädigt oder verändert. Installation abgebrochen.",
+  "updateError": "Fehler beim Update",
+  "fieldsAutoFilled": "Die Felder wurden automatisch ausgefüllt. Jetzt speichern oder zuerst prüfen?",
+  "daysSuffix": "{count} Tage",
+  "@daysSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hintInterventionDetails": "Details der Arbeiten...",
+  "scanDocument": "Dokument scannen",
+  "photographDocument": "Dokument fotografieren",
+  "cameraOrGallery": "Kamera / Galerie",
+  "selectImage": "Bild auswählen",
+  "selectExistingPhoto": "Vorhandenes Foto wählen",
+  "selectImageSource": "Bildquelle wählen",
+  "scanHintCamera": "Fotografiere oder wähle das Dokument für automatisches Ausfüllen.",
+  "scanHintGallery": "Wähle ein Bild des Dokuments für automatisches Ausfüllen.",
+  "processing": "Wird verarbeitet...",
+  "checkingKnownServer": "Bekannter Server wird geprüft...",
+  "privacyOptions": "Datenschutz-Optionen",
+  "privacyOptionsHint": "Auswahl zu personalisierter Werbung verwalten"
 }

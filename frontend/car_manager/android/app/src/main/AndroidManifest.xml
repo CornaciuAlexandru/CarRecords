@@ -40,6 +40,15 @@
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
             android:value="false" />
+
+        <!-- AdMob. Valoarea de mai jos este ID-ul de TEST oficial Google.
+             INAINTE DE PUBLICARE inlocuieste-l cu App ID-ul real din contul
+             tau AdMob (vezi docs/reclame.md). Daca ramane cel de test,
+             reclamele nu vor genera venit; daca pui unul gresit, aplicatia
+             se inchide la pornire. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

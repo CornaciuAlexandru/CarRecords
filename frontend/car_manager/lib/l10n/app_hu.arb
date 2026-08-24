@@ -408,5 +408,54 @@
   "hintCity": "Bukarest",
   "hintAddress": "Példa utca 1., Bukarest",
   "hintPerformedBy": "Szerviz / személy",
-  "hintInterventionDetails": "A beavatkozás részletei..."
+  "errNoConnection": "A szerver nem érhető el. Ellenőrizd a kapcsolatot.",
+  "errServerDown": "A szerver nem elérhető. Fut a háttérszolgáltatás?",
+  "errAccountDisabled": "A fiókod le lett tiltva. Vedd fel a kapcsolatot a támogatással.",
+  "errBadCredentials": "Hibás e-mail vagy jelszó.",
+  "errInvalidData": "Érvénytelen adatok. Ellenőrizd a mezőket.",
+  "errForbidden": "Nincs jogosultságod ehhez a művelethez.",
+  "errNotFound": "Az erőforrás nem található.",
+  "errServer": "Szerverhiba. Próbáld újra.",
+  "errWithCode": "Hiba történt ({name} kód).",
+  "@errWithCode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errUnexpected": "Váratlan hiba történt.",
+  "updateAvailable": "Frissítés elérhető",
+  "updateRequired": "Kötelező frissítés",
+  "newVersion": "Új verzió: ",
+  "whatsNew": "Újdonságok:",
+  "updateNow": "Frissítés most",
+  "later": "Később",
+  "downloadingUpdate": "Frissítés letöltése",
+  "updateMandatory": "Ez a verzió már nem támogatott. A frissítés kötelező.",
+  "downloadFailed": "A letöltés sikertelen. Ellenőrizd a kapcsolatot és próbáld újra.",
+  "integrityFailed": "Az integritás-ellenőrzés sikertelen — a fájl sérült vagy módosított. A telepítés megszakadt.",
+  "updateError": "Frissítési hiba",
+  "fieldsAutoFilled": "A mezők automatikusan kitöltve. Mented most, vagy előbb ellenőrzöd?",
+  "daysSuffix": "{count} nap",
+  "@daysSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hintInterventionDetails": "A beavatkozás részletei...",
+  "scanDocument": "Dokumentum beolvasása",
+  "photographDocument": "Fényképezd le a dokumentumot",
+  "cameraOrGallery": "Kamera / Galéria",
+  "selectImage": "Kép kiválasztása",
+  "selectExistingPhoto": "Válassz meglévő fotót",
+  "selectImageSource": "Válassz képforrást",
+  "scanHintCamera": "Fényképezd le vagy válaszd ki a dokumentumot az automatikus kitöltéshez.",
+  "scanHintGallery": "Válassz egy képet a dokumentumról a mezők automatikus kitöltéséhez.",
+  "processing": "Feldolgozás...",
+  "checkingKnownServer": "Ismert szerver ellenőrzése...",
+  "privacyOptions": "Adatvédelmi beállítások",
+  "privacyOptionsHint": "Személyre szabott hirdetések beállítása"
 }

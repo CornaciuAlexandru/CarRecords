@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_theme.dart';
 import 'cm_button.dart';
+import '../../core/utils/l10n.dart';
 
 /// Widget reutilizabil pentru scanare documente cu OCR.
 /// Pe Windows/desktop: deschide file picker (galerie).
@@ -40,14 +41,14 @@ class ScanCard extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Selectează sursa imaginii',
+                Text(tr(context).selectImageSource,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 const SizedBox(height: 16),
                 ListTile(
                   leading: const CircleAvatar(
                       backgroundColor: AppColors.primary,
                       child: Icon(Icons.camera_alt, color: Colors.white)),
-                  title: const Text('Fotografiază documentul'),
+                  title: Text(tr(context).photographDocument),
                   subtitle: const Text('Deschide camera'),
                   onTap: () => Navigator.pop(context, ImageSource.camera),
                 ),
@@ -56,7 +57,7 @@ class ScanCard extends StatelessWidget {
                       backgroundColor: Colors.teal,
                       child: Icon(Icons.photo_library, color: Colors.white)),
                   title: const Text('Alege din galerie'),
-                  subtitle: const Text('Selectează o fotografie existentă'),
+                  subtitle: Text(tr(context).selectExistingPhoto),
                   onTap: () => Navigator.pop(context, ImageSource.gallery),
                 ),
               ],
@@ -81,17 +82,17 @@ class ScanCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(children: [
+            Row(children: [
               Icon(Icons.document_scanner, color: AppColors.primary),
               SizedBox(width: 8),
-              Text('Scanează documentul',
+              Text(tr(context).scanDocument,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
             ]),
             const SizedBox(height: 6),
             Text(
               isDesktop
-                  ? 'Selectați o imagine a documentului pentru completare automată a câmpurilor.'
-                  : 'Fotografiați sau selectați documentul pentru completare automată.',
+                  ? tr(context).scanHintGallery
+                  : tr(context).scanHintCamera,
               style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
             ),
             if (scannedImage != null) ...[
@@ -105,8 +106,8 @@ class ScanCard extends StatelessWidget {
             const SizedBox(height: 10),
             CmButton(
               label: isScanning
-                  ? 'Se procesează...'
-                  : (isDesktop ? 'Selectează imagine' : 'Fotografiază / Galerie'),
+                  ? tr(context).processing
+                  : (isDesktop ? tr(context).selectImage : tr(context).cameraOrGallery),
               isLoading: isScanning,
               icon: isDesktop ? Icons.folder_open_outlined : Icons.camera_alt_outlined,
               outlined: true,

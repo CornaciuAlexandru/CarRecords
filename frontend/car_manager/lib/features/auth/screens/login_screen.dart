@@ -45,7 +45,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _showError(Object e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(parseError(e)),
+        content: Text(parseError(context, e)),
         backgroundColor: AppColors.danger,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

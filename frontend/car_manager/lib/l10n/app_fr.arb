@@ -408,5 +408,54 @@
   "hintCity": "Bucarest",
   "hintAddress": "1 rue Exemple, Bucarest",
   "hintPerformedBy": "Garage / personne",
-  "hintInterventionDetails": "Détails de l'intervention..."
+  "errNoConnection": "Impossible de joindre le serveur. Vérifie ta connexion.",
+  "errServerDown": "Serveur indisponible. Vérifie que le backend fonctionne.",
+  "errAccountDisabled": "Ton compte a été désactivé. Contacte le support.",
+  "errBadCredentials": "E-mail ou mot de passe incorrect.",
+  "errInvalidData": "Données invalides. Vérifie les champs.",
+  "errForbidden": "Tu n'as pas la permission pour cette action.",
+  "errNotFound": "Ressource introuvable.",
+  "errServer": "Erreur du serveur. Réessaie.",
+  "errWithCode": "Une erreur s'est produite (code {name}).",
+  "@errWithCode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errUnexpected": "Une erreur inattendue s'est produite.",
+  "updateAvailable": "Mise à jour disponible",
+  "updateRequired": "Mise à jour obligatoire",
+  "newVersion": "Nouvelle version : ",
+  "whatsNew": "Nouveautés :",
+  "updateNow": "Mettre à jour",
+  "later": "Plus tard",
+  "downloadingUpdate": "Téléchargement de la mise à jour",
+  "updateMandatory": "Cette version n'est plus prise en charge. La mise à jour est obligatoire.",
+  "downloadFailed": "Échec du téléchargement. Vérifie ta connexion et réessaie.",
+  "integrityFailed": "Échec de la vérification d'intégrité — le fichier est corrompu ou modifié. Installation annulée.",
+  "updateError": "Erreur de mise à jour",
+  "fieldsAutoFilled": "Les champs ont été remplis automatiquement. Enregistrer ou vérifier d'abord ?",
+  "daysSuffix": "{count} jours",
+  "@daysSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hintInterventionDetails": "Détails de l'intervention...",
+  "scanDocument": "Scanner le document",
+  "photographDocument": "Photographier le document",
+  "cameraOrGallery": "Appareil photo / Galerie",
+  "selectImage": "Choisir une image",
+  "selectExistingPhoto": "Choisir une photo existante",
+  "selectImageSource": "Choisir la source de l'image",
+  "scanHintCamera": "Prends une photo ou choisis le document pour un remplissage automatique.",
+  "scanHintGallery": "Sélectionne une image du document pour remplir les champs automatiquement.",
+  "processing": "Traitement...",
+  "checkingKnownServer": "Vérification du serveur connu...",
+  "privacyOptions": "Options de confidentialité",
+  "privacyOptionsHint": "Gérer ton choix sur les publicités personnalisées"
 }

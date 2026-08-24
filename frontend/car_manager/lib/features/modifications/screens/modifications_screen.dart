@@ -9,6 +9,7 @@ import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/widgets/ad_banner.dart';
 
 final modificationsFutureProvider =
     FutureProvider.family<List<CarModification>, String>(
@@ -39,6 +40,7 @@ class ModificationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(modificationsFutureProvider(carId));
     return Scaffold(
+      bottomNavigationBar: const AdBanner(),
       appBar: AppBar(title: Text(tr(context).modifications)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/cars/$carId/modifications/add'),
@@ -47,7 +49,7 @@ class ModificationsScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(tr(context).errorWith('\$e'))),
+        error: (e, _) => Center(child: Text(tr(context).errorWith('$e'))),
         data: (mods) => mods.isEmpty
             ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(Icons.tune_outlined, size: 64, color: Colors.grey[300]),
@@ -119,7 +121,7 @@ class _ModCardState extends State<_ModCard> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(tr(context).errorWith('\$e')),
+              content: Text(tr(context).errorWith('$e')),
               backgroundColor: AppColors.danger),
         );
       }
@@ -141,7 +143,7 @@ class _ModCardState extends State<_ModCard> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(tr(context).uploadError('\$e')),
+              content: Text(tr(context).uploadError('$e')),
               backgroundColor: AppColors.danger),
         );
       }

@@ -822,5 +822,123 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintPerformedBy => 'Garage / person';
 
   @override
+  String get errNoConnection =>
+      'Cannot reach the server. Check your connection.';
+
+  @override
+  String get errServerDown =>
+      'Server unavailable. Make sure the backend is running.';
+
+  @override
+  String get errAccountDisabled =>
+      'Your account has been disabled. Please contact support.';
+
+  @override
+  String get errBadCredentials => 'Incorrect email or password.';
+
+  @override
+  String get errInvalidData => 'Invalid data. Please check the fields.';
+
+  @override
+  String get errForbidden => 'You do not have permission for this action.';
+
+  @override
+  String get errNotFound => 'Resource not found.';
+
+  @override
+  String get errServer => 'Server error. Please try again.';
+
+  @override
+  String errWithCode(String name) {
+    return 'An error occurred (code $name).';
+  }
+
+  @override
+  String get errUnexpected => 'An unexpected error occurred.';
+
+  @override
+  String get updateAvailable => 'Update available';
+
+  @override
+  String get updateRequired => 'Update required';
+
+  @override
+  String get newVersion => 'New version: ';
+
+  @override
+  String get whatsNew => 'What\'s new:';
+
+  @override
+  String get updateNow => 'Update now';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get downloadingUpdate => 'Downloading the update';
+
+  @override
+  String get updateMandatory =>
+      'This version is no longer supported. Updating is required.';
+
+  @override
+  String get downloadFailed =>
+      'Download failed. Check your connection and try again.';
+
+  @override
+  String get integrityFailed =>
+      'Integrity check failed — the downloaded file is corrupt or modified. Installation cancelled.';
+
+  @override
+  String get updateError => 'Update error';
+
+  @override
+  String get fieldsAutoFilled =>
+      'The fields were filled automatically. Save now or review first?';
+
+  @override
+  String daysSuffix(int count) {
+    return '$count days';
+  }
+
+  @override
   String get hintInterventionDetails => 'Details of the work...';
+
+  @override
+  String get scanDocument => 'Scan document';
+
+  @override
+  String get photographDocument => 'Photograph the document';
+
+  @override
+  String get cameraOrGallery => 'Camera / Gallery';
+
+  @override
+  String get selectImage => 'Select image';
+
+  @override
+  String get selectExistingPhoto => 'Choose an existing photo';
+
+  @override
+  String get selectImageSource => 'Choose image source';
+
+  @override
+  String get scanHintCamera =>
+      'Take a photo or pick one to fill the fields automatically.';
+
+  @override
+  String get scanHintGallery =>
+      'Select an image of the document to fill the fields automatically.';
+
+  @override
+  String get processing => 'Processing...';
+
+  @override
+  String get checkingKnownServer => 'Checking the known server...';
+
+  @override
+  String get privacyOptions => 'Privacy options';
+
+  @override
+  String get privacyOptionsHint => 'Manage your choice about personalised ads';
 }

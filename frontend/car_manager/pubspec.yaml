@@ -1,7 +1,7 @@
 name: car_manager
 description: CarRecords - Aplicatie pentru gestionarea documentelor si datelor auto
 publish_to: 'none'
-version: 1.0.18+1018
+version: 1.0.19+1019
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -27,6 +27,9 @@ dependencies:
   # Verificare integritate update (SHA-256)
   crypto: ^3.0.3
 
+  # Reclame (doar Android/iOS — pe Windows pachetul nu are implementare)
+  google_mobile_ads: ^5.2.0
+
   # Camera & OCR
   image_picker: ^1.1.2
 
@@ -47,6 +50,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  msix: ^3.18.0
 
 # Forteaza versiuni fara Dart Native Assets / JNI (libdatastore_shared_counter.so,
 # libdartjni.so) care cauzeaza crash la pornire pe Android
@@ -61,3 +65,26 @@ flutter:
   assets:
     - assets/images/
     - assets/animations/
+
+# ── Pachet MSIX pentru Microsoft Store ──────────────────────────
+# Construire:  flutter build windows --release && dart run msix:create
+#
+# Valorile publisher/identity de mai jos sunt provizorii. Inainte de
+# publicare, inlocuieste-le cu cele din Partner Center (Product identity):
+#   msix_version         ramane sincronizat cu versiunea aplicatiei
+#   identity_name        ex. 12345Nume.CarRecords
+#   publisher            ex. CN=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+#   publisher_display_name  numele contului de dezvoltator
+# Vezi docs/microsoft-store.md pentru pasii completi.
+msix_config:
+  display_name: CarRecords
+  publisher_display_name: CarRecords
+  identity_name: CarRecords.CarRecords
+  publisher: CN=CarRecords
+  msix_version: 1.0.19.0
+  logo_path: assets/images/logo_192.png
+  capabilities: internetClient
+  # Store-ul gestioneaza actualizarile — auto-updater-ul propriu se
+  # dezactiveaza in pachetul MSIX (vezi AppConfig.selfUpdateEnabled).
+  store: true
+  architecture: x64

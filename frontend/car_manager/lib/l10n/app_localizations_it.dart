@@ -821,5 +821,124 @@ class AppLocalizationsIt extends AppLocalizations {
   String get hintPerformedBy => 'Officina / persona';
 
   @override
+  String get errNoConnection =>
+      'Impossibile raggiungere il server. Controlla la connessione.';
+
+  @override
+  String get errServerDown =>
+      'Server non disponibile. Verifica che il backend sia attivo.';
+
+  @override
+  String get errAccountDisabled =>
+      'Il tuo account è stato disattivato. Contatta l\'assistenza.';
+
+  @override
+  String get errBadCredentials => 'Email o password errati.';
+
+  @override
+  String get errInvalidData => 'Dati non validi. Controlla i campi.';
+
+  @override
+  String get errForbidden => 'Non hai i permessi per questa azione.';
+
+  @override
+  String get errNotFound => 'Risorsa non trovata.';
+
+  @override
+  String get errServer => 'Errore del server. Riprova.';
+
+  @override
+  String errWithCode(String name) {
+    return 'Si è verificato un errore (codice $name).';
+  }
+
+  @override
+  String get errUnexpected => 'Si è verificato un errore imprevisto.';
+
+  @override
+  String get updateAvailable => 'Aggiornamento disponibile';
+
+  @override
+  String get updateRequired => 'Aggiornamento obbligatorio';
+
+  @override
+  String get newVersion => 'Nuova versione: ';
+
+  @override
+  String get whatsNew => 'Novità:';
+
+  @override
+  String get updateNow => 'Aggiorna ora';
+
+  @override
+  String get later => 'Più tardi';
+
+  @override
+  String get downloadingUpdate => 'Download dell\'aggiornamento';
+
+  @override
+  String get updateMandatory =>
+      'Questa versione non è più supportata. L\'aggiornamento è obbligatorio.';
+
+  @override
+  String get downloadFailed =>
+      'Download non riuscito. Controlla la connessione e riprova.';
+
+  @override
+  String get integrityFailed =>
+      'Verifica di integrità non riuscita — il file è danneggiato o modificato. Installazione annullata.';
+
+  @override
+  String get updateError => 'Errore di aggiornamento';
+
+  @override
+  String get fieldsAutoFilled =>
+      'I campi sono stati compilati automaticamente. Salvare o controllare prima?';
+
+  @override
+  String daysSuffix(int count) {
+    return '$count giorni';
+  }
+
+  @override
   String get hintInterventionDetails => 'Dettagli dell\'intervento...';
+
+  @override
+  String get scanDocument => 'Scansiona documento';
+
+  @override
+  String get photographDocument => 'Fotografa il documento';
+
+  @override
+  String get cameraOrGallery => 'Fotocamera / Galleria';
+
+  @override
+  String get selectImage => 'Seleziona immagine';
+
+  @override
+  String get selectExistingPhoto => 'Scegli una foto esistente';
+
+  @override
+  String get selectImageSource => 'Scegli la sorgente';
+
+  @override
+  String get scanHintCamera =>
+      'Fotografa o scegli il documento per la compilazione automatica.';
+
+  @override
+  String get scanHintGallery =>
+      'Seleziona un\'immagine del documento per compilare i campi.';
+
+  @override
+  String get processing => 'Elaborazione...';
+
+  @override
+  String get checkingKnownServer => 'Verifica del server noto...';
+
+  @override
+  String get privacyOptions => 'Opzioni sulla privacy';
+
+  @override
+  String get privacyOptionsHint =>
+      'Gestisci la scelta sugli annunci personalizzati';
 }

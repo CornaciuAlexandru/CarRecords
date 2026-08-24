@@ -1,15 +1,18 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
+import 'l10n.dart';
 
-String parseError(Object error) {
+/// Mesaj de eroare prietenos, in limba aleasa de utilizator.
+String parseError(BuildContext context, Object error) {
   if (error is DioException) {
     // Eroare de retea / timeout
     if (error.type == DioExceptionType.connectionTimeout ||
         error.type == DioExceptionType.receiveTimeout ||
         error.type == DioExceptionType.sendTimeout) {
-      return 'Nu se poate conecta la server. Verifică conexiunea.';
+      return tr(context).errNoConnection;
     }
     if (error.type == DioExceptionType.connectionError) {
-      return 'Server indisponibil. Asigură-te că backend-ul rulează.';
+      return tr(context).errServerDown;
     }
 
     // Erori HTTP cu mesaj de la backend
@@ -23,7 +26,7 @@ String parseError(Object error) {
         return detail.toString();
       }
       if (detail.toString().contains('dezactivat')) {
-        return 'Contul tău a fost dezactivat. Contactează suportul.';
+        return tr(context).errAccountDisabled;
       }
       if (detail.toString().contains('Limita')) {
         return detail.toString();
@@ -33,13 +36,13 @@ String parseError(Object error) {
 
     // Fallback pe status code
     return switch (statusCode) {
-      400 => 'Date invalide. Verifică câmpurile completate.',
-      401 => 'Email sau parolă incorectă.',
-      403 => 'Nu ai permisiunea pentru această acțiune.',
-      404 => 'Resursa nu a fost găsită.',
+      400 => tr(context).errInvalidData,
+      401 => tr(context).errBadCredentials,
+      403 => tr(context).errForbidden,
+      404 => tr(context).errNotFound,
       422 => 'Date incomplete sau invalide.',
-      500 => 'Eroare server. Încearcă din nou.',
-      _ => 'A apărut o eroare (cod $statusCode).',
+      500 => tr(context).errServer,
+      _ => tr(context).errWithCode('\$statusCode'),
     };
   }
 
@@ -48,5 +51,5 @@ String parseError(Object error) {
   if (msg.contains('SocketException') || msg.contains('Connection refused')) {
     return 'Nu se poate conecta la server.';
   }
-  return 'A apărut o eroare neașteptată.';
+  return tr(context).errUnexpected;
 }

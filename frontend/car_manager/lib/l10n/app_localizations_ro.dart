@@ -822,5 +822,124 @@ class AppLocalizationsRo extends AppLocalizations {
   String get hintPerformedBy => 'Service / Persoană';
 
   @override
+  String get errNoConnection =>
+      'Nu se poate conecta la server. Verifică conexiunea.';
+
+  @override
+  String get errServerDown =>
+      'Server indisponibil. Asigură-te că backend-ul rulează.';
+
+  @override
+  String get errAccountDisabled =>
+      'Contul tău a fost dezactivat. Contactează suportul.';
+
+  @override
+  String get errBadCredentials => 'Email sau parolă incorectă.';
+
+  @override
+  String get errInvalidData => 'Date invalide. Verifică câmpurile completate.';
+
+  @override
+  String get errForbidden => 'Nu ai permisiunea pentru această acțiune.';
+
+  @override
+  String get errNotFound => 'Resursa nu a fost găsită.';
+
+  @override
+  String get errServer => 'Eroare server. Încearcă din nou.';
+
+  @override
+  String errWithCode(String name) {
+    return 'A apărut o eroare (cod $name).';
+  }
+
+  @override
+  String get errUnexpected => 'A apărut o eroare neașteptată.';
+
+  @override
+  String get updateAvailable => 'Update disponibil';
+
+  @override
+  String get updateRequired => 'Update obligatoriu';
+
+  @override
+  String get newVersion => 'Versiune nouă: ';
+
+  @override
+  String get whatsNew => 'Noutăți:';
+
+  @override
+  String get updateNow => 'Actualizează acum';
+
+  @override
+  String get later => 'Mai târziu';
+
+  @override
+  String get downloadingUpdate => 'Se descarcă update-ul';
+
+  @override
+  String get updateMandatory =>
+      'Această versiune nu mai este suportată. Actualizarea este obligatorie.';
+
+  @override
+  String get downloadFailed =>
+      'Descărcarea a eșuat. Verifică conexiunea și încearcă din nou.';
+
+  @override
+  String get integrityFailed =>
+      'Verificarea integrității a eșuat — fișierul descărcat este corupt sau modificat. Instalarea a fost anulată.';
+
+  @override
+  String get updateError => 'Eroare la actualizare';
+
+  @override
+  String get fieldsAutoFilled =>
+      'Câmpurile au fost completate automat. Salvezi direct sau verifici mai întâi?';
+
+  @override
+  String daysSuffix(int count) {
+    return '$count zile';
+  }
+
+  @override
   String get hintInterventionDetails => 'Detalii intervenție...';
+
+  @override
+  String get scanDocument => 'Scanează documentul';
+
+  @override
+  String get photographDocument => 'Fotografiază documentul';
+
+  @override
+  String get cameraOrGallery => 'Fotografiază / Galerie';
+
+  @override
+  String get selectImage => 'Selectează imagine';
+
+  @override
+  String get selectExistingPhoto => 'Selectează o fotografie existentă';
+
+  @override
+  String get selectImageSource => 'Selectează sursa imaginii';
+
+  @override
+  String get scanHintCamera =>
+      'Fotografiați sau selectați documentul pentru completare automată.';
+
+  @override
+  String get scanHintGallery =>
+      'Selectați o imagine a documentului pentru completare automată a câmpurilor.';
+
+  @override
+  String get processing => 'Se procesează...';
+
+  @override
+  String get checkingKnownServer => 'Se verifică serverul cunoscut...';
+
+  @override
+  String get privacyOptions => 'Opțiuni de confidențialitate';
+
+  @override
+  String get privacyOptionsHint =>
+      'Gestionează alegerea privind reclamele personalizate';
 }

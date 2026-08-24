@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../widgets/car_card.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/widgets/ad_banner.dart';
 
 class CarsScreen extends ConsumerWidget {
   const CarsScreen({super.key});
@@ -19,6 +20,7 @@ class CarsScreen extends ConsumerWidget {
     final maxCars = user?.maxCars ?? 3;
 
     return Scaffold(
+      bottomNavigationBar: const AdBanner(),
       appBar: AppBar(
         title: Text(tr(context).myCars),
         actions: [

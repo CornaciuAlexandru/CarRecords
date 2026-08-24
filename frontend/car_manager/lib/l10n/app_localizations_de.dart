@@ -823,5 +823,123 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hintPerformedBy => 'Werkstatt / Person';
 
   @override
+  String get errNoConnection =>
+      'Server nicht erreichbar. Prüfe deine Verbindung.';
+
+  @override
+  String get errServerDown => 'Server nicht verfügbar. Läuft das Backend?';
+
+  @override
+  String get errAccountDisabled =>
+      'Dein Konto wurde deaktiviert. Bitte den Support kontaktieren.';
+
+  @override
+  String get errBadCredentials => 'E-Mail oder Passwort falsch.';
+
+  @override
+  String get errInvalidData => 'Ungültige Daten. Bitte Felder prüfen.';
+
+  @override
+  String get errForbidden => 'Du hast keine Berechtigung für diese Aktion.';
+
+  @override
+  String get errNotFound => 'Ressource nicht gefunden.';
+
+  @override
+  String get errServer => 'Serverfehler. Bitte erneut versuchen.';
+
+  @override
+  String errWithCode(String name) {
+    return 'Ein Fehler ist aufgetreten (Code $name).';
+  }
+
+  @override
+  String get errUnexpected => 'Ein unerwarteter Fehler ist aufgetreten.';
+
+  @override
+  String get updateAvailable => 'Update verfügbar';
+
+  @override
+  String get updateRequired => 'Update erforderlich';
+
+  @override
+  String get newVersion => 'Neue Version: ';
+
+  @override
+  String get whatsNew => 'Neuerungen:';
+
+  @override
+  String get updateNow => 'Jetzt aktualisieren';
+
+  @override
+  String get later => 'Später';
+
+  @override
+  String get downloadingUpdate => 'Update wird heruntergeladen';
+
+  @override
+  String get updateMandatory =>
+      'Diese Version wird nicht mehr unterstützt. Ein Update ist erforderlich.';
+
+  @override
+  String get downloadFailed =>
+      'Download fehlgeschlagen. Prüfe die Verbindung und versuche es erneut.';
+
+  @override
+  String get integrityFailed =>
+      'Integritätsprüfung fehlgeschlagen — die Datei ist beschädigt oder verändert. Installation abgebrochen.';
+
+  @override
+  String get updateError => 'Fehler beim Update';
+
+  @override
+  String get fieldsAutoFilled =>
+      'Die Felder wurden automatisch ausgefüllt. Jetzt speichern oder zuerst prüfen?';
+
+  @override
+  String daysSuffix(int count) {
+    return '$count Tage';
+  }
+
+  @override
   String get hintInterventionDetails => 'Details der Arbeiten...';
+
+  @override
+  String get scanDocument => 'Dokument scannen';
+
+  @override
+  String get photographDocument => 'Dokument fotografieren';
+
+  @override
+  String get cameraOrGallery => 'Kamera / Galerie';
+
+  @override
+  String get selectImage => 'Bild auswählen';
+
+  @override
+  String get selectExistingPhoto => 'Vorhandenes Foto wählen';
+
+  @override
+  String get selectImageSource => 'Bildquelle wählen';
+
+  @override
+  String get scanHintCamera =>
+      'Fotografiere oder wähle das Dokument für automatisches Ausfüllen.';
+
+  @override
+  String get scanHintGallery =>
+      'Wähle ein Bild des Dokuments für automatisches Ausfüllen.';
+
+  @override
+  String get processing => 'Wird verarbeitet...';
+
+  @override
+  String get checkingKnownServer => 'Bekannter Server wird geprüft...';
+
+  @override
+  String get privacyOptions => 'Datenschutz-Optionen';
+
+  @override
+  String get privacyOptionsHint =>
+      'Auswahl zu personalisierter Werbung verwalten';
 }

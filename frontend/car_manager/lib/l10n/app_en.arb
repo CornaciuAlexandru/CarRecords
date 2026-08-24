@@ -408,5 +408,54 @@
   "hintCity": "Bucharest",
   "hintAddress": "1 Example St., Bucharest",
   "hintPerformedBy": "Garage / person",
-  "hintInterventionDetails": "Details of the work..."
+  "errNoConnection": "Cannot reach the server. Check your connection.",
+  "errServerDown": "Server unavailable. Make sure the backend is running.",
+  "errAccountDisabled": "Your account has been disabled. Please contact support.",
+  "errBadCredentials": "Incorrect email or password.",
+  "errInvalidData": "Invalid data. Please check the fields.",
+  "errForbidden": "You do not have permission for this action.",
+  "errNotFound": "Resource not found.",
+  "errServer": "Server error. Please try again.",
+  "errWithCode": "An error occurred (code {name}).",
+  "@errWithCode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errUnexpected": "An unexpected error occurred.",
+  "updateAvailable": "Update available",
+  "updateRequired": "Update required",
+  "newVersion": "New version: ",
+  "whatsNew": "What's new:",
+  "updateNow": "Update now",
+  "later": "Later",
+  "downloadingUpdate": "Downloading the update",
+  "updateMandatory": "This version is no longer supported. Updating is required.",
+  "downloadFailed": "Download failed. Check your connection and try again.",
+  "integrityFailed": "Integrity check failed — the downloaded file is corrupt or modified. Installation cancelled.",
+  "updateError": "Update error",
+  "fieldsAutoFilled": "The fields were filled automatically. Save now or review first?",
+  "daysSuffix": "{count} days",
+  "@daysSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hintInterventionDetails": "Details of the work...",
+  "scanDocument": "Scan document",
+  "photographDocument": "Photograph the document",
+  "cameraOrGallery": "Camera / Gallery",
+  "selectImage": "Select image",
+  "selectExistingPhoto": "Choose an existing photo",
+  "selectImageSource": "Choose image source",
+  "scanHintCamera": "Take a photo or pick one to fill the fields automatically.",
+  "scanHintGallery": "Select an image of the document to fill the fields automatically.",
+  "processing": "Processing...",
+  "checkingKnownServer": "Checking the known server...",
+  "privacyOptions": "Privacy options",
+  "privacyOptionsHint": "Manage your choice about personalised ads"
 }

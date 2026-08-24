@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/services/ads_service.dart';
 
 class AddCarScreen extends ConsumerStatefulWidget {
   const AddCarScreen({super.key});
@@ -60,6 +61,8 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
           SnackBar(content: Text(tr(context).carAdded), backgroundColor: AppColors.success),
         );
         context.pop();
+        // Ocazional, o reclama pe tot ecranul (nu la fiecare salvare)
+        AdsService.instance.onUserAction();
       }
     } catch (e) {
       final msg = e is DioException

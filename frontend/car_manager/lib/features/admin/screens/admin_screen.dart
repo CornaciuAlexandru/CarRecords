@@ -80,7 +80,7 @@ class AdminScreen extends ConsumerWidget {
                       const Icon(Icons.error_outline,
                           size: 48, color: AppColors.danger),
                       const SizedBox(height: 12),
-                      Text(tr(context).errorWith('\$e'), textAlign: TextAlign.center),
+                      Text(tr(context).errorWith('$e'), textAlign: TextAlign.center),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () =>

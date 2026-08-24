@@ -408,5 +408,54 @@
   "hintCity": "București",
   "hintAddress": "Str. Exemplu, nr. 1, București",
   "hintPerformedBy": "Service / Persoană",
-  "hintInterventionDetails": "Detalii intervenție..."
+  "errNoConnection": "Nu se poate conecta la server. Verifică conexiunea.",
+  "errServerDown": "Server indisponibil. Asigură-te că backend-ul rulează.",
+  "errAccountDisabled": "Contul tău a fost dezactivat. Contactează suportul.",
+  "errBadCredentials": "Email sau parolă incorectă.",
+  "errInvalidData": "Date invalide. Verifică câmpurile completate.",
+  "errForbidden": "Nu ai permisiunea pentru această acțiune.",
+  "errNotFound": "Resursa nu a fost găsită.",
+  "errServer": "Eroare server. Încearcă din nou.",
+  "errWithCode": "A apărut o eroare (cod {name}).",
+  "@errWithCode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errUnexpected": "A apărut o eroare neașteptată.",
+  "updateAvailable": "Update disponibil",
+  "updateRequired": "Update obligatoriu",
+  "newVersion": "Versiune nouă: ",
+  "whatsNew": "Noutăți:",
+  "updateNow": "Actualizează acum",
+  "later": "Mai târziu",
+  "downloadingUpdate": "Se descarcă update-ul",
+  "updateMandatory": "Această versiune nu mai este suportată. Actualizarea este obligatorie.",
+  "downloadFailed": "Descărcarea a eșuat. Verifică conexiunea și încearcă din nou.",
+  "integrityFailed": "Verificarea integrității a eșuat — fișierul descărcat este corupt sau modificat. Instalarea a fost anulată.",
+  "updateError": "Eroare la actualizare",
+  "fieldsAutoFilled": "Câmpurile au fost completate automat. Salvezi direct sau verifici mai întâi?",
+  "daysSuffix": "{count} zile",
+  "@daysSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hintInterventionDetails": "Detalii intervenție...",
+  "scanDocument": "Scanează documentul",
+  "photographDocument": "Fotografiază documentul",
+  "cameraOrGallery": "Fotografiază / Galerie",
+  "selectImage": "Selectează imagine",
+  "selectExistingPhoto": "Selectează o fotografie existentă",
+  "selectImageSource": "Selectează sursa imaginii",
+  "scanHintCamera": "Fotografiați sau selectați documentul pentru completare automată.",
+  "scanHintGallery": "Selectați o imagine a documentului pentru completare automată a câmpurilor.",
+  "processing": "Se procesează...",
+  "checkingKnownServer": "Se verifică serverul cunoscut...",
+  "privacyOptions": "Opțiuni de confidențialitate",
+  "privacyOptionsHint": "Gestionează alegerea privind reclamele personalizate"
 }

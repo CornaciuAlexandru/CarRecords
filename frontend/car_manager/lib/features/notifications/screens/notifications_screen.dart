@@ -5,6 +5,7 @@ import '../../../core/models/documents.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/notifications_provider.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/widgets/ad_banner.dart';
 
 const _typeIcons = {
   'rovinieta_expira': (Icons.card_membership, AppColors.accent),
@@ -23,6 +24,7 @@ class NotificationsScreen extends ConsumerWidget {
     final async = ref.watch(notificationsProvider);
 
     return Scaffold(
+      bottomNavigationBar: const AdBanner(),
       appBar: AppBar(
         title: Text(tr(context).notificationsTitle),
         actions: [
@@ -47,7 +49,7 @@ class NotificationsScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.danger),
               const SizedBox(height: 12),
-              Text(tr(context).errorWith('\$e'), textAlign: TextAlign.center),
+              Text(tr(context).errorWith('$e'), textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () =>

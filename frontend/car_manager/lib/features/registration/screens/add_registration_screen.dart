@@ -11,6 +11,7 @@ import '../../../shared/widgets/cm_button.dart';
 import '../../../shared/widgets/scan_card.dart';
 import 'registration_screen.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/services/ads_service.dart';
 
 class AddRegistrationScreen extends ConsumerStatefulWidget {
   final String carId;
@@ -76,7 +77,7 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
       if (mounted) _showQuickSaveDialog(data);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).scanFailed('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).scanFailed('$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isScanning = false);
@@ -156,7 +157,7 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
         content: SingleChildScrollView(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
             if (hasData) ...[
-              const Text('Câmpurile au fost completate automat. Salvezi direct sau verifici mai întâi?',
+              Text(tr(context).fieldsAutoFilled,
                   style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
               const SizedBox(height: 12),
               if (data['registration_number'] != null) _ocrRow(tr(context).plateNumber, data['registration_number']),
@@ -237,10 +238,12 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
           backgroundColor: AppColors.success,
         ));
         context.pop();
+        // Ocazional, o reclama pe tot ecranul (nu la fiecare salvare)
+        AdsService.instance.onUserAction();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);

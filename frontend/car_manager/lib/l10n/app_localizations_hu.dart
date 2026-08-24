@@ -820,5 +820,123 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hintPerformedBy => 'Szerviz / személy';
 
   @override
+  String get errNoConnection =>
+      'A szerver nem érhető el. Ellenőrizd a kapcsolatot.';
+
+  @override
+  String get errServerDown =>
+      'A szerver nem elérhető. Fut a háttérszolgáltatás?';
+
+  @override
+  String get errAccountDisabled =>
+      'A fiókod le lett tiltva. Vedd fel a kapcsolatot a támogatással.';
+
+  @override
+  String get errBadCredentials => 'Hibás e-mail vagy jelszó.';
+
+  @override
+  String get errInvalidData => 'Érvénytelen adatok. Ellenőrizd a mezőket.';
+
+  @override
+  String get errForbidden => 'Nincs jogosultságod ehhez a művelethez.';
+
+  @override
+  String get errNotFound => 'Az erőforrás nem található.';
+
+  @override
+  String get errServer => 'Szerverhiba. Próbáld újra.';
+
+  @override
+  String errWithCode(String name) {
+    return 'Hiba történt ($name kód).';
+  }
+
+  @override
+  String get errUnexpected => 'Váratlan hiba történt.';
+
+  @override
+  String get updateAvailable => 'Frissítés elérhető';
+
+  @override
+  String get updateRequired => 'Kötelező frissítés';
+
+  @override
+  String get newVersion => 'Új verzió: ';
+
+  @override
+  String get whatsNew => 'Újdonságok:';
+
+  @override
+  String get updateNow => 'Frissítés most';
+
+  @override
+  String get later => 'Később';
+
+  @override
+  String get downloadingUpdate => 'Frissítés letöltése';
+
+  @override
+  String get updateMandatory =>
+      'Ez a verzió már nem támogatott. A frissítés kötelező.';
+
+  @override
+  String get downloadFailed =>
+      'A letöltés sikertelen. Ellenőrizd a kapcsolatot és próbáld újra.';
+
+  @override
+  String get integrityFailed =>
+      'Az integritás-ellenőrzés sikertelen — a fájl sérült vagy módosított. A telepítés megszakadt.';
+
+  @override
+  String get updateError => 'Frissítési hiba';
+
+  @override
+  String get fieldsAutoFilled =>
+      'A mezők automatikusan kitöltve. Mented most, vagy előbb ellenőrzöd?';
+
+  @override
+  String daysSuffix(int count) {
+    return '$count nap';
+  }
+
+  @override
   String get hintInterventionDetails => 'A beavatkozás részletei...';
+
+  @override
+  String get scanDocument => 'Dokumentum beolvasása';
+
+  @override
+  String get photographDocument => 'Fényképezd le a dokumentumot';
+
+  @override
+  String get cameraOrGallery => 'Kamera / Galéria';
+
+  @override
+  String get selectImage => 'Kép kiválasztása';
+
+  @override
+  String get selectExistingPhoto => 'Válassz meglévő fotót';
+
+  @override
+  String get selectImageSource => 'Válassz képforrást';
+
+  @override
+  String get scanHintCamera =>
+      'Fényképezd le vagy válaszd ki a dokumentumot az automatikus kitöltéshez.';
+
+  @override
+  String get scanHintGallery =>
+      'Válassz egy képet a dokumentumról a mezők automatikus kitöltéséhez.';
+
+  @override
+  String get processing => 'Feldolgozás...';
+
+  @override
+  String get checkingKnownServer => 'Ismert szerver ellenőrzése...';
+
+  @override
+  String get privacyOptions => 'Adatvédelmi beállítások';
+
+  @override
+  String get privacyOptionsHint => 'Személyre szabott hirdetések beállítása';
 }

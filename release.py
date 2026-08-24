@@ -52,6 +52,15 @@ def bump_inno_version(new_ver: str):
     iss.write_text(txt, encoding="utf-8")
     print(f"  ✓ Versiune Inno Setup actualizata: {new_ver}")
 
+def bump_msix_version(new_ver: str):
+    """Versiunea MSIX are 4 componente (Store cere formatul x.y.z.0)."""
+    pub = FLUTTER / "pubspec.yaml"
+    txt = pub.read_text(encoding="utf-8")
+    txt = re.sub(r"msix_version: [\d.]+", f"msix_version: {new_ver}.0", txt)
+    pub.write_text(txt, encoding="utf-8")
+    print(f"  ✓ Versiune MSIX actualizata: {new_ver}.0")
+
+
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -86,23 +95,24 @@ if __name__ == "__main__":
     print(f"  Release CarRecords v{new_ver}")
     print(f"{'='*50}\n")
 
-    print("[1/6] Actualizare versiuni in cod...")
+    print("[1/7] Actualizare versiuni in cod...")
     bump_flutter_version(new_ver)
     bump_inno_version(new_ver)
+    bump_msix_version(new_ver)
 
-    print("\n[2/6] Build Windows EXE...")
+    print("\n[2/7] Build Windows EXE...")
     run("flutter build windows --release", cwd=FLUTTER)
 
-    print("\n[3/6] Build Android APK...")
+    print("\n[3/7] Build Android APK...")
     run("flutter build apk --release", cwd=FLUTTER)
 
-    print("\n[4/6] Compilare installer Inno Setup...")
+    print("\n[4/7] Compilare installer Inno Setup...")
     run(f'"{ISCC}" installer.iss', cwd=ROOT)
 
-    print("\n[5/6] Actualizare version.json backend...")
+    print("\n[5/7] Actualizare version.json backend...")
     update_version_json(new_ver, changelog)
 
-    print("\n[6/6] Copiere installer in backend/downloads/...")
+    print("\n[6/7] Copiere artefacte...")
     installer_src = ROOT / f"CarRecords_Setup_v{new_ver}.exe"
     installer_dst = BACKEND / "downloads" / f"CarRecords_Setup_v{new_ver}.exe"
     shutil.copy(installer_src, installer_dst)
@@ -110,6 +120,19 @@ if __name__ == "__main__":
     apk_src = FLUTTER / "build" / "app" / "outputs" / "flutter-apk" / "app-release.apk"
     shutil.copy(apk_src, ROOT / "CarRecords.apk")
     print(f"  ✓ {installer_dst.name} ({installer_src.stat().st_size / 1e6:.1f} MB)")
+
+    # Pachetul pentru Microsoft Store se face separat: are updater-ul propriu
+    # dezactivat (magazinul gestioneaza actualizarile).
+    print("\n[7/7] Pachet MSIX pentru Microsoft Store...")
+    run("flutter build windows --release --dart-define=STORE_BUILD=true", cwd=FLUTTER)
+    run("dart run msix:create", cwd=FLUTTER)
+    msix_src = FLUTTER / "build" / "windows" / "x64" / "runner" / "Release" / "car_manager.msix"
+    if msix_src.exists():
+        msix_dst = ROOT / f"CarRecords_v{new_ver}.msix"
+        shutil.copy(msix_src, msix_dst)
+        print(f"  ✓ {msix_dst.name} ({msix_dst.stat().st_size / 1e6:.1f} MB)")
+    # Refacem build-ul normal (fara STORE_BUILD), ca sa ramana cel curent
+    run("flutter build windows --release", cwd=FLUTTER)
 
     print(f"\n{'='*50}")
     print(f"  ✓ Release v{new_ver} completat cu succes!")

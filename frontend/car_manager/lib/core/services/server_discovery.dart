@@ -17,21 +17,17 @@ const _cachedIpKey      = 'server_ip';
 ///
 /// Returneaza IP-ul gasit sau `null` daca nu s-a gasit nimic.
 class ServerDiscovery {
-  static Future<String?> discover({
-    void Function(String status)? onStatus,
-  }) async {
+  static Future<String?> discover() async {
     // ── 1. Incearca IP-ul din cache ──────────────────────────────────────
     final prefs = await SharedPreferences.getInstance();
     final cached = prefs.getString(_cachedIpKey);
     if (cached != null) {
-      onStatus?.call('Se verifică serverul cunoscut...');
       if (await _isReachable(cached)) {
         return cached;
       }
     }
 
     // ── 2. Broadcast UDP ─────────────────────────────────────────────────
-    onStatus?.call('Se caută serverul în rețea...');
     final ip = await _broadcastDiscover();
     if (ip != null) {
       await prefs.setString(_cachedIpKey, ip);

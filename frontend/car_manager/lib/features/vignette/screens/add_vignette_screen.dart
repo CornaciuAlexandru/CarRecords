@@ -11,6 +11,7 @@ import '../../../shared/widgets/cm_button.dart';
 import '../../../shared/widgets/scan_card.dart';
 import 'vignettes_screen.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/services/ads_service.dart';
 
 class AddVignetteScreen extends ConsumerStatefulWidget {
   final String carId;
@@ -92,7 +93,7 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
       if (mounted) _showQuickSaveDialog(data);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).scanFailed('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).scanFailed('$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isScanning = false);
@@ -128,7 +129,7 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (hasData) ...[
-                const Text('Câmpurile au fost completate automat. Salvezi direct sau verifici mai întâi?',
+                Text(tr(context).fieldsAutoFilled,
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 const SizedBox(height: 12),
                 if (data['issuer_company'] != null) _ocrRow(tr(context).issuer, data['issuer_company']),
@@ -197,10 +198,12 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
           backgroundColor: AppColors.success,
         ));
         context.pop();
+        // Ocazional, o reclama pe tot ecranul (nu la fiecare salvare)
+        AdsService.instance.onUserAction();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).errorWith('\$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).errorWith('$e')), backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
