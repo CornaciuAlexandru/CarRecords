@@ -47,6 +47,29 @@
   "passwordRulesHint": "Min. 8 characters, 1 uppercase, 1 digit",
   "passwordNeedsUpper": "Must contain at least one uppercase letter",
   "passwordNeedsDigit": "Must contain at least one digit",
+  "forgotPassword": "Forgot your password?",
+  "resetPasswordTitle": "Reset password",
+  "resetPasswordHint": "Enter the address you signed up with. We will email you a link for setting a new password.",
+  "sendResetLink": "Send link",
+  "resetLinkSent": "If an account exists for {email}, the link is on its way. Check your inbox.",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailNotVerified": "Email address not confirmed",
+  "emailNotVerifiedHint": "Confirm it so you can recover the account if you forget the password.",
+  "emailVerified": "Email address confirmed",
+  "resendVerification": "Send confirmation link",
+  "verificationSent": "Confirmation link sent. Check your inbox.",
+  "deleteAccount": "Delete account",
+  "deleteAccountHint": "Removes the account and all its data, permanently.",
+  "deleteAccountConfirm": "All your cars, documents and alerts will be deleted. This cannot be undone.",
+  "deleteAccountPassword": "Type your password to confirm",
+  "deleteAccountButton": "Delete permanently",
+  "accountDeleted": "The account has been deleted.",
   "navHome": "Home",
   "navCars": "Cars",
   "navAlerts": "Alerts",
@@ -415,6 +438,7 @@
   "errInvalidData": "Invalid data. Please check the fields.",
   "errForbidden": "You do not have permission for this action.",
   "errNotFound": "Resource not found.",
+  "errTooManyAttempts": "Too many attempts. Please try again in a few minutes.",
   "errServer": "Server error. Please try again.",
   "errWithCode": "An error occurred (code {name}).",
   "@errWithCode": {

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../api/api_client.dart';
+import 'token_store.dart';
 
 class AuthService {
   final Dio _dio = createDio();
@@ -11,12 +11,15 @@ class AuthService {
     required String password,
     required String fullName,
     String? phone,
+    String? lang,
   }) async {
     final resp = await _dio.post('/auth/register', data: {
       'email': email,
       'password': password,
       'full_name': fullName,
       if (phone != null && phone.isNotEmpty) 'phone': phone,
+      // Limba aplicatiei decide limba emailului de confirmare
+      if (lang != null) 'lang': lang,
     });
     await _saveTokens(resp.data);
     return User.fromJson(resp.data['user']);
@@ -40,20 +43,36 @@ class AuthService {
     }
   }
 
-  Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('access_token');
-    await prefs.remove('refresh_token');
+  /// Cere pe email un link de resetare a parolei.
+  ///
+  /// Serverul raspunde la fel si daca adresa nu are cont, ca sa nu spuna
+  /// nimanui cine e inregistrat. Deci lipsa unei erori nu inseamna ca
+  /// exista un cont.
+  Future<void> forgotPassword({required String email, String? lang}) async {
+    await _dio.post('/auth/forgot-password', data: {
+      'email': email,
+      if (lang != null) 'lang': lang,
+    });
   }
 
-  Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.containsKey('access_token');
+  /// Retrimite linkul de confirmare a adresei.
+  Future<void> resendVerification({String? lang}) async {
+    await _dio.post('/auth/resend-verification',
+        data: {if (lang != null) 'lang': lang});
   }
 
-  Future<void> _saveTokens(Map<String, dynamic> data) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('access_token', data['access_token']);
-    await prefs.setString('refresh_token', data['refresh_token']);
+  /// Sterge definitiv contul si curata tokenurile locale.
+  Future<void> deleteAccount({required String password}) async {
+    await _dio.delete('/auth/me', data: {'password': password});
+    await logout();
   }
+
+  Future<void> logout() => TokenStore.clear();
+
+  Future<bool> isLoggedIn() => TokenStore.hasSession;
+
+  Future<void> _saveTokens(Map<String, dynamic> data) => TokenStore.save(
+        access: data['access_token'],
+        refresh: data['refresh_token'],
+      );
 }

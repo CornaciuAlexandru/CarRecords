@@ -42,6 +42,62 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  /// Cere serverului un link de resetare pe email.
+  ///
+  /// Mesajul de confirmare e acelasi indiferent daca adresa are cont sau nu —
+  /// asa raspunde si serverul, ca sa nu dezvaluie cine e inregistrat.
+  Future<void> _showForgotPassword() async {
+    final emailCtrl = TextEditingController(text: _emailCtrl.text.trim());
+    final email = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(tr(ctx).resetPasswordTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(tr(ctx).resetPasswordHint,
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailCtrl,
+              autofocus: true,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                labelText: tr(ctx).email,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr(ctx).cancel)),
+          TextButton(
+            onPressed: () {
+              final value = emailCtrl.text.trim();
+              if (value.contains('@')) Navigator.pop(ctx, value);
+            },
+            child: Text(tr(ctx).sendResetLink),
+          ),
+        ],
+      ),
+    );
+    emailCtrl.dispose();
+    if (email == null || !mounted) return;
+
+    try {
+      await ref.read(authStateProvider.notifier).forgotPassword(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(tr(context).resetLinkSent(email)),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ));
+    } catch (e) {
+      if (mounted) _showError(e);
+    }
+  }
+
   void _showError(Object e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -133,7 +189,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         isLoading: isLoading,
                         onPressed: isLoading ? null : _login,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 4),
+                      Center(
+                        child: TextButton(
+                          onPressed: _showForgotPassword,
+                          child: Text(tr(context).forgotPassword,
+                              style: const TextStyle(color: AppColors.textSecondary)),
+                        ),
+                      ),
                       Center(
                         child: TextButton(
                           onPressed: () => context.push('/register'),

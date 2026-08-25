@@ -81,7 +81,19 @@ POSTGRES_DB=carrecords
 POSTGRES_PASSWORD=<rezultatul din: openssl rand -hex 24>
 SECRET_KEY=<rezultatul din: openssl rand -hex 32>
 CORS_ORIGINS=*
+PUBLIC_URL=https://api.carrecords.ro
+SMTP_HOST=<serverul de mail>
+SMTP_PORT=587
+SMTP_USER=<utilizatorul SMTP>
+SMTP_PASSWORD=<parola SMTP>
+SMTP_FROM=CarRecords <noreply@carrecords.ro>
 ```
+
+> **Fără `SMTP_HOST`, resetarea parolei nu funcționează.** Backend-ul nu dă
+> eroare: scrie mesajele în `sent_emails.log`, în container, unde nu le vede
+> nimeni. Orice serviciu SMTP e bun (Brevo, Mailgun, Resend, Zoho, sau
+> serverul de mail al domeniului). `PUBLIC_URL` trebuie să fie adresa reală a
+> API-ului — din ea se compun linkurile trimise pe email.
 
 Generează cele două valori aleatoare direct pe server:
 ```bash
@@ -192,4 +204,6 @@ folosește PostgreSQL — formatele nu sunt compatibile direct. Ai două opțiun
 | Certificatul HTTPS nu se emite | DNS-ul încă nu s-a propagat, sau porturile 80/443 sunt blocate |
 | `502 Bad Gateway` | Backend-ul nu a pornit — vezi `docker compose logs backend` |
 | Aplicația spune „server negăsit" | A fost compilată fără `--dart-define=API_URL` |
+| Nu ajung emailurile de resetare | `SMTP_HOST` nu e completat, sau furnizorul refuză autentificarea — vezi `docker compose logs backend` |
+| Linkul din email duce la o adresă greșită | `PUBLIC_URL` nu e setat pe domeniul real |
 | OCR nu extrage nimic | Verifică în container: `docker compose exec backend tesseract --list-langs` (trebuie să apară `ron`) |

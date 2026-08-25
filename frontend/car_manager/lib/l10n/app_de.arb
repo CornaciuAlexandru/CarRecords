@@ -47,6 +47,29 @@
   "passwordRulesHint": "Mind. 8 Zeichen, 1 Großbuchstabe, 1 Ziffer",
   "passwordNeedsUpper": "Muss mindestens einen Großbuchstaben enthalten",
   "passwordNeedsDigit": "Muss mindestens eine Ziffer enthalten",
+  "forgotPassword": "Passwort vergessen?",
+  "resetPasswordTitle": "Passwort zurücksetzen",
+  "resetPasswordHint": "Gib die Adresse an, mit der du dich registriert hast. Wir senden dir einen Link für ein neues Passwort.",
+  "sendResetLink": "Link senden",
+  "resetLinkSent": "Falls es ein Konto für {email} gibt, ist der Link unterwegs. Sieh in deinem Postfach nach.",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailNotVerified": "E-Mail-Adresse nicht bestätigt",
+  "emailNotVerifiedHint": "Bestätige sie, damit du dein Konto wiederherstellen kannst, falls du das Passwort vergisst.",
+  "emailVerified": "E-Mail-Adresse bestätigt",
+  "resendVerification": "Bestätigungslink senden",
+  "verificationSent": "Bestätigungslink gesendet. Sieh in deinem Postfach nach.",
+  "deleteAccount": "Konto löschen",
+  "deleteAccountHint": "Entfernt das Konto und alle Daten endgültig.",
+  "deleteAccountConfirm": "Alle deine Fahrzeuge, Dokumente und Warnungen werden gelöscht. Das lässt sich nicht rückgängig machen.",
+  "deleteAccountPassword": "Gib zur Bestätigung dein Passwort ein",
+  "deleteAccountButton": "Endgültig löschen",
+  "accountDeleted": "Das Konto wurde gelöscht.",
   "navHome": "Start",
   "navCars": "Fahrzeuge",
   "navAlerts": "Warnungen",
@@ -415,6 +438,7 @@
   "errInvalidData": "Ungültige Daten. Bitte Felder prüfen.",
   "errForbidden": "Du hast keine Berechtigung für diese Aktion.",
   "errNotFound": "Ressource nicht gefunden.",
+  "errTooManyAttempts": "Zu viele Versuche. Bitte versuche es in ein paar Minuten erneut.",
   "errServer": "Serverfehler. Bitte erneut versuchen.",
   "errWithCode": "Ein Fehler ist aufgetreten (Code {name}).",
   "@errWithCode": {

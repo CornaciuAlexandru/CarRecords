@@ -34,6 +34,48 @@ class Settings(BaseSettings):
     # Pe Windows e calea catre .exe; in container e simplu "tesseract".
     TESSERACT_PATH: str = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
+    # ── Protectie la incercari repetate de autentificare ─────────
+    # Fereastra in care se numara incercarile de login.
+    LOGIN_WINDOW_MINUTES: int = 15
+    # Cate parole gresite acceptam de la acelasi IP pentru acelasi cont.
+    LOGIN_MAX_FAILURES: int = 5
+    # Cate cereri de login acceptam de la un IP, indiferent de rezultat.
+    # Mai mare decat limita de mai sus: de pe aceeasi retea se pot autentifica
+    # mai multi oameni.
+    LOGIN_MAX_ATTEMPTS_PER_IP: int = 20
+
+    # ── Protectie la creari repetate de cont ─────────────────────
+    REGISTER_WINDOW_MINUTES: int = 60
+    # Cate conturi noi pot pleca de la acelasi IP intr-o fereastra.
+    REGISTER_MAX_ACCOUNTS_PER_IP: int = 5
+    # Cate cereri de inregistrare acceptam, indiferent de rezultat. Peste
+    # asta, cineva incearca sa afle ce adrese au deja cont.
+    REGISTER_MAX_ATTEMPTS_PER_IP: int = 20
+
+    # ── Email (resetare parola, verificare adresa) ────────────────
+    # Fara SMTP_HOST configurat mesajele nu se pierd: se scriu in
+    # backend/sent_emails.log si in consola, deci linkul e folosibil si in
+    # dezvoltare, fara cont de mail.
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = "CarRecords <noreply@carrecords.ro>"
+    SMTP_STARTTLS: bool = True
+
+    # Adresa publica a backend-ului, folosita in linkurile din email.
+    # Local: IP-ul din retea. In cloud: https://api.carrecords.ro
+    PUBLIC_URL: str = "http://127.0.0.1:8000"
+
+    # Cat timp raman valabile linkurile trimise pe email
+    RESET_TOKEN_EXPIRE_MINUTES: int = 30
+    VERIFY_TOKEN_EXPIRE_HOURS: int = 48
+
+    # Cand e activat, conturile cu adresa neconfirmata nu se pot autentifica.
+    # Implicit oprit: conturile existente nu au adresa confirmata si nu vrem
+    # sa le blocam retroactiv.
+    REQUIRE_EMAIL_VERIFICATION: bool = False
+
     # ── Descoperire in retea locala (doar pentru rulare pe PC) ────
     DISCOVERY_ENABLED: bool = True
 
@@ -43,6 +85,11 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.ENVIRONMENT.lower() in ("production", "prod")
+
+    @property
+    def mail_enabled(self) -> bool:
+        """Exista un server SMTP configurat? Daca nu, emailurile se scriu in fisier."""
+        return bool(self.SMTP_HOST.strip())
 
     @property
     def cors_origins_list(self) -> List[str]:

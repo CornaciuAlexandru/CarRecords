@@ -12,6 +12,7 @@ import '../../notifications/providers/notifications_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/services/ads_service.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/utils/error_handler.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -242,10 +243,38 @@ class _QuickAddCard extends StatelessWidget {
 }
 
 
-class ProfilePage extends ConsumerWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Adresa se confirma din browser, in afara aplicatiei. La deschiderea
+    // profilului recitim contul, ca avertismentul sa dispara imediat ce
+    // utilizatorul a apasat linkul din email.
+    final user = ref.read(authStateProvider).value;
+    if (user != null && !user.emailVerified) {
+      Future.microtask(() => ref.read(authStateProvider.notifier).refreshUser());
+    }
+  }
+
+  void _toast(String message, {bool error = false}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: error ? AppColors.danger : null,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final user = ref.watch(authStateProvider).value;
     final lang = ref.watch(localeProvider).languageCode;
@@ -263,6 +292,28 @@ class ProfilePage extends ConsumerWidget {
           Center(child: Text(user?.fullName ?? '', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
           Center(child: Text(user?.email ?? '', style: const TextStyle(color: AppColors.textSecondary))),
           const SizedBox(height: 32),
+          // Starea adresei de email: neconfirmata inseamna cont nerecuperabil
+          // daca se uita parola, deci merita scos in fata.
+          if (user != null && !user.emailVerified)
+            Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: const Icon(Icons.mark_email_unread_outlined, color: AppColors.warning),
+                title: Text(tr(context).emailNotVerified),
+                subtitle: Text(tr(context).emailNotVerifiedHint,
+                    style: const TextStyle(fontSize: 12)),
+                trailing: const Icon(Icons.send_outlined, size: 18),
+                onTap: _resendVerification,
+              ),
+            )
+          else if (user != null)
+            Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: const Icon(Icons.verified_outlined, color: AppColors.success),
+                title: Text(tr(context).emailVerified),
+              ),
+            ),
           // Selector de limba
           Card(
             margin: const EdgeInsets.only(bottom: 12),
@@ -301,9 +352,105 @@ class ProfilePage extends ConsumerWidget {
                 await ref.read(authStateProvider.notifier).logout();
                 if (context.mounted) context.go('/login');
               }),
+          const Divider(height: 32),
+          // Stergerea contului: cerinta obligatorie Google Play.
+          ListTile(
+            leading: const Icon(Icons.delete_forever_outlined, color: AppColors.danger),
+            title: Text(tr(context).deleteAccount,
+                style: const TextStyle(color: AppColors.danger)),
+            subtitle: Text(tr(context).deleteAccountHint,
+                style: const TextStyle(fontSize: 12)),
+            onTap: _confirmDeleteAccount,
+          ),
         ],
       ),
     );
+  }
+
+  /// Retrimite linkul de confirmare a adresei de email.
+  Future<void> _resendVerification() async {
+    try {
+      await ref.read(authStateProvider.notifier).resendVerification();
+      if (!mounted) return;
+      _toast(tr(context).verificationSent);
+    } catch (e) {
+      if (!mounted) return;
+      _toast(parseError(context, e), error: true);
+    }
+  }
+
+  /// Stergerea contului, confirmata cu parola.
+  ///
+  /// Parola nu e formalitate: un telefon lasat deblocat nu trebuie sa fie
+  /// de ajuns ca sa dispara toate datele.
+  Future<void> _confirmDeleteAccount() async {
+    final passCtrl = TextEditingController();
+    final deleted = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        String? error;
+        bool busy = false;
+        return StatefulBuilder(
+          builder: (ctx, setLocal) => AlertDialog(
+            title: Row(children: [
+              const Icon(Icons.warning_amber_rounded, color: AppColors.danger),
+              const SizedBox(width: 10),
+              Expanded(child: Text(tr(ctx).deleteAccount)),
+            ]),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(tr(ctx).deleteAccountConfirm),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: passCtrl,
+                  obscureText: true,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: tr(ctx).deleteAccountPassword,
+                    errorText: error,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: busy ? null : () => Navigator.pop(ctx, false),
+                child: Text(tr(ctx).cancel),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+                onPressed: busy
+                    ? null
+                    : () async {
+                        setLocal(() { busy = true; error = null; });
+                        try {
+                          await ref
+                              .read(authStateProvider.notifier)
+                              .deleteAccount(passCtrl.text);
+                          if (ctx.mounted) Navigator.pop(ctx, true);
+                        } catch (e) {
+                          setLocal(() {
+                            busy = false;
+                            error = parseError(ctx, e);
+                          });
+                        }
+                      },
+                child: Text(tr(ctx).deleteAccountButton),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    passCtrl.dispose();
+    if (deleted == true && mounted) {
+      _toast(tr(context).accountDeleted);
+      context.go('/login');
+    }
   }
 
   /// Dialog de alegere a limbii aplicatiei.

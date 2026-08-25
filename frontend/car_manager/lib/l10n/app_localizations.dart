@@ -348,6 +348,102 @@ abstract class AppLocalizations {
   /// **'Must contain at least one digit'**
   String get passwordNeedsDigit;
 
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get forgotPassword;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the address you signed up with. We will email you a link for setting a new password.'**
+  String get resetPasswordHint;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send link'**
+  String get sendResetLink;
+
+  /// No description provided for @resetLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account exists for {email}, the link is on its way. Check your inbox.'**
+  String resetLinkSent(String email);
+
+  /// No description provided for @emailNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address not confirmed'**
+  String get emailNotVerified;
+
+  /// No description provided for @emailNotVerifiedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm it so you can recover the account if you forget the password.'**
+  String get emailNotVerifiedHint;
+
+  /// No description provided for @emailVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address confirmed'**
+  String get emailVerified;
+
+  /// No description provided for @resendVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Send confirmation link'**
+  String get resendVerification;
+
+  /// No description provided for @verificationSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation link sent. Check your inbox.'**
+  String get verificationSent;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Removes the account and all its data, permanently.'**
+  String get deleteAccountHint;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'All your cars, documents and alerts will be deleted. This cannot be undone.'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @deleteAccountPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your password to confirm'**
+  String get deleteAccountPassword;
+
+  /// No description provided for @deleteAccountButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get deleteAccountButton;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'The account has been deleted.'**
+  String get accountDeleted;
+
   /// No description provided for @navHome.
   ///
   /// In en, this message translates to:
@@ -1679,6 +1775,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resource not found.'**
   String get errNotFound;
+
+  /// No description provided for @errTooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please try again in a few minutes.'**
+  String get errTooManyAttempts;
 
   /// No description provided for @errServer.
   ///

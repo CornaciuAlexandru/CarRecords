@@ -47,6 +47,29 @@
   "passwordRulesHint": "Min. 8 caractères, 1 majuscule, 1 chiffre",
   "passwordNeedsUpper": "Doit contenir au moins une majuscule",
   "passwordNeedsDigit": "Doit contenir au moins un chiffre",
+  "forgotPassword": "Mot de passe oublié ?",
+  "resetPasswordTitle": "Réinitialiser le mot de passe",
+  "resetPasswordHint": "Saisis l'adresse utilisée à l'inscription. Nous t'enverrons un lien par e-mail pour définir un nouveau mot de passe.",
+  "sendResetLink": "Envoyer le lien",
+  "resetLinkSent": "Si un compte existe pour {email}, le lien est en route. Consulte ta boîte de réception.",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailNotVerified": "Adresse e-mail non confirmée",
+  "emailNotVerifiedHint": "Confirme-la pour pouvoir récupérer le compte en cas d'oubli du mot de passe.",
+  "emailVerified": "Adresse e-mail confirmée",
+  "resendVerification": "Envoyer le lien de confirmation",
+  "verificationSent": "Lien de confirmation envoyé. Consulte ta boîte de réception.",
+  "deleteAccount": "Supprimer le compte",
+  "deleteAccountHint": "Supprime définitivement le compte et toutes ses données.",
+  "deleteAccountConfirm": "Toutes tes voitures, tous tes documents et alertes seront supprimés. Cette action est irréversible.",
+  "deleteAccountPassword": "Saisis ton mot de passe pour confirmer",
+  "deleteAccountButton": "Supprimer définitivement",
+  "accountDeleted": "Le compte a été supprimé.",
   "navHome": "Accueil",
   "navCars": "Voitures",
   "navAlerts": "Alertes",
@@ -415,6 +438,7 @@
   "errInvalidData": "Données invalides. Vérifie les champs.",
   "errForbidden": "Tu n'as pas la permission pour cette action.",
   "errNotFound": "Ressource introuvable.",
+  "errTooManyAttempts": "Trop de tentatives. Réessaie dans quelques minutes.",
   "errServer": "Erreur du serveur. Réessaie.",
   "errWithCode": "Une erreur s'est produite (code {name}).",
   "@errWithCode": {

@@ -24,6 +24,12 @@ dependencies:
   # Local storage
   shared_preferences: '>=2.2.3 <2.3.0'
 
+  # Stocarea tokenurilor de autentificare: DPAPI pe Windows,
+  # EncryptedSharedPreferences pe Android. Ramanem pe seria 9.x — proiectul
+  # are constrangeri stricte pe pluginurile Android (vezi
+  # dependency_overrides) si nu vrem surprize la o schimbare de major.
+  flutter_secure_storage: ^9.2.2
+
   # Verificare integritate update (SHA-256)
   crypto: ^3.0.3
 

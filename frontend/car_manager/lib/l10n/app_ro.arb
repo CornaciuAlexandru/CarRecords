@@ -47,6 +47,29 @@
   "passwordRulesHint": "Min. 8 caractere, 1 majusculă, 1 cifră",
   "passwordNeedsUpper": "Trebuie cel puțin o literă mare",
   "passwordNeedsDigit": "Trebuie cel puțin o cifră",
+  "forgotPassword": "Ai uitat parola?",
+  "resetPasswordTitle": "Resetare parolă",
+  "resetPasswordHint": "Scrie adresa cu care te-ai înregistrat. Îți trimitem pe email un link pentru o parolă nouă.",
+  "sendResetLink": "Trimite linkul",
+  "resetLinkSent": "Dacă există un cont pentru {email}, linkul e pe drum. Verifică-ți emailul.",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailNotVerified": "Adresa de email nu e confirmată",
+  "emailNotVerifiedHint": "Confirm-o ca să îți poți recupera contul dacă uiți parola.",
+  "emailVerified": "Adresă de email confirmată",
+  "resendVerification": "Trimite linkul de confirmare",
+  "verificationSent": "Linkul de confirmare a fost trimis. Verifică-ți emailul.",
+  "deleteAccount": "Șterge contul",
+  "deleteAccountHint": "Șterge definitiv contul și toate datele lui.",
+  "deleteAccountConfirm": "Toate mașinile, documentele și alertele tale vor fi șterse. Operațiunea nu poate fi anulată.",
+  "deleteAccountPassword": "Scrie parola ca să confirmi",
+  "deleteAccountButton": "Șterge definitiv",
+  "accountDeleted": "Contul a fost șters.",
   "navHome": "Acasă",
   "navCars": "Mașini",
   "navAlerts": "Alerte",
@@ -415,6 +438,7 @@
   "errInvalidData": "Date invalide. Verifică câmpurile completate.",
   "errForbidden": "Nu ai permisiunea pentru această acțiune.",
   "errNotFound": "Resursa nu a fost găsită.",
+  "errTooManyAttempts": "Prea multe încercări. Încearcă din nou peste câteva minute.",
   "errServer": "Eroare server. Încearcă din nou.",
   "errWithCode": "A apărut o eroare (cod {name}).",
   "@errWithCode": {

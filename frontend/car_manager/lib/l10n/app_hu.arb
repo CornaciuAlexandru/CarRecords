@@ -47,6 +47,29 @@
   "passwordRulesHint": "Min. 8 karakter, 1 nagybetű, 1 számjegy",
   "passwordNeedsUpper": "Legalább egy nagybetűt kell tartalmaznia",
   "passwordNeedsDigit": "Legalább egy számjegyet kell tartalmaznia",
+  "forgotPassword": "Elfelejtetted a jelszavad?",
+  "resetPasswordTitle": "Jelszó visszaállítása",
+  "resetPasswordHint": "Add meg a regisztrációhoz használt címet. E-mailben küldünk egy linket az új jelszóhoz.",
+  "sendResetLink": "Link küldése",
+  "resetLinkSent": "Ha létezik fiók a(z) {email} címhez, a link úton van. Nézd meg a postaládád.",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailNotVerified": "Az e-mail-cím nincs megerősítve",
+  "emailNotVerifiedHint": "Erősítsd meg, hogy vissza tudd szerezni a fiókod, ha elfelejtenéd a jelszavad.",
+  "emailVerified": "Az e-mail-cím megerősítve",
+  "resendVerification": "Megerősítő link küldése",
+  "verificationSent": "A megerősítő linket elküldtük. Nézd meg a postaládád.",
+  "deleteAccount": "Fiók törlése",
+  "deleteAccountHint": "Véglegesen törli a fiókot és minden adatát.",
+  "deleteAccountConfirm": "Az összes autód, dokumentumod és riasztásod törlődik. A művelet nem vonható vissza.",
+  "deleteAccountPassword": "Írd be a jelszavad a megerősítéshez",
+  "deleteAccountButton": "Végleges törlés",
+  "accountDeleted": "A fiókot töröltük.",
   "navHome": "Kezdőlap",
   "navCars": "Autók",
   "navAlerts": "Riasztások",
@@ -415,6 +438,7 @@
   "errInvalidData": "Érvénytelen adatok. Ellenőrizd a mezőket.",
   "errForbidden": "Nincs jogosultságod ehhez a művelethez.",
   "errNotFound": "Az erőforrás nem található.",
+  "errTooManyAttempts": "Túl sok próbálkozás. Próbáld újra néhány perc múlva.",
   "errServer": "Szerverhiba. Próbáld újra.",
   "errWithCode": "Hiba történt ({name} kód).",
   "@errWithCode": {

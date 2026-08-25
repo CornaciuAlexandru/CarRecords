@@ -131,6 +131,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordNeedsDigit => 'Must contain at least one digit';
 
   @override
+  String get forgotPassword => 'Forgot your password?';
+
+  @override
+  String get resetPasswordTitle => 'Reset password';
+
+  @override
+  String get resetPasswordHint =>
+      'Enter the address you signed up with. We will email you a link for setting a new password.';
+
+  @override
+  String get sendResetLink => 'Send link';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'If an account exists for $email, the link is on its way. Check your inbox.';
+  }
+
+  @override
+  String get emailNotVerified => 'Email address not confirmed';
+
+  @override
+  String get emailNotVerifiedHint =>
+      'Confirm it so you can recover the account if you forget the password.';
+
+  @override
+  String get emailVerified => 'Email address confirmed';
+
+  @override
+  String get resendVerification => 'Send confirmation link';
+
+  @override
+  String get verificationSent => 'Confirmation link sent. Check your inbox.';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountHint =>
+      'Removes the account and all its data, permanently.';
+
+  @override
+  String get deleteAccountConfirm =>
+      'All your cars, documents and alerts will be deleted. This cannot be undone.';
+
+  @override
+  String get deleteAccountPassword => 'Type your password to confirm';
+
+  @override
+  String get deleteAccountButton => 'Delete permanently';
+
+  @override
+  String get accountDeleted => 'The account has been deleted.';
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -844,6 +898,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errNotFound => 'Resource not found.';
+
+  @override
+  String get errTooManyAttempts =>
+      'Too many attempts. Please try again in a few minutes.';
 
   @override
   String get errServer => 'Server error. Please try again.';

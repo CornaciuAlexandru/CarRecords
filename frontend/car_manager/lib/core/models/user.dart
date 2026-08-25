@@ -5,6 +5,7 @@ class User {
   final String? phone;
   final String role;
   final bool isActive;
+  final bool emailVerified;
   final String subscriptionTier;
   final int maxCars;
   final DateTime? createdAt;
@@ -16,6 +17,7 @@ class User {
     this.phone,
     required this.role,
     required this.isActive,
+    this.emailVerified = false,
     required this.subscriptionTier,
     required this.maxCars,
     this.createdAt,
@@ -31,6 +33,7 @@ class User {
         phone: j['phone'],
         role: j['role'],
         isActive: j['is_active'],
+        emailVerified: j['email_verified'] ?? false,
         subscriptionTier: j['subscription_tier'],
         maxCars: j['max_cars'],
         createdAt: j['created_at'] != null ? DateTime.tryParse(j['created_at']) : null,

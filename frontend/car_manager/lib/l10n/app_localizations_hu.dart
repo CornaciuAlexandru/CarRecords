@@ -131,6 +131,60 @@ class AppLocalizationsHu extends AppLocalizations {
   String get passwordNeedsDigit => 'Legalább egy számjegyet kell tartalmaznia';
 
   @override
+  String get forgotPassword => 'Elfelejtetted a jelszavad?';
+
+  @override
+  String get resetPasswordTitle => 'Jelszó visszaállítása';
+
+  @override
+  String get resetPasswordHint =>
+      'Add meg a regisztrációhoz használt címet. E-mailben küldünk egy linket az új jelszóhoz.';
+
+  @override
+  String get sendResetLink => 'Link küldése';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'Ha létezik fiók a(z) $email címhez, a link úton van. Nézd meg a postaládád.';
+  }
+
+  @override
+  String get emailNotVerified => 'Az e-mail-cím nincs megerősítve';
+
+  @override
+  String get emailNotVerifiedHint =>
+      'Erősítsd meg, hogy vissza tudd szerezni a fiókod, ha elfelejtenéd a jelszavad.';
+
+  @override
+  String get emailVerified => 'Az e-mail-cím megerősítve';
+
+  @override
+  String get resendVerification => 'Megerősítő link küldése';
+
+  @override
+  String get verificationSent =>
+      'A megerősítő linket elküldtük. Nézd meg a postaládád.';
+
+  @override
+  String get deleteAccount => 'Fiók törlése';
+
+  @override
+  String get deleteAccountHint => 'Véglegesen törli a fiókot és minden adatát.';
+
+  @override
+  String get deleteAccountConfirm =>
+      'Az összes autód, dokumentumod és riasztásod törlődik. A művelet nem vonható vissza.';
+
+  @override
+  String get deleteAccountPassword => 'Írd be a jelszavad a megerősítéshez';
+
+  @override
+  String get deleteAccountButton => 'Végleges törlés';
+
+  @override
+  String get accountDeleted => 'A fiókot töröltük.';
+
+  @override
   String get navHome => 'Kezdőlap';
 
   @override
@@ -842,6 +896,10 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get errNotFound => 'Az erőforrás nem található.';
+
+  @override
+  String get errTooManyAttempts =>
+      'Túl sok próbálkozás. Próbáld újra néhány perc múlva.';
 
   @override
   String get errServer => 'Szerverhiba. Próbáld újra.';

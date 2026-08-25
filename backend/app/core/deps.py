@@ -21,6 +21,11 @@ def get_current_user(
     user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utilizator negasit")
+    # Tokenurile emise inainte de ultima schimbare de parola sunt refuzate.
+    # Tokenurile vechi, fara "tv", si conturile nemigrate au versiunea 0.
+    if (payload.get("tv") or 0) != (user.token_version or 0):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Sesiune incheiata. Autentifica-te din nou.")
     return user
 
 

@@ -131,6 +131,61 @@ class AppLocalizationsRo extends AppLocalizations {
   String get passwordNeedsDigit => 'Trebuie cel puțin o cifră';
 
   @override
+  String get forgotPassword => 'Ai uitat parola?';
+
+  @override
+  String get resetPasswordTitle => 'Resetare parolă';
+
+  @override
+  String get resetPasswordHint =>
+      'Scrie adresa cu care te-ai înregistrat. Îți trimitem pe email un link pentru o parolă nouă.';
+
+  @override
+  String get sendResetLink => 'Trimite linkul';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'Dacă există un cont pentru $email, linkul e pe drum. Verifică-ți emailul.';
+  }
+
+  @override
+  String get emailNotVerified => 'Adresa de email nu e confirmată';
+
+  @override
+  String get emailNotVerifiedHint =>
+      'Confirm-o ca să îți poți recupera contul dacă uiți parola.';
+
+  @override
+  String get emailVerified => 'Adresă de email confirmată';
+
+  @override
+  String get resendVerification => 'Trimite linkul de confirmare';
+
+  @override
+  String get verificationSent =>
+      'Linkul de confirmare a fost trimis. Verifică-ți emailul.';
+
+  @override
+  String get deleteAccount => 'Șterge contul';
+
+  @override
+  String get deleteAccountHint =>
+      'Șterge definitiv contul și toate datele lui.';
+
+  @override
+  String get deleteAccountConfirm =>
+      'Toate mașinile, documentele și alertele tale vor fi șterse. Operațiunea nu poate fi anulată.';
+
+  @override
+  String get deleteAccountPassword => 'Scrie parola ca să confirmi';
+
+  @override
+  String get deleteAccountButton => 'Șterge definitiv';
+
+  @override
+  String get accountDeleted => 'Contul a fost șters.';
+
+  @override
   String get navHome => 'Acasă';
 
   @override
@@ -844,6 +899,10 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get errNotFound => 'Resursa nu a fost găsită.';
+
+  @override
+  String get errTooManyAttempts =>
+      'Prea multe încercări. Încearcă din nou peste câteva minute.';
 
   @override
   String get errServer => 'Eroare server. Încearcă din nou.';

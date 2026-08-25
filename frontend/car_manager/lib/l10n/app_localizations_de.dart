@@ -132,6 +132,61 @@ class AppLocalizationsDe extends AppLocalizations {
   String get passwordNeedsDigit => 'Muss mindestens eine Ziffer enthalten';
 
   @override
+  String get forgotPassword => 'Passwort vergessen?';
+
+  @override
+  String get resetPasswordTitle => 'Passwort zurücksetzen';
+
+  @override
+  String get resetPasswordHint =>
+      'Gib die Adresse an, mit der du dich registriert hast. Wir senden dir einen Link für ein neues Passwort.';
+
+  @override
+  String get sendResetLink => 'Link senden';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'Falls es ein Konto für $email gibt, ist der Link unterwegs. Sieh in deinem Postfach nach.';
+  }
+
+  @override
+  String get emailNotVerified => 'E-Mail-Adresse nicht bestätigt';
+
+  @override
+  String get emailNotVerifiedHint =>
+      'Bestätige sie, damit du dein Konto wiederherstellen kannst, falls du das Passwort vergisst.';
+
+  @override
+  String get emailVerified => 'E-Mail-Adresse bestätigt';
+
+  @override
+  String get resendVerification => 'Bestätigungslink senden';
+
+  @override
+  String get verificationSent =>
+      'Bestätigungslink gesendet. Sieh in deinem Postfach nach.';
+
+  @override
+  String get deleteAccount => 'Konto löschen';
+
+  @override
+  String get deleteAccountHint =>
+      'Entfernt das Konto und alle Daten endgültig.';
+
+  @override
+  String get deleteAccountConfirm =>
+      'Alle deine Fahrzeuge, Dokumente und Warnungen werden gelöscht. Das lässt sich nicht rückgängig machen.';
+
+  @override
+  String get deleteAccountPassword => 'Gib zur Bestätigung dein Passwort ein';
+
+  @override
+  String get deleteAccountButton => 'Endgültig löschen';
+
+  @override
+  String get accountDeleted => 'Das Konto wurde gelöscht.';
+
+  @override
   String get navHome => 'Start';
 
   @override
@@ -844,6 +899,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get errNotFound => 'Ressource nicht gefunden.';
+
+  @override
+  String get errTooManyAttempts =>
+      'Zu viele Versuche. Bitte versuche es in ein paar Minuten erneut.';
 
   @override
   String get errServer => 'Serverfehler. Bitte erneut versuchen.';

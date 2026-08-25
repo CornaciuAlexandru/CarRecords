@@ -131,6 +131,61 @@ class AppLocalizationsFr extends AppLocalizations {
   String get passwordNeedsDigit => 'Doit contenir au moins un chiffre';
 
   @override
+  String get forgotPassword => 'Mot de passe oublié ?';
+
+  @override
+  String get resetPasswordTitle => 'Réinitialiser le mot de passe';
+
+  @override
+  String get resetPasswordHint =>
+      'Saisis l\'adresse utilisée à l\'inscription. Nous t\'enverrons un lien par e-mail pour définir un nouveau mot de passe.';
+
+  @override
+  String get sendResetLink => 'Envoyer le lien';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'Si un compte existe pour $email, le lien est en route. Consulte ta boîte de réception.';
+  }
+
+  @override
+  String get emailNotVerified => 'Adresse e-mail non confirmée';
+
+  @override
+  String get emailNotVerifiedHint =>
+      'Confirme-la pour pouvoir récupérer le compte en cas d\'oubli du mot de passe.';
+
+  @override
+  String get emailVerified => 'Adresse e-mail confirmée';
+
+  @override
+  String get resendVerification => 'Envoyer le lien de confirmation';
+
+  @override
+  String get verificationSent =>
+      'Lien de confirmation envoyé. Consulte ta boîte de réception.';
+
+  @override
+  String get deleteAccount => 'Supprimer le compte';
+
+  @override
+  String get deleteAccountHint =>
+      'Supprime définitivement le compte et toutes ses données.';
+
+  @override
+  String get deleteAccountConfirm =>
+      'Toutes tes voitures, tous tes documents et alertes seront supprimés. Cette action est irréversible.';
+
+  @override
+  String get deleteAccountPassword => 'Saisis ton mot de passe pour confirmer';
+
+  @override
+  String get deleteAccountButton => 'Supprimer définitivement';
+
+  @override
+  String get accountDeleted => 'Le compte a été supprimé.';
+
+  @override
   String get navHome => 'Accueil';
 
   @override
@@ -844,6 +899,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errNotFound => 'Ressource introuvable.';
+
+  @override
+  String get errTooManyAttempts =>
+      'Trop de tentatives. Réessaie dans quelques minutes.';
 
   @override
   String get errServer => 'Erreur du serveur. Réessaie.';

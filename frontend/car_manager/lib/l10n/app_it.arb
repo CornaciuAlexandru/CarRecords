@@ -47,6 +47,29 @@
   "passwordRulesHint": "Min. 8 caratteri, 1 maiuscola, 1 cifra",
   "passwordNeedsUpper": "Deve contenere almeno una maiuscola",
   "passwordNeedsDigit": "Deve contenere almeno una cifra",
+  "forgotPassword": "Password dimenticata?",
+  "resetPasswordTitle": "Reimposta password",
+  "resetPasswordHint": "Inserisci l'indirizzo usato per la registrazione. Ti invieremo per email un link per impostare una nuova password.",
+  "sendResetLink": "Invia link",
+  "resetLinkSent": "Se esiste un account per {email}, il link è in arrivo. Controlla la tua casella di posta.",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailNotVerified": "Indirizzo email non confermato",
+  "emailNotVerifiedHint": "Confermalo per poter recuperare l'account se dimentichi la password.",
+  "emailVerified": "Indirizzo email confermato",
+  "resendVerification": "Invia link di conferma",
+  "verificationSent": "Link di conferma inviato. Controlla la tua casella di posta.",
+  "deleteAccount": "Elimina account",
+  "deleteAccountHint": "Elimina definitivamente l'account e tutti i suoi dati.",
+  "deleteAccountConfirm": "Tutte le tue auto, i documenti e gli avvisi saranno eliminati. L'operazione non è reversibile.",
+  "deleteAccountPassword": "Inserisci la password per confermare",
+  "deleteAccountButton": "Elimina definitivamente",
+  "accountDeleted": "L'account è stato eliminato.",
   "navHome": "Home",
   "navCars": "Auto",
   "navAlerts": "Avvisi",
@@ -415,6 +438,7 @@
   "errInvalidData": "Dati non validi. Controlla i campi.",
   "errForbidden": "Non hai i permessi per questa azione.",
   "errNotFound": "Risorsa non trovata.",
+  "errTooManyAttempts": "Troppi tentativi. Riprova tra qualche minuto.",
   "errServer": "Errore del server. Riprova.",
   "errWithCode": "Si è verificato un errore (codice {name}).",
   "@errWithCode": {

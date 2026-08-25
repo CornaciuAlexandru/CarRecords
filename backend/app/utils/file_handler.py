@@ -1,3 +1,4 @@
+import shutil
 import uuid
 import aiofiles
 from pathlib import Path
@@ -35,3 +36,13 @@ async def save_document(file: UploadFile, user_id: str) -> Path:
 
 async def save_photo(file: UploadFile, user_id: str) -> Path:
     return await _save_file(file, PHOTOS_PATH, user_id)
+
+
+def delete_user_files(user_id: str) -> None:
+    """Sterge pozele si documentele unui utilizator.
+
+    Chemata la stergerea contului: fara asta, fisierele ar ramane pe disc
+    dupa ce randurile din baza de date dispar.
+    """
+    for base in (DOCUMENTS_PATH, PHOTOS_PATH):
+        shutil.rmtree(base / user_id, ignore_errors=True)

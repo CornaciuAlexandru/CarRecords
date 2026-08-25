@@ -37,6 +37,7 @@ async def lifespan(app: FastAPI):
     DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
     _migrate_missing_columns()
     _migrate_max_cars()
+    _migrate_lowercase_emails()
     # Descoperirea prin broadcast are sens doar in retea locala.
     # In cloud clientii folosesc un domeniu fix.
     if settings.DISCOVERY_ENABLED and not settings.is_production:
@@ -122,8 +123,52 @@ def _migrate_missing_columns():
                         f'ALTER TABLE "{table.name}" '
                         f'ADD COLUMN "{col.name}" {sql_type}'
                     ))
+                    # ALTER lasa NULL pe randurile existente, chiar daca in
+                    # model coloana are default. Le completam, altfel
+                    # randurile vechi ies din aplicatie cu valori nule
+                    # acolo unde codul asteapta un numar sau un boolean.
+                    if col.default is not None and getattr(col.default, "is_scalar", False):
+                        conn.execute(
+                            text(f'UPDATE "{table.name}" SET "{col.name}" = :v '
+                                 f'WHERE "{col.name}" IS NULL'),
+                            {"v": col.default.arg},
+                        )
     except Exception:
         pass  # migrarea nu trebuie sa blocheze pornirea
+
+
+def _migrate_lowercase_emails():
+    """Trece adresele salvate la litere mici.
+
+    Cautarea contului e o egalitate simpla pe coloana `email`, iar aceasta e
+    sensibila la majuscule. Conturile create inainte de normalizarea la
+    intrare ar ramane inaccesibile pentru cine isi scrie adresa altfel decat
+    la inregistrare.
+
+    Daca doua conturi difera doar prin litere mari, nu le atingem: le-am
+    ciocni pe indexul unic. Raman ca inainte si se rezolva manual.
+    """
+    from collections import Counter
+    from app.models.user import User
+    db = SessionLocal()
+    try:
+        users = db.query(User).all()
+        mixed = [u for u in users if u.email != u.email.lower()]
+        if not mixed:
+            return
+        # Cate conturi ar ajunge la aceeasi adresa dupa normalizare
+        counts = Counter(u.email.lower() for u in users)
+        for user in mixed:
+            target = user.email.lower()
+            if counts[target] > 1:
+                print(f"[migrare] {user.email} s-ar ciocni cu {target}; il las asa")
+                continue
+            user.email = target
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
 
 
 def _migrate_max_cars():

@@ -51,6 +51,24 @@ python run.py
 | Notificari | `/api/v1/notifications` |
 | Admin | `/api/v1/admin` |
 
+## Emailuri (resetare parola, confirmarea adresei)
+
+Fara `SMTP_HOST` in `backend/.env`, mesajele nu se trimit: se scriu in
+`backend/sent_emails.log` si in consola. Linkurile din ele sunt valide, deci
+fluxul complet se poate testa local, fara cont de mail.
+
+Pentru trimitere reala:
+```env
+PUBLIC_URL=http://192.168.1.10:8000   # adresa la care ajung telefoanele
+SMTP_HOST=smtp.exemplu.ro
+SMTP_PORT=587
+SMTP_USER=noreply@carrecords.ro
+SMTP_PASSWORD=parola
+```
+
+`PUBLIC_URL` trebuie sa fie adresa la care serverul e vizibil pentru cel care
+deschide emailul — din ea se construiesc linkurile.
+
 ## OCR - Scanare Documente
 
 Pentru functia de scanare automata a documentelor este necesar **Tesseract OCR**:

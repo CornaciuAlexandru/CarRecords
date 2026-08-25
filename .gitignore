@@ -4,6 +4,8 @@ backend/*.db
 backend/backups/
 backend/uploads/
 backend/downloads/
+# Emailurile netrimise (contin linkuri de resetare a parolei)
+backend/sent_emails.log
 
 # ── Chei de semnare Android (NU se urca niciodata pe git) ──
 *.jks

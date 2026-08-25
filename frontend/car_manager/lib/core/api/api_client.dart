@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/token_store.dart';
 
 /// Adresa serverului din cloud. Se seteaza la compilare:
 ///     flutter build apk --release --dart-define=API_URL=https://api.exemplu.ro
@@ -41,8 +41,7 @@ Dio createDio() {
     onRequest: (options, handler) async {
       // Actualizeaza baseUrl la fiecare request — suporta discovery dinamic
       options.baseUrl = _dynamicBaseUrl;
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('access_token');
+      final token = await TokenStore.accessToken;
       if (token != null) {
         options.headers['Authorization'] = 'Bearer $token';
       }
@@ -53,16 +52,13 @@ Dio createDio() {
         final refreshed = await _tryRefreshToken(dio);
         if (refreshed) {
           final opts = error.requestOptions;
-          final prefs = await SharedPreferences.getInstance();
-          opts.headers['Authorization'] = 'Bearer ${prefs.getString('access_token')}';
+          opts.headers['Authorization'] = 'Bearer ${await TokenStore.accessToken}';
           try {
             final response = await dio.fetch(opts);
             return handler.resolve(response);
           } catch (_) {}
         }
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove('access_token');
-        await prefs.remove('refresh_token');
+        await TokenStore.clear();
       }
       return handler.next(error);
     },
@@ -73,13 +69,14 @@ Dio createDio() {
 
 Future<bool> _tryRefreshToken(Dio dio) async {
   try {
-    final prefs = await SharedPreferences.getInstance();
-    final refreshToken = prefs.getString('refresh_token');
+    final refreshToken = await TokenStore.refreshToken;
     if (refreshToken == null) return false;
     final response = await dio.post('/auth/refresh',
         data: {'refresh_token': refreshToken});
-    await prefs.setString('access_token', response.data['access_token']);
-    await prefs.setString('refresh_token', response.data['refresh_token']);
+    await TokenStore.save(
+      access: response.data['access_token'],
+      refresh: response.data['refresh_token'],
+    );
     return true;
   } catch (_) {
     return false;

@@ -15,6 +15,7 @@ from app.models.registration import VehicleRegistration
 from app.models.maintenance import MaintenanceRecord
 from app.models.modification import CarModification
 from app.schemas.user import UserOut, AdminUserUpdate
+from app.utils.file_handler import delete_user_files
 
 
 class AdminUserOut(BaseModel):
@@ -121,6 +122,7 @@ def delete_user(user_id: str, db: Session = Depends(get_db), admin: User = Depen
         raise HTTPException(status_code=400, detail="Nu te poti sterge pe tine insuti")
     db.delete(user)
     db.commit()
+    delete_user_files(user_id)
 
 
 @router.get("/users/{user_id}/cars", response_model=List[dict])

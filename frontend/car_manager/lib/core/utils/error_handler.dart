@@ -19,6 +19,10 @@ String parseError(BuildContext context, Object error) {
     final statusCode = error.response?.statusCode;
     final detail = error.response?.data?['detail'];
 
+    // Limitarea de rata are mesaj propriu, tradus: cel de la server e
+    // intr-o singura limba.
+    if (statusCode == 429) return tr(context).errTooManyAttempts;
+
     if (detail != null) {
       // Mesaje cunoscute de la backend
       if (detail.toString().contains('Email sau parola') ||

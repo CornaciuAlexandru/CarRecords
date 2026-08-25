@@ -15,6 +15,11 @@ class User(Base):
     phone = Column(String, nullable=True)
     role = Column(Enum("user", "admin", name="user_role"), default="user", nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
+    email_verified = Column(Boolean, default=False, nullable=False)
+    email_verified_at = Column(DateTime, nullable=True)
+    # Creste la fiecare schimbare/resetare de parola. Tokenurile emise
+    # inainte poarta o versiune mai veche si sunt refuzate.
+    token_version = Column(Integer, default=0, nullable=False)
     subscription_tier = Column(Enum("free", "premium", name="subscription_tier"), default="free")
     max_cars = Column(Integer, default=3)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -23,3 +28,4 @@ class User(Base):
 
     cars = relationship("Car", back_populates="owner", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    email_tokens = relationship("EmailToken", back_populates="user", cascade="all, delete-orphan")

@@ -47,6 +47,29 @@
   "passwordRulesHint": "Mín. 8 caracteres, 1 mayúscula, 1 dígito",
   "passwordNeedsUpper": "Debe contener al menos una mayúscula",
   "passwordNeedsDigit": "Debe contener al menos un dígito",
+  "forgotPassword": "¿Olvidaste la contraseña?",
+  "resetPasswordTitle": "Restablecer contraseña",
+  "resetPasswordHint": "Escribe la dirección con la que te registraste. Te enviaremos por correo un enlace para poner una contraseña nueva.",
+  "sendResetLink": "Enviar enlace",
+  "resetLinkSent": "Si existe una cuenta para {email}, el enlace ya está en camino. Revisa tu correo.",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "emailNotVerified": "Dirección de correo sin confirmar",
+  "emailNotVerifiedHint": "Confírmala para poder recuperar la cuenta si olvidas la contraseña.",
+  "emailVerified": "Dirección de correo confirmada",
+  "resendVerification": "Enviar enlace de confirmación",
+  "verificationSent": "Enlace de confirmación enviado. Revisa tu correo.",
+  "deleteAccount": "Eliminar cuenta",
+  "deleteAccountHint": "Elimina de forma permanente la cuenta y todos sus datos.",
+  "deleteAccountConfirm": "Se eliminarán todos tus coches, documentos y alertas. Esta acción no se puede deshacer.",
+  "deleteAccountPassword": "Escribe tu contraseña para confirmar",
+  "deleteAccountButton": "Eliminar permanentemente",
+  "accountDeleted": "La cuenta ha sido eliminada.",
   "navHome": "Inicio",
   "navCars": "Coches",
   "navAlerts": "Alertas",
@@ -415,6 +438,7 @@
   "errInvalidData": "Datos no válidos. Revisa los campos.",
   "errForbidden": "No tienes permiso para esta acción.",
   "errNotFound": "Recurso no encontrado.",
+  "errTooManyAttempts": "Demasiados intentos. Inténtalo de nuevo en unos minutos.",
   "errServer": "Error del servidor. Inténtalo de nuevo.",
   "errWithCode": "Se ha producido un error (código {name}).",
   "@errWithCode": {

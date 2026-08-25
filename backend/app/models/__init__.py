@@ -6,3 +6,4 @@ from app.models.registration import VehicleRegistration
 from app.models.maintenance import MaintenanceRecord
 from app.models.modification import CarModification
 from app.models.notification import Notification
+from app.models.email_token import EmailToken

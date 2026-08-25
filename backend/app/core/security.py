@@ -1,8 +1,20 @@
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Optional, Tuple
+import hashlib
+import secrets
 from jose import JWTError, jwt
 import bcrypt
 from app.core.config import settings
+
+
+def utcnow() -> datetime:
+    """Ora UTC fara fus orar.
+
+    Coloanele DateTime nu pastreaza fusul nici pe SQLite, nici pe PostgreSQL,
+    iar compararea unei date "aware" cu una citita din baza da TypeError.
+    Tinem totul naiv, in UTC.
+    """
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 def hash_password(password: str) -> str:
@@ -11,6 +23,17 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+
+
+def issue_tokens(user) -> Tuple[str, str]:
+    """Pereche access + refresh pentru un utilizator.
+
+    Amandoua poarta versiunea de token a contului (`tv`): la schimbarea sau
+    resetarea parolei versiunea creste, iar tokenurile emise inainte devin
+    invalide — altfel un refresh token furat ar ramane valabil 30 de zile.
+    """
+    data = {"sub": user.id, "tv": user.token_version or 0}
+    return create_access_token(data), create_refresh_token(data)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -36,3 +59,18 @@ def decode_token(token: str) -> Optional[dict]:
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError:
         return None
+
+
+# ── Tokenuri trimise pe email ────────────────────────────────────────
+# Nu sunt JWT: se pastreaza in baza de date ca sa poata fi anulate si
+# folosite o singura data. In tabel intra doar hash-ul, deci cine citeste
+# baza de date nu poate reconstrui linkul din email.
+
+def generate_email_token() -> Tuple[str, str]:
+    """Returneaza (token pentru link, hash pentru baza de date)."""
+    raw = secrets.token_urlsafe(32)
+    return raw, hash_email_token(raw)
+
+
+def hash_email_token(raw: str) -> str:
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
