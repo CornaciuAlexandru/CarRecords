@@ -1,0 +1,46 @@
+# Usa din fata a serverului: un singur Caddy pentru toate aplicatiile de pe
+# masina.
+#
+# De ce exista fisierul asta. Fiecare aplicatie venea cu propriul Caddy, care
+# cerea porturile 80 si 443. Pe un server unde ruleaza doua aplicatii, al
+# doilea nu mai porneste - porturile sunt deja luate. Un singur proxy le
+# rezolva pe amandoua si tine un singur set de certificate.
+#
+# Aplicatiile nu mai publica porturi. Se conecteaza la reteaua "web", iar
+# Caddy le gaseste dupa numele serviciului (backend, api).
+#
+# Pornire:
+#   docker network create web        # o singura data, pe server
+#   docker compose --env-file .env up -d
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CARRECORDS_DOMAIN: ${CARRECORDS_DOMAIN}
+      DRIVECHAT_DOMAIN: ${DRIVECHAT_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Fisierele statice ale fiecarei aplicatii, luate de unde sunt clonate
+      # pe server. Caile se dau in .env - proxy-ul nu presupune unde stau
+      # celelalte proiecte.
+      - ${CARRECORDS_SITE}:/srv/carrecords:ro
+      - ${DRIVECHAT_SITE}:/srv/drivechat:ro
+      # Certificatele. Volumul asta nu se sterge niciodata din greseala:
+      # Let's Encrypt limiteaza cate certificate poti cere pe saptamana.
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+
+volumes:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,105 @@
+# Caddy obtine si reinnoieste singur certificatele de la Let's Encrypt, pentru
+# toate numele de mai jos. Nu e nevoie de certbot si nici de vreun cron.
+#
+# Numele serviciilor (backend, api) se rezolva prin reteaua Docker "web".
+
+# ── CarRecords: API ───────────────────────────────────────────────
+api.{$CARRECORDS_DOMAIN} {
+	encode gzip
+
+	# Documentele scanate pentru OCR sunt mari; implicit Caddy taie mult mai jos.
+	request_body {
+		max_size 15MB
+	}
+
+	reverse_proxy backend:8000 {
+		header_up X-Real-IP {remote_host}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output file /data/carrecords-api.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}
+
+# ── CarRecords: site public ───────────────────────────────────────
+# Gazduieste paginile pe care Google Play le cere accesibile fara instalarea
+# aplicatiei: /confidentialitate, /termeni, /stergere-cont.
+{$CARRECORDS_DOMAIN}, www.{$CARRECORDS_DOMAIN} {
+	encode gzip
+	root * /srv/carrecords
+	try_files {path} {path}.html {path}/index.html /index.html
+	file_server
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output file /data/carrecords-site.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}
+
+# ── DriveChat ─────────────────────────────────────────────────────
+# Mutat aici din stiva DriveChat, neschimbat: aceleasi rute, acelasi
+# comportament. Doar proxy-ul e altul.
+{$DRIVECHAT_DOMAIN} {
+	encode gzip
+
+	handle /privacy* {
+		root * /srv/drivechat
+		try_files /privacy.html
+		file_server
+	}
+	handle /terms* {
+		root * /srv/drivechat
+		try_files /terms.html
+		file_server
+	}
+	handle /delete-account* {
+		root * /srv/drivechat
+		try_files /delete-account.html
+		file_server
+	}
+
+	handle /api/* {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		root * /srv/drivechat
+		try_files /index.html
+		file_server
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	log {
+		output file /data/drivechat.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}

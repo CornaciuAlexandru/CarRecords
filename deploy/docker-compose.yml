@@ -1,10 +1,19 @@
-# Stiva completa CarRecords pentru un server in cloud.
+# Stiva CarRecords pentru un server in cloud.
 #
-#   caddy    — proxy invers, obtine si reinnoieste automat certificatul HTTPS
 #   backend  — API-ul FastAPI
 #   db       — PostgreSQL
 #
-# Pornire:  docker compose up -d
+# HTTPS-ul nu e aici. Pe un server cu mai multe aplicatii, fiecare cu propriul
+# Caddy, doar prima apuca porturile 80 si 443. Terminarea TLS s-a mutat intr-o
+# stiva separata, comuna intregii masini: vezi deploy/proxy/. Backend-ul se
+# conecteaza la reteaua "web", de unde proxy-ul il gaseste dupa numele
+# serviciului.
+#
+# Pornire:
+#   docker network create web        # o singura data, pe server
+#   docker compose --env-file .env up -d --build
+#   cd proxy && docker compose --env-file .env up -d
+#
 # Valorile sensibile se citesc din fisierul .env de langa acest fisier.
 
 services:
@@ -51,25 +60,16 @@ services:
       - uploads:/app/uploads
     expose:
       - "8000"
+    networks:
+      # "default" ramane pentru vorbit cu baza de date, care nu are ce cauta
+      # pe reteaua comuna.
+      - default
+      - web
 
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on:
-      - backend
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      DOMAIN: ${DOMAIN}
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ../site:/srv/site:ro          # site-ul public (fisiere statice)
-      - caddy_data:/data
-      - caddy_config:/config
+networks:
+  web:
+    external: true
 
 volumes:
   db_data:
   uploads:
-  caddy_data:
-  caddy_config:

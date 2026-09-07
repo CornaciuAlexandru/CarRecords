@@ -23,22 +23,23 @@ PC-ul tău să fie pornit.
 ## Pasul 1 — Îndreaptă domeniul spre server
 
 În panoul registrarului de la care ai cumpărat `carrecords.ro`, la secțiunea
-**DNS / Zone management**, adaugă:
+**DNS / Zone management**, sunt necesare trei înregistrări A către IP-ul
+public al serverului:
 
 ```
-Tip:     A
-Nume:    api
-Valoare: <IP-ul public al serverului Hetzner>
-TTL:     3600
+Tip: A   Nume: @      -> IP-ul serverului     (carrecords.ro, site public)
+Tip: A   Nume: www    -> IP-ul serverului     (www.carrecords.ro)
+Tip: A   Nume: api    -> IP-ul serverului     (api.carrecords.ro)
 ```
 
-Rezultă `api.carrecords.ro`. Verifică propagarea (poate dura până la o oră):
+Verifică propagarea (poate dura până la o oră):
 ```bash
-nslookup api.carrecords.ro
+for h in carrecords.ro www.carrecords.ro api.carrecords.ro; do echo -n "$h "; dig +short $h; done
 ```
 
-Nu trece la pasul 5 până când comanda de mai sus nu returnează IP-ul
-serverului — Let's Encrypt nu poate emite certificatul altfel.
+Nu porni proxy-ul până când toate trei nu returnează IP-ul serverului.
+Let's Encrypt nu poate emite certificatul altfel, iar Caddy va reîncerca în
+buclă până se lovește de limita de cereri.
 
 ---
 
@@ -105,12 +106,31 @@ echo "SECRET_KEY=$(openssl rand -hex 32)"
 
 ## Pasul 5 — Pornește
 
+HTTPS-ul e servit de un proxy comun întregii mașini, nu de stiva asta —
+altfel două aplicații pe același server s-ar bate pe porturile 80 și 443.
+
 ```bash
-docker compose up -d --build
+# o singură dată pe server: rețeaua pe care proxy-ul găsește aplicațiile
+docker network create web
+
+# aplicația
+docker compose --env-file .env up -d --build
+
+# proxy-ul, care termină TLS pentru toate aplicațiile de pe mașină
+cd proxy
+cp .env.example .env && nano .env      # domenii și căile spre fișierele statice
+docker compose --env-file .env up -d
 ```
 
 Prima pornire durează ~5 minute (se compilează imaginea cu Tesseract).
-Caddy obține automat certificatul HTTPS de la Let's Encrypt.
+Caddy obține automat certificatele HTTPS de la Let's Encrypt.
+
+Înainte de a porni proxy-ul merită validată configurația — o greșeală de
+sintaxă îl lasă în repornire continuă, cu toate aplicațiile căzute:
+
+```bash
+docker compose run --rm caddy caddy validate --config /etc/caddy/Caddyfile
+```
 
 Verifică:
 ```bash
