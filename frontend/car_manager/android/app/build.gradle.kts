@@ -22,6 +22,9 @@ android {
     ndkVersion = "28.2.13676358"
 
     compileOptions {
+        // Cerut de flutter_local_notifications: foloseste java.time, care pe
+        // Android vechi exista doar prin desugaring.
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -72,4 +75,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

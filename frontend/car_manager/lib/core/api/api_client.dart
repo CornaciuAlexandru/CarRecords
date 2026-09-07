@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../services/notification_scheduler.dart';
 import '../services/token_store.dart';
 
 /// Adresa serverului din cloud. Se seteaza la compilare:
@@ -29,6 +30,17 @@ void setDiscoveredServerIp(String ip) {
   _dynamicBaseUrl = 'http://$ip:8000/api/v1';
 }
 
+/// Rutele ale caror modificari schimba momentul in care trebuie sa sune un
+/// memento. Stergerea unei masini intra si ea aici: ii duce cu sine
+/// documentele, deci si alarmele.
+const _reminderPaths = ['/cars', 'vignettes', 'insurance', 'registration'];
+
+bool _affectsReminders(RequestOptions o) {
+  final method = o.method.toUpperCase();
+  if (method == 'GET' || method == 'HEAD') return false;
+  return _reminderPaths.any(o.path.contains);
+}
+
 Dio createDio() {
   final dio = Dio(BaseOptions(
     baseUrl: _dynamicBaseUrl,
@@ -46,6 +58,16 @@ Dio createDio() {
         options.headers['Authorization'] = 'Bearer $token';
       }
       return handler.next(options);
+    },
+    onResponse: (response, handler) {
+      // Cand se adauga sau se schimba un document, alarmele de pe telefon nu
+      // mai corespund. Reprogramarea se face aici, o singura data pentru toate
+      // ecranele, in loc sa fie chemata din fiecare formular - de unde ar
+      // lipsi exact din cel uitat.
+      if (_affectsReminders(response.requestOptions)) {
+        NotificationScheduler.instance.scheduleResync(dio);
+      }
+      return handler.next(response);
     },
     onError: (error, handler) async {
       if (error.response?.statusCode == 401) {

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../models/user.dart';
 import '../api/api_client.dart';
+import 'notification_scheduler.dart';
 import 'token_store.dart';
 
 class AuthService {
@@ -32,6 +33,16 @@ class AuthService {
     });
     await _saveTokens(resp.data);
     return User.fromJson(resp.data['user']);
+  }
+
+  /// Pune pe telefon mementourile documentelor acestui cont.
+  ///
+  /// Cere si permisiunea de notificari: momentul potrivit e imediat dupa
+  /// autentificare, cand utilizatorul tocmai a intrat in aplicatia lui, nu la
+  /// prima deschidere cand inca nu stie ce e.
+  Future<void> syncReminders({bool askPermission = false}) async {
+    if (askPermission) await NotificationScheduler.instance.requestPermission();
+    await NotificationScheduler.instance.sync(_dio);
   }
 
   Future<User?> getMe() async {

@@ -5,8 +5,8 @@ from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
 from app.models.notification import Notification
-from app.schemas.notification import NotificationOut
-from app.services.notification_checker import check_and_create_notifications
+from app.schemas.notification import NotificationOut, PlannedNotification
+from app.services.notification_checker import check_and_create_notifications, plan_notifications
 
 router = APIRouter(prefix="/notifications", tags=["Notificari"])
 
@@ -30,6 +30,21 @@ def trigger_notification_check(
 ):
     created = check_and_create_notifications(current_user.id, db)
     return {"created": created}
+
+
+@router.get("/schedule", response_model=List[PlannedNotification])
+def notification_schedule(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Alarmele viitoare, pe care telefonul le programeaza local.
+
+    Datele de expirare se stiu dinainte, deci telefonul nu are nevoie de un
+    server care sa-l trezeasca la momentul potrivit - isi pune singur alarmele
+    si suna si fara internet. Serverul ramane sursa unica pentru praguri si
+    texte.
+    """
+    return plan_notifications(current_user.id, db)
 
 
 @router.put("/{notif_id}/read", response_model=NotificationOut)

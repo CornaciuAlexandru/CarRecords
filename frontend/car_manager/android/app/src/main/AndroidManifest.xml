@@ -3,6 +3,17 @@
     <!-- Permisiuni pentru image_picker (selectare poze modificari) -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <!-- Notificari pentru expirarea documentelor (ITP, RCA, rovinieta).
+         Din Android 13 permisiunea se cere si de la utilizator, la prima
+         pornire. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Alarma trebuie sa sune in ziua stabilita, nu "candva prin apropiere":
+         un memento de ITP intarziat cu o zi e inutil. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <!-- Alarmele programate se pierd la repornirea telefonului daca nu le
+         reinregistram noi dupa boot. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
         android:label="CarRecords"
         android:name="${applicationName}"
@@ -30,6 +41,23 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Reprogramarea alarmelor dupa repornirea telefonului si dupa
+             actualizarea aplicatiei. Fara ele, mementourile dispar tacut la
+             primul restart. -->
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

@@ -46,6 +46,14 @@ dependencies:
   gap: ^3.0.1
   badges: ^3.1.2
 
+  # Notificari programate local (ITP, RCA, rovinieta).
+  # Datele de expirare se stiu dinainte, deci telefonul isi pune singur
+  # alarmele — nu e nevoie de Firebase, de chei de push si nici ca serverul
+  # sa fie pornit in ziua respectiva.
+  flutter_local_notifications: ^19.0.0
+  timezone: ^0.10.0
+  flutter_timezone: ^4.1.0
+
   # File handling
   path_provider: ^2.1.3
 

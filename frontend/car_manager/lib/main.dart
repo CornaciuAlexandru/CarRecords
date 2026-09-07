@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/services/ads_service.dart';
+import 'core/services/notification_scheduler.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/router.dart';
 import 'core/widgets/startup_wrapper.dart';
@@ -12,6 +13,9 @@ void main() {
   // Reclamele se initializeaza in fundal — pornirea aplicatiei nu asteapta
   // dupa ele, iar pe Windows apelul nu face nimic.
   AdsService.instance.initialize();
+  // La fel si notificarile: initializarea citeste fusul orar si inregistreaza
+  // canalul, dar nu programeaza nimic pana nu stim al cui e telefonul.
+  NotificationScheduler.instance.initialize();
   runApp(const ProviderScope(child: CarRecordsApp()));
 }
 
