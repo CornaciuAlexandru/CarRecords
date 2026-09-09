@@ -65,6 +65,11 @@ services:
       REQUIRE_EMAIL_VERIFICATION: ${REQUIRE_EMAIL_VERIFICATION:-false}
     volumes:
       - uploads:/app/uploads
+      # Cheia contului de serviciu Google, cu care serverul verifica chitantele.
+      # Calea din stanga se da in .env; fara ea, montarea nu se face si
+      # cumpararile raspund 503 - ceea ce e corect: mai bine refuzam decat sa
+      # acordam un abonament pe care nu l-am verificat.
+      - ${GOOGLE_PLAY_KEY_HOST_PATH:-/dev/null}:/run/secrets/google-play.json:ro
     expose:
       - "8000"
     networks:

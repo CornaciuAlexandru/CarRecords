@@ -39,6 +39,29 @@ class BillingPlan {
       );
 }
 
+/// Ce a raspuns serverul la o chitanta.
+///
+/// Distinctia conteaza: pentru `unavailable` cumpararea NU se marcheaza ca
+/// finalizata la magazin, ca sa fie livrata din nou la urmatoarea pornire si
+/// sa se poata reincerca. Pentru celelalte nu are rost sa se reincerce.
+enum VerifyOutcome {
+  /// Contul a primit ce a cumparat.
+  granted,
+
+  /// Chitanta e valida dar a fost deja folosita - de obicei pe alt cont, sau
+  /// e o restaurare a unei cumparari deja acordate.
+  alreadyUsed,
+
+  /// Magazinul spune ca nu e o cumparare valabila. Reincercarea n-ar schimba
+  /// nimic.
+  refused,
+
+  /// Nu s-a putut verifica acum: server picat, fara internet, cont de serviciu
+  /// lipsa. Se reincearca.
+  unavailable,
+}
+
+
 class BillingService {
   final Dio _dio = createDio();
 
@@ -47,5 +70,24 @@ class BillingService {
     return (resp.data as List)
         .map((j) => BillingPlan.fromJson(j as Map<String, dynamic>))
         .toList();
+  }
+
+  /// Trimite chitanta serverului, care intreaba magazinul si acorda.
+  Future<VerifyOutcome> verify(String productId, String purchaseToken) async {
+    try {
+      await _dio.post('/billing/verify', data: {
+        'product_id': productId,
+        'purchase_token': purchaseToken,
+      });
+      return VerifyOutcome.granted;
+    } on DioException catch (e) {
+      return switch (e.response?.statusCode) {
+        409 => VerifyOutcome.alreadyUsed,
+        400 => VerifyOutcome.refused,
+        _ => VerifyOutcome.unavailable,
+      };
+    } catch (_) {
+      return VerifyOutcome.unavailable;
+    }
   }
 }

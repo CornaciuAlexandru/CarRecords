@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/providers/locale_provider.dart';
+import 'core/providers/purchase_provider.dart';
 import 'core/services/ads_service.dart';
 import 'core/services/notification_scheduler.dart';
 import 'core/theme/app_theme.dart';
@@ -26,6 +27,10 @@ class CarRecordsApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
+    // Tinut viu de la radacina: o plata lasata in asteptare se confirma mai
+    // tarziu si e livrata la urmatoarea pornire, cand ecranul de cumparare nu
+    // e deschis. Fara ascultarea asta, omul ar plati fara sa primeasca nimic.
+    ref.watch(purchaseServiceProvider);
 
     return StartupWrapper(
       child: MaterialApp.router(

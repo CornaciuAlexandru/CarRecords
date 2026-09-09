@@ -36,6 +36,10 @@ dependencies:
   # Reclame (doar Android/iOS — pe Windows pachetul nu are implementare)
   google_mobile_ads: ^5.2.0
 
+  # Cumparari din magazin (abonamente si scanari). Ca si reclamele, exista doar
+  # pe Android/iOS: pe Windows apelurile sunt oprite inainte sa ajunga la plugin.
+  in_app_purchase: ^3.2.0
+
   # Camera & OCR
   image_picker: ^1.1.2
 
