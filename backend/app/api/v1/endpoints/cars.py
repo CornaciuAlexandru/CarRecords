@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import re
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.core import entitlements
@@ -7,6 +9,7 @@ from app.core.deps import get_current_user
 from app.models.user import User
 from app.models.car import Car
 from app.schemas.car import CarCreate, CarUpdate, CarOut
+from app.services.car_report import build_car_report
 
 router = APIRouter(prefix="/cars", tags=["Masini"])
 
@@ -45,6 +48,33 @@ def create_car(data: CarCreate, current_user: User = Depends(get_current_user), 
 @router.get("/{car_id}", response_model=CarOut)
 def get_car(car_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return get_car_or_404(car_id, current_user, db)
+
+
+@router.get("/{car_id}/report.pdf")
+def car_report(car_id: str, current_user: User = Depends(get_current_user),
+               db: Session = Depends(get_db)):
+    """Istoricul complet al masinii, ca PDF.
+
+    Se ataseaza la un anunt de vanzare sau se arata cumparatorului. Rezervat
+    planurilor platite: e o functie care aduce bani proprietarului, nu doar
+    comoditate.
+    """
+    car = get_car_or_404(car_id, current_user, db)
+    if not entitlements.can_export_report(current_user):
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Raportul PDF e disponibil in planurile PRO si MAXI.",
+        )
+
+    pdf = build_car_report(car, current_user)
+    # Numarul de inmatriculare ajunge in numele fisierului, deci trebuie curatat:
+    # un caracter nepotrivit acolo strica antetul.
+    plate = re.sub(r"[^A-Za-z0-9-]", "", car.license_plate or "masina")
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="CarRecords-{plate}.pdf"'},
+    )
 
 
 @router.put("/{car_id}", response_model=CarOut)

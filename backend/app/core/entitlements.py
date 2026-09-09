@@ -29,6 +29,9 @@ SCANS_PER_CAR = 5
 LEGACY_TIERS = {"premium": PRO}
 
 VALID_TIERS = (FREE, PRO, MAXI)
+# Planurile platite. Ce e rezervat lor se verifica prin `is_paid`, nu prin
+# comparatii cu numele planului imprastiate prin cod.
+PAID_TIERS = (PRO, MAXI)
 
 
 def normalize_tier(tier: Optional[str]) -> str:
@@ -62,6 +65,19 @@ def max_cars(user) -> int:
 def max_cars_for_tier(tier: Optional[str]) -> int:
     """Limita implicita a unui plan. Se scrie pe cont la schimbarea planului."""
     return MAX_CARS[normalize_tier(tier)]
+
+
+def is_paid(user) -> bool:
+    return tier_of(user) in PAID_TIERS
+
+
+def can_export_report(user) -> bool:
+    """Raportul PDF cu istoricul masinii - o functie de plan platit.
+
+    E cel mai bun motiv de plata pe care il avem: la vanzare, un istoric
+    documentat schimba pretul, iar datele exista doar aici.
+    """
+    return is_paid(user)
 
 
 def scans_used(car) -> int:

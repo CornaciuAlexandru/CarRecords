@@ -3,12 +3,16 @@ FROM python:3.12-slim
 
 # Tesseract cu limba romana (necesar pentru OCR pe taloane/asigurari)
 # + libpq pentru PostgreSQL
+# + fonts-dejavu-core: fara un font cu diacritice, raportul PDF ar scrie
+#   "Bucuresti" in loc de "Bucuresti" cu s si t - fonturile de baza din PDF
+#   acopera doar Latin-1.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         tesseract-ocr \
         tesseract-ocr-ron \
         tesseract-ocr-eng \
         libpq5 \
         curl \
+        fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
