@@ -25,6 +25,19 @@ class CarService {
     await _dio.delete('/cars/$carId');
   }
 
+  /// Raportul PDF cu istoricul complet al masinii.
+  ///
+  /// Vine ca octeti, nu ca JSON: se salveaza intr-un fisier si se trimite mai
+  /// departe. Disponibil doar pe planurile platite - serverul raspunde 402
+  /// altfel, iar apelantul arata oferta.
+  Future<List<int>> downloadCarReport(String carId) async {
+    final resp = await _dio.get<List<int>>(
+      '/cars/$carId/report.pdf',
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return resp.data ?? const [];
+  }
+
   // ── Roviniete ──────────────────────────────────────────────
   Future<List<Vignette>> getVignettes(String carId) async {
     final resp = await _dio.get('/cars/$carId/vignettes');

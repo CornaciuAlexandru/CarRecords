@@ -6,7 +6,9 @@ import '../providers/cars_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
+import '../../../core/utils/error_handler.dart';
 import '../../../core/utils/l10n.dart';
+import '../../../core/widgets/upgrade_sheet.dart';
 import '../../../core/services/ads_service.dart';
 
 class AddCarScreen extends ConsumerStatefulWidget {
@@ -65,6 +67,15 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
         AdsService.instance.onUserAction();
       }
     } catch (e) {
+      // Limita planului nu e o eroare de formular: aratam ce ar debloca.
+      if (isPaymentRequired(e)) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          showUpgradeSheet(context,
+              reason: (e as dynamic).response?.data?['detail'] as String?);
+        }
+        return;
+      }
       final msg = e is DioException
           ? (e.response?.data?['detail'] ?? tr(context).saveError)
           : e.toString();

@@ -1,8 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../core/models/user.dart';
+import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/error_handler.dart';
+import '../../../core/widgets/upgrade_sheet.dart';
 import '../providers/cars_provider.dart';
 import '../../../core/utils/l10n.dart';
 
@@ -152,9 +159,25 @@ class _InfoTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cars = ref.watch(carsProvider).value ?? [];
-    final car = cars.firstWhere((c) => c.id == carId,
-        orElse: () => cars.isEmpty ? throw Exception() : cars.first);
+    final carsAsync = ref.watch(carsProvider);
+    final cars = carsAsync.value ?? const <Car>[];
+    Car? car;
+    for (final c in cars) {
+      if (c.id == carId) {
+        car = c;
+        break;
+      }
+    }
+    // Cautarea de dinainte cadea inapoi pe prima masina din lista cand nu o
+    // gasea pe cea ceruta - deci ecranul arata linistit datele altei masini,
+    // iar acum ar fi exportat si un PDF cu istoricul ei.
+    if (car == null) {
+      return Center(
+        child: carsAsync.isLoading
+            ? const CircularProgressIndicator()
+            : const Text('Masina nu mai exista.'),
+      );
+    }
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -180,6 +203,8 @@ class _InfoTab extends ConsumerWidget {
             _row(tr(context).mileage, '${car.mileage} km'),
           if (car.vinNumber != null) _row(tr(context).vin, car.vinNumber!),
         ]),
+        const SizedBox(height: 16),
+        _ReportCard(car: car),
       ],
     );
   }
@@ -216,6 +241,93 @@ class _InfoTab extends ConsumerWidget {
           ],
         ),
       );
+}
+
+/// Exportul istoricului ca PDF.
+///
+/// Cel mai bun motiv de plata din aplicatie: la vanzare, un istoric documentat
+/// schimba pretul, iar datele exista doar aici. De asta cardul se vede si pe
+/// conturile gratuite - refuzul serverului deschide oferta, in loc sa ascunda
+/// functia si sa n-o afle nimeni.
+class _ReportCard extends ConsumerStatefulWidget {
+  final Car car;
+  const _ReportCard({required this.car});
+
+  @override
+  ConsumerState<_ReportCard> createState() => _ReportCardState();
+}
+
+class _ReportCardState extends ConsumerState<_ReportCard> {
+  bool _busy = false;
+
+  Future<void> _export() async {
+    setState(() => _busy = true);
+    try {
+      final bytes = await CarService().downloadCarReport(widget.car.id);
+      final dir = await getTemporaryDirectory();
+      final plate = widget.car.licensePlate.replaceAll(RegExp(r'[^A-Za-z0-9-]'), '');
+      final file = File('${dir.path}/CarRecords-$plate.pdf');
+      await file.writeAsBytes(bytes);
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'application/pdf')],
+        subject: 'Istoric ${widget.car.displayName}',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      // Planul nu ajunge: aratam ce ar debloca, nu un mesaj de eroare.
+      if (isPaymentRequired(e)) {
+        showUpgradeSheet(context,
+            reason: (e as dynamic).response?.data?['detail'] as String?);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(parseError(context, e)),
+          backgroundColor: AppColors.danger,
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: const [
+              Icon(Icons.picture_as_pdf_outlined, color: AppColors.primary),
+              SizedBox(width: 8),
+              Text('Istoric pentru vanzare',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            ]),
+            const SizedBox(height: 6),
+            const Text(
+              'Un PDF cu tot ce ai trecut aici: revizii, kilometraj, ITP, '
+              'asigurari, modificari. Il atasezi la anunt sau il arati '
+              'cumparatorului.',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _busy ? null : _export,
+                icon: _busy
+                    ? const SizedBox(
+                        width: 16, height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.ios_share),
+                label: Text(_busy ? 'Se genereaza...' : 'Genereaza PDF'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _SectionCard extends StatelessWidget {

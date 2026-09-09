@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/user.dart';
 import '../../../core/providers/locale_provider.dart';
+import '../../../core/services/ads_service.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/notification_scheduler.dart';
 
@@ -16,6 +17,7 @@ class AuthNotifier extends AsyncNotifier<User?> {
     final service = ref.read(authServiceProvider);
     if (await service.isLoggedIn()) {
       final user = await service.getMe();
+      _applyPlan(user);
       // Sesiune reluata: realiniem alarmele cu ce e pe server. Datele se pot
       // fi schimbat de pe alt dispozitiv, iar telefonul n-ar afla altfel.
       if (user != null) unawaited(service.syncReminders());
@@ -29,7 +31,10 @@ class AuthNotifier extends AsyncNotifier<User?> {
     state = await AsyncValue.guard(
       () => ref.read(authServiceProvider).login(email: email, password: password),
     );
-    if (state.hasValue && state.value != null) _armReminders();
+    if (state.hasValue && state.value != null) {
+      _applyPlan(state.value);
+      _armReminders();
+    }
   }
 
   Future<void> register(String email, String password, String fullName, String? phone) async {
@@ -43,7 +48,16 @@ class AuthNotifier extends AsyncNotifier<User?> {
             lang: _lang,
           ),
     );
-    if (state.hasValue && state.value != null) _armReminders();
+    if (state.hasValue && state.value != null) {
+      _applyPlan(state.value);
+      _armReminders();
+    }
+  }
+
+  /// Un cont platit nu vede reclame. AdBanner citeste direct providerul, dar
+  /// interstitialele pleaca din serviciu si n-ar trece pe acolo.
+  void _applyPlan(User? user) {
+    AdsService.instance.paidUser = user?.isPaid ?? false;
   }
 
   /// Cere permisiunea si programeaza mementourile, fara sa tina ecranul in
@@ -57,6 +71,7 @@ class AuthNotifier extends AsyncNotifier<User?> {
     // Alarmele vorbesc despre masinile contului. Daca ies din cont, n-au ce
     // sa mai sune pe telefonul asta.
     await NotificationScheduler.instance.cancelAll();
+    _applyPlan(null);
     state = const AsyncData(null);
   }
 
@@ -66,7 +81,10 @@ class AuthNotifier extends AsyncNotifier<User?> {
   /// nu trebuie sa arate ca o deconectare.
   Future<void> refreshUser() async {
     final user = await ref.read(authServiceProvider).getMe();
-    if (user != null) state = AsyncData(user);
+    if (user != null) {
+      _applyPlan(user);
+      state = AsyncData(user);
+    }
   }
 
   Future<void> forgotPassword(String email) =>

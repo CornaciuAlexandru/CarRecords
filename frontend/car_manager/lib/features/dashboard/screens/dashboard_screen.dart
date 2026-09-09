@@ -11,6 +11,7 @@ import '../../admin/screens/admin_screen.dart';
 import '../../notifications/providers/notifications_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/services/ads_service.dart';
+import '../../../core/widgets/upgrade_sheet.dart';
 import '../../../core/utils/l10n.dart';
 import '../../../core/utils/error_handler.dart';
 
@@ -312,6 +313,28 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               child: ListTile(
                 leading: const Icon(Icons.verified_outlined, color: AppColors.success),
                 title: Text(tr(context).emailVerified),
+              ),
+            ),
+          // Planul contului. Sta sus, langa starea adresei: cate masini si cate
+          // scanari mai are omul e o informatie de care da cu nasul, nu una
+          // pe care s-o caute prin meniuri.
+          if (user != null)
+            Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: Icon(
+                  user.isPaid ? Icons.workspace_premium : Icons.card_giftcard,
+                  color: user.isPaid ? AppColors.primary : AppColors.textSecondary,
+                ),
+                title: Text('Plan: ${user.planLabel}'),
+                subtitle: Text(
+                  user.scanCredits > 0
+                      ? '${user.maxCars} masini - ${user.scanCredits} scanari cumparate'
+                      : '${user.maxCars} masini',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 15),
+                onTap: () => showUpgradeSheet(context),
               ),
             ),
           // Selector de limba

@@ -56,6 +56,10 @@ dependencies:
 
   # File handling
   path_provider: ^2.1.3
+  # Trimiterea raportului PDF mai departe (atasat la un anunt, pe WhatsApp,
+  # pe email). Fara ea, fisierul ar ramane intr-un folder al aplicatiei pe care
+  # utilizatorul nu-l vede.
+  share_plus: ^10.1.4
 
   # Icons
   cupertino_icons: ^1.0.8

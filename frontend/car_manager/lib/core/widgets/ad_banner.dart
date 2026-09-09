@@ -1,20 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../../features/auth/providers/auth_provider.dart';
 import '../services/ads_service.dart';
 
 /// Banner publicitar afisat in partea de jos a ecranelor de listare.
 ///
 /// Pe Windows (sau cand reclamele sunt dezactivate) nu ocupa spatiu deloc —
 /// randeaza un widget gol, deci ecranele raman neschimbate.
-class AdBanner extends StatefulWidget {
+///
+/// Conturile platite nu vad reclame. Verificarea sta aici, in invelisul care
+/// urmareste contul, ca bannerul sa dispara in clipa in care omul cumpara -
+/// nu la urmatoarea pornire a aplicatiei.
+class AdBanner extends ConsumerWidget {
   const AdBanner({super.key});
 
   @override
-  State<AdBanner> createState() => _AdBannerState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authStateProvider).value;
+    if (user?.isPaid ?? false) return const SizedBox.shrink();
+    return const _AdBannerView();
+  }
 }
 
-class _AdBannerState extends State<AdBanner> {
+class _AdBannerView extends StatefulWidget {
+  const _AdBannerView();
+
+  @override
+  State<_AdBannerView> createState() => _AdBannerState();
+}
+
+class _AdBannerState extends State<_AdBannerView> {
   BannerAd? _ad;
   bool _loaded = false;
 

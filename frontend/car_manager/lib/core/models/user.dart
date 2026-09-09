@@ -8,6 +8,8 @@ class User {
   final bool emailVerified;
   final String subscriptionTier;
   final int maxCars;
+  /// Scanari OCR cumparate separat, folosibile pe orice masina a contului.
+  final int scanCredits;
   final DateTime? createdAt;
 
   const User({
@@ -20,11 +22,21 @@ class User {
     this.emailVerified = false,
     required this.subscriptionTier,
     required this.maxCars,
+    this.scanCredits = 0,
     this.createdAt,
   });
 
   bool get isAdmin => role == 'admin';
-  bool get isPremium => subscriptionTier == 'premium';
+
+  /// Planurile platite. Serverul le verifica oricum la fiecare cerere - asta e
+  /// doar ca sa nu ducem omul pana la un buton care s-ar refuza.
+  bool get isPaid => subscriptionTier == 'pro' || subscriptionTier == 'maxi';
+
+  String get planLabel => switch (subscriptionTier) {
+        'pro' => 'PRO',
+        'maxi' => 'MAXI',
+        _ => 'Gratuit',
+      };
 
   factory User.fromJson(Map<String, dynamic> j) => User(
         id: j['id'],
@@ -36,6 +48,7 @@ class User {
         emailVerified: j['email_verified'] ?? false,
         subscriptionTier: j['subscription_tier'],
         maxCars: j['max_cars'],
+        scanCredits: j['scan_credits'] ?? 0,
         createdAt: j['created_at'] != null ? DateTime.tryParse(j['created_at']) : null,
       );
 }
@@ -100,6 +113,10 @@ class Car {
   final String licensePlate;
   final String? registrationNumber;
   final int? mileage;
+  /// Scanari OCR folosite din cele incluse cu masina, si cate au mai ramas.
+  /// Vin de la server: limitele nu se calculeaza in aplicatie.
+  final int ocrScans;
+  final int ocrScansLeft;
 
   const Car({
     required this.id,
@@ -116,6 +133,8 @@ class Car {
     required this.licensePlate,
     this.registrationNumber,
     this.mileage,
+    this.ocrScans = 0,
+    this.ocrScansLeft = 0,
   });
 
   String get displayName => nickname ?? '$brand $model ($year)';
@@ -135,6 +154,8 @@ class Car {
         licensePlate: j['license_plate'],
         registrationNumber: j['registration_number'],
         mileage: j['mileage'],
+        ocrScans: j['ocr_scans'] ?? 0,
+        ocrScansLeft: j['ocr_scans_left'] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {

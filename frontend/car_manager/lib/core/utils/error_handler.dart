@@ -2,6 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'l10n.dart';
 
+/// Serverul a refuzat pentru ca depaseste planul contului.
+///
+/// Se deosebeste de restul erorilor pentru ca cere alt raspuns din partea
+/// aplicatiei: se arata oferta, nu un mesaj rosu. De asta backend-ul intoarce
+/// 402 si nu 400 sau 403.
+bool isPaymentRequired(Object error) =>
+    error is DioException && error.response?.statusCode == 402;
+
 /// Mesaj de eroare prietenos, in limba aleasa de utilizator.
 String parseError(BuildContext context, Object error) {
   if (error is DioException) {

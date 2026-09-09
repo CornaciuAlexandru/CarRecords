@@ -13,12 +13,39 @@ class ScanCard extends StatelessWidget {
   final bool isScanning;
   final Future<void> Function(String filePath) onScan;
 
+  /// Scanari ramase din cele incluse cu masina, si cele cumparate separat.
+  /// Se afiseaza INAINTE de a face poza: un om care afla dupa ce a fotografiat
+  /// documentul ca nu mai are scanari a pierdut timp degeaba.
+  final int? scansLeft;
+  final int credits;
+
+  /// Ce se intampla cand nu mai sunt scanari. De obicei deschide oferta.
+  final VoidCallback? onNeedMore;
+
   const ScanCard({
     super.key,
     required this.scannedImage,
     required this.isScanning,
     required this.onScan,
+    this.scansLeft,
+    this.credits = 0,
+    this.onNeedMore,
   });
+
+  /// Cate scanari mai poate face acum, cu tot cu cele cumparate.
+  int? get _available =>
+      scansLeft == null ? null : scansLeft! + credits;
+
+  bool get _outOfScans => _available != null && _available! <= 0;
+
+  String get _quotaText {
+    if (scansLeft == null) return '';
+    if (_outOfScans) return 'Ai folosit toate scanarile acestei masini.';
+    final included = scansLeft! == 1 ? '1 scanare inclusa' : '${scansLeft!} scanari incluse';
+    if (credits <= 0) return 'Iti mai raman $included.';
+    final bought = credits == 1 ? '1 cumparata' : '$credits cumparate';
+    return 'Iti mai raman $included si $bought.';
+  }
 
   Future<void> _pick(BuildContext context) async {
     final picker = ImagePicker();
@@ -95,6 +122,31 @@ class ScanCard extends StatelessWidget {
                   : tr(context).scanHintCamera,
               style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
             ),
+            if (scansLeft != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    _outOfScans ? Icons.lock_outline : Icons.auto_awesome_outlined,
+                    size: 15,
+                    color: _outOfScans ? AppColors.textSecondary : AppColors.primary,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      _quotaText,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: _outOfScans
+                            ? AppColors.textSecondary
+                            : AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
             if (scannedImage != null) ...[
               const SizedBox(height: 10),
               ClipRRect(
@@ -104,15 +156,25 @@ class ScanCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 10),
-            CmButton(
-              label: isScanning
-                  ? tr(context).processing
-                  : (isDesktop ? tr(context).selectImage : tr(context).cameraOrGallery),
-              isLoading: isScanning,
-              icon: isDesktop ? Icons.folder_open_outlined : Icons.camera_alt_outlined,
-              outlined: true,
-              onPressed: isScanning ? null : () => _pick(context),
-            ),
+            if (_outOfScans)
+              // Butonul nu e doar dezactivat: dus in gol, omul n-ar sti ce sa
+              // faca mai departe. Il ducem direct la oferta.
+              CmButton(
+                label: 'Vezi optiunile',
+                icon: Icons.shopping_bag_outlined,
+                outlined: true,
+                onPressed: onNeedMore,
+              )
+            else
+              CmButton(
+                label: isScanning
+                    ? tr(context).processing
+                    : (isDesktop ? tr(context).selectImage : tr(context).cameraOrGallery),
+                isLoading: isScanning,
+                icon: isDesktop ? Icons.folder_open_outlined : Icons.camera_alt_outlined,
+                outlined: true,
+                onPressed: isScanning ? null : () => _pick(context),
+              ),
           ],
         ),
       ),

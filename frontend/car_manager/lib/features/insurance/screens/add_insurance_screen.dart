@@ -8,7 +8,10 @@ import '../../../core/services/car_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
-import '../../../shared/widgets/scan_card.dart';
+import '../../../shared/widgets/car_scan_card.dart';
+import '../../../core/utils/error_handler.dart';
+import '../../../core/widgets/upgrade_sheet.dart';
+import '../../cars/providers/cars_provider.dart';
 import 'insurance_screen.dart';
 import '../../../core/utils/l10n.dart';
 import '../../../core/services/ads_service.dart';
@@ -85,6 +88,9 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
     try {
       final result = await CarService().scanInsurance(widget.carId, filePath);
       final data = result['extracted_data'] as Map<String, dynamic>;
+      // Scanarea tocmai s-a consumat: numarul afisat pe card vine din lista de
+      // masini, deci trebuie recitita, altfel ramane cel dinainte.
+      ref.read(carsProvider.notifier).refresh();
 
       setState(() {
         if (data['type'] != null && _types.contains(data['type'])) {
@@ -109,6 +115,14 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
             backgroundColor: AppColors.success),
       );
     } catch (e) {
+      // Cota epuizata nu e o eroare de scanare: aratam oferta, nu un mesaj rosu.
+      if (isPaymentRequired(e)) {
+        if (mounted) {
+          showUpgradeSheet(context,
+              reason: (e as dynamic).response?.data?['detail'] as String?);
+        }
+        return;
+      }
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(tr(context).scanFailed('$e')), backgroundColor: AppColors.danger),
       );
@@ -201,7 +215,8 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
           padding: const EdgeInsets.all(20),
           children: [
             // Scanare OCR
-            ScanCard(
+            CarScanCard(
+              carId: widget.carId,
               scannedImage: _scannedImage,
               isScanning: _isScanning,
               onScan: _scan,

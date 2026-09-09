@@ -36,6 +36,10 @@ class AdsService {
   static const _testInterstitialAndroid = 'ca-app-pub-3940256099942544/1033173712';
   static const _testInterstitialIos = 'ca-app-pub-3940256099942544/4411468910';
 
+  /// Conturile platite nu vad reclame. Se seteaza la autentificare si la
+  /// fiecare schimbare de plan.
+  bool paidUser = false;
+
   bool _initialized = false;
   bool _consentGathered = false;
   InterstitialAd? _interstitial;
@@ -49,7 +53,9 @@ class AdsService {
   static bool get isSupported =>
       !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
-  bool get enabled => _adsEnabled && isSupported;
+  /// Reclamele sunt pornite? Un cont platit le opreste peste tot dintr-un
+  /// singur loc - inclusiv interstitialele, care nu trec prin AdBanner.
+  bool get enabled => _adsEnabled && isSupported && !paidUser;
 
   // ── Initializare ─────────────────────────────────────────────
 
