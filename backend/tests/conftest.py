@@ -100,3 +100,35 @@ def promote_to_admin(email: str):
         db.commit()
     finally:
         db.close()
+
+
+def set_tier(email: str, tier: str, scan_credits: int = None):
+    """Muta un cont pe alt plan, direct in baza de date.
+
+    Cumpararea reala trece prin magazin; testele care verifica limitele n-au de
+    ce sa astepte dupa ea.
+    """
+    from app.core import entitlements
+    db = SessionLocal()
+    try:
+        u = db.query(User).filter(User.email == email).first()
+        u.subscription_tier = tier
+        u.max_cars = entitlements.max_cars_for_tier(tier)
+        if scan_credits is not None:
+            u.scan_credits = scan_credits
+        db.commit()
+    finally:
+        db.close()
+
+
+def exhaust_car_scans(car_id: str):
+    """Marcheaza scanarile incluse ale unei masini ca folosite."""
+    from app.core import entitlements
+    from app.models.car import Car
+    db = SessionLocal()
+    try:
+        car = db.query(Car).filter(Car.id == car_id).first()
+        car.ocr_scans = entitlements.SCANS_PER_CAR
+        db.commit()
+    finally:
+        db.close()

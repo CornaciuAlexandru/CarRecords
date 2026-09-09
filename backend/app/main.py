@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI):
     PHOTOS_PATH.mkdir(parents=True, exist_ok=True)
     DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
     _migrate_missing_columns()
+    _migrate_subscription_tier_to_text()
     _migrate_max_cars()
     _migrate_lowercase_emails()
     # Descoperirea prin broadcast are sens doar in retea locala.
@@ -172,22 +173,62 @@ def _migrate_lowercase_emails():
 
 
 def _migrate_max_cars():
-    """Migrare: seteaza max_cars=3 pentru utilizatorii normali (nu admin) care inca au valoarea
-    implicita veche de 10."""
+    """Aliniaza limita de masini cu planul contului.
+
+    `max_cars` era o valoare fixa scrisa la inregistrare - intai 10, apoi 3.
+    Acum exista trei planuri, fiecare cu limita lui, iar coloana trebuie sa
+    porneasca de la plan. Se ating doar conturile ramase cu vechile valori
+    implicite; o limita acordata manual de un administrator nu se atinge.
+    """
     from app.models.user import User
     db = SessionLocal()
     try:
-        updated = (
-            db.query(User)
-            .filter(User.role == "user", User.max_cars == 10)
-            .update({"max_cars": 3}, synchronize_session=False)
-        )
-        if updated:
+        from app.core import entitlements
+        changed = False
+        for user in db.query(User).filter(User.role == "user",
+                                          User.max_cars.in_((3, 10))).all():
+            user.max_cars = entitlements.max_cars_for_tier(user.subscription_tier)
+            changed = True
+        if changed:
             db.commit()
     except Exception:
         db.rollback()
     finally:
         db.close()
+
+
+def _migrate_subscription_tier_to_text():
+    """Scoate tipul enum de pe `users.subscription_tier`, pe PostgreSQL.
+
+    Coloana a fost creata ca enum nativ cu valorile ("free", "premium"). Planurile
+    s-au inmultit, iar fiecare valoare noua ar cere un ALTER TYPE - o migrare de
+    schema pentru o decizie de pret. Coloana devine text, iar valorile permise
+    sunt verificate in aplicatie (app/core/entitlements.py).
+
+    Pe SQLite nu e nimic de facut: SQLAlchemy 2.x nu pune constrangere CHECK
+    pentru Enum, deci coloana e deja text.
+    """
+    if engine.dialect.name != "postgresql":
+        return
+    from sqlalchemy import text
+    try:
+        with engine.begin() as conn:
+            is_enum = conn.execute(text(
+                "SELECT data_type FROM information_schema.columns "
+                "WHERE table_name = 'users' AND column_name = 'subscription_tier'"
+            )).scalar()
+            if is_enum != "USER-DEFINED":
+                return
+            conn.execute(text(
+                'ALTER TABLE users ALTER COLUMN subscription_tier '
+                'TYPE VARCHAR USING subscription_tier::text'
+            ))
+            conn.execute(text("ALTER TABLE users ALTER COLUMN subscription_tier SET DEFAULT 'free'"))
+            # Tipul ramane orfan dupa ce nu-l mai foloseste nicio coloana.
+            conn.execute(text("DROP TYPE IF EXISTS subscription_tier"))
+    except Exception as e:
+        # O migrare esuata nu trebuie sa blocheze pornirea, dar trebuie vazuta.
+        print(f"[migrare] subscription_tier a ramas enum: {e}")
 
 
 app = FastAPI(

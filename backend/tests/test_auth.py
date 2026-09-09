@@ -1,5 +1,6 @@
 """Teste pentru autentificare si securitatea conturilor."""
 from app.core.config import settings
+from app.core import entitlements
 from tests.conftest import auth
 
 
@@ -12,12 +13,14 @@ def test_register_creates_account(client):
 
 
 def test_new_user_defaults(client):
-    """Utilizatorii noi primesc rol 'user' si limita de 3 masini."""
+    """Un cont nou porneste pe planul gratuit, cu limita lui de masini."""
     r = client.post("/api/v1/auth/register", json={
         "email": "auth_defaults@gmail.com", "password": "Test1234", "full_name": "D"})
     user = r.json()["user"]
     assert user["role"] == "user"
-    assert user["max_cars"] == 3
+    assert user["subscription_tier"] == entitlements.FREE
+    assert user["max_cars"] == entitlements.MAX_CARS[entitlements.FREE]
+    assert user["scan_credits"] == 0
 
 
 def test_weak_password_rejected(client):

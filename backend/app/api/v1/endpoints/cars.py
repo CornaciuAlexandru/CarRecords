@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+from app.core import entitlements
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
@@ -24,11 +25,14 @@ def list_cars(current_user: User = Depends(get_current_user), db: Session = Depe
 
 @router.post("", response_model=CarOut, status_code=status.HTTP_201_CREATED)
 def create_car(data: CarCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    limit = entitlements.max_cars(current_user)
     car_count = db.query(Car).filter(Car.user_id == current_user.id).count()
-    if car_count >= current_user.max_cars:
+    if car_count >= limit:
+        # 402, nu 400: aplicatia il deosebeste de o eroare de validare si arata
+        # planurile in loc de un mesaj rosu.
         raise HTTPException(
-            status_code=400,
-            detail=f"Limita de {current_user.max_cars} masini atinsa. Upgradeaza abonamentul."
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail=f"Ai atins limita de {limit} masini a planului tau.",
         )
 
     car = Car(user_id=current_user.id, **data.model_dump())

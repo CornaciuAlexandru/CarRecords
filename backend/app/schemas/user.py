@@ -77,6 +77,8 @@ class UserOut(BaseModel):
     email_verified: bool = False
     subscription_tier: str
     max_cars: int
+    # Scanari OCR cumparate separat, disponibile pe orice masina a contului.
+    scan_credits: int = 0
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -97,7 +99,9 @@ class AdminUserUpdate(BaseModel):
     is_active: Optional[bool] = None
     role: Optional[Literal["user", "admin"]] = None
     max_cars: Optional[int] = None
-    subscription_tier: Optional[Literal["free", "premium"]] = None
+    subscription_tier: Optional[Literal["free", "pro", "maxi"]] = None
+    # Scanari acordate manual - suport, compensatii, testare.
+    scan_credits: Optional[int] = None
 
 
 # ── Recuperarea contului si stergerea lui ────────────────────────────

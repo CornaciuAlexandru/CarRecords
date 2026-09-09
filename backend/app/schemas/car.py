@@ -40,6 +40,11 @@ class CarOut(BaseModel):
     license_plate: str
     registration_number: Optional[str]
     mileage: Optional[int]
+    # Cate scanari OCR s-au folosit din cele incluse cu masina si cate au ramas.
+    # Ajung la aplicatie ca sa poata arata "mai ai 3 scanari" inainte ca omul sa
+    # faca poza, nu dupa.
+    ocr_scans: int = 0
+    ocr_scans_left: int = 0
     created_at: datetime
 
     model_config = {"from_attributes": True}

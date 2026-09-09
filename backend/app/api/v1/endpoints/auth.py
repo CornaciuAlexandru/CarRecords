@@ -9,6 +9,7 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from app.core import rate_limit
+from app.core import entitlements
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.email import public_link, send_email_verification, send_password_reset
@@ -125,7 +126,7 @@ def register(
         password_hash=hash_password(data.password),
         full_name=data.full_name,
         phone=data.phone,
-        max_cars=3,
+        max_cars=entitlements.max_cars_for_tier(entitlements.FREE),
         role="user",
     )
     db.add(user)

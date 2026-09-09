@@ -23,9 +23,18 @@ class Car(Base):
     license_plate = Column(String, nullable=False)
     registration_number = Column(String, nullable=True)
     mileage = Column(Integer, nullable=True)
+    # Scanari OCR consumate din cele incluse cu masina (vezi entitlements).
+    ocr_scans = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc))
+
+    @property
+    def ocr_scans_left(self) -> int:
+        """Scanari ramase din cele incluse cu masina. Cele cumparate separat stau
+        pe cont, nu aici."""
+        from app.core.entitlements import scans_left_on_car
+        return scans_left_on_car(self)
 
     owner = relationship("User", back_populates="cars")
     vignettes = relationship("Vignette", back_populates="car", cascade="all, delete-orphan")

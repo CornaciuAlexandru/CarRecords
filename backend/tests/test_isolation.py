@@ -3,6 +3,7 @@
 Acestea acopera bug-ul major din iunie 2026, cand orice utilizator vedea
 datele tuturor celorlalti.
 """
+from app.core import entitlements
 import pytest
 from tests.conftest import auth, make_user, make_car
 
@@ -59,9 +60,11 @@ def test_user_cannot_add_documents_to_others_car(client, two_users):
 
 
 def test_car_limit_enforced(client):
-    """Un utilizator normal poate adauga maximum 3 masini."""
+    """Contul gratuit se opreste la limita planului, cu 402, nu cu o eroare
+    generica: aplicatia arata planurile pe 402, nu un mesaj rosu."""
+    limit = entitlements.MAX_CARS[entitlements.FREE]
     tok = make_user(client, "iso_limit@gmail.com")
-    for i in range(3):
+    for i in range(limit):
         r = client.post("/api/v1/cars", json={
             "brand": "X", "model": "Y", "year": 2020,
             "license_plate": f"B-60{i}-LIM"}, headers=auth(tok))
@@ -70,5 +73,5 @@ def test_car_limit_enforced(client):
     r = client.post("/api/v1/cars", json={
         "brand": "X", "model": "Y", "year": 2020, "license_plate": "B-604-LIM"},
         headers=auth(tok))
-    assert r.status_code == 400
-    assert "3" in r.json()["detail"]
+    assert r.status_code == 402
+    assert str(limit) in r.json()["detail"]

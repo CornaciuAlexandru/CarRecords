@@ -5,6 +5,7 @@ from typing import List
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
+from app.core import entitlements
 from app.core.database import get_db
 from app.core.deps import get_current_admin
 from app.models.user import User
@@ -41,7 +42,12 @@ def get_stats(db: Session = Depends(get_db), _: User = Depends(get_current_admin
     return {
         "total_users": db.query(func.count(User.id)).scalar(),
         "active_users": db.query(func.count(User.id)).filter(User.is_active == True).scalar(),
-        "premium_users": db.query(func.count(User.id)).filter(User.subscription_tier == "premium").scalar(),
+        "paying_users": db.query(func.count(User.id)).filter(
+            User.subscription_tier.in_((entitlements.PRO, entitlements.MAXI))).scalar(),
+        "pro_users": db.query(func.count(User.id)).filter(
+            User.subscription_tier == entitlements.PRO).scalar(),
+        "maxi_users": db.query(func.count(User.id)).filter(
+            User.subscription_tier == entitlements.MAXI).scalar(),
         "total_cars": db.query(func.count(Car.id)).scalar(),
         "total_vignettes": db.query(func.count(Vignette.id)).scalar(),
         "total_insurance_policies": db.query(func.count(InsurancePolicy.id)).scalar(),
@@ -106,7 +112,13 @@ def update_user(
     if user.id == admin.id:
         raise HTTPException(status_code=400, detail="Nu te poti modifica pe tine insuti din admin")
 
-    for field, value in data.model_dump(exclude_none=True).items():
+    changes = data.model_dump(exclude_none=True)
+    # Schimbarea planului aduce cu ea limita de masini a planului, daca nu s-a
+    # cerut explicit alta. Altfel un cont urcat pe MAXI ar ramane cu limita de
+    # dinainte si nimeni n-ar intelege de ce.
+    if "subscription_tier" in changes and "max_cars" not in changes:
+        changes["max_cars"] = entitlements.max_cars_for_tier(changes["subscription_tier"])
+    for field, value in changes.items():
         setattr(user, field, value)
     db.commit()
     db.refresh(user)

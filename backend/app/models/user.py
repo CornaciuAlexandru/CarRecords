@@ -20,8 +20,15 @@ class User(Base):
     # Creste la fiecare schimbare/resetare de parola. Tokenurile emise
     # inainte poarta o versiune mai veche si sunt refuzate.
     token_version = Column(Integer, default=0, nullable=False)
-    subscription_tier = Column(Enum("free", "premium", name="subscription_tier"), default="free")
-    max_cars = Column(Integer, default=3)
+    # Text, nu Enum: planurile se schimba (free -> pro -> maxi, si ce mai vine),
+    # iar un enum nativ de PostgreSQL cere o migrare de tip la fiecare valoare
+    # noua. Valorile permise sunt in app/core/entitlements.py, verificate acolo.
+    subscription_tier = Column(String, default="free", nullable=False)
+    # Depasire acordata manual peste limita planului. 0 inseamna "cat da planul".
+    max_cars = Column(Integer, default=0)
+    # Scanari OCR cumparate la bucata, in afara abonamentului. Se consuma dupa
+    # ce se termina cele incluse cu masina si nu expira.
+    scan_credits = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc))

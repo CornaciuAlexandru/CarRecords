@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.core.database import get_db
-from app.core.deps import get_current_user
+from app.core.deps import charge_scan, ensure_can_scan, get_current_user
 from app.models.user import User
 from app.models.car import Car
 from app.models.vignette import Vignette
@@ -48,10 +48,18 @@ async def scan_vignette(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    get_owned_car(car_id, current_user, db)
+    car = get_owned_car(car_id, current_user, db)
+    ensure_can_scan(current_user, car)
     file_path = await save_document(file, current_user.id)
     extracted = await extract_vignette_data(file_path)
-    return {"file_path": str(file_path), "extracted_data": extracted}
+    if extracted:
+        charge_scan(current_user, car, db)
+    return {
+        "file_path": str(file_path),
+        "extracted_data": extracted,
+        "scans_left": car.ocr_scans_left,
+        "scan_credits": current_user.scan_credits,
+    }
 
 
 @router.get("/{vignette_id}", response_model=VignetteOut)
