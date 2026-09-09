@@ -16,6 +16,13 @@
 #
 # Valorile sensibile se citesc din fisierul .env de langa acest fisier.
 
+# Numele proiectului, explicit. Fara el, Compose il deduce din numele
+# folderului - iar folderul se cheama "deploy" si in celelalte proiecte de pe
+# masina. Doua stive cu acelasi nume de proiect isi vad containerele una
+# alteia ca resturi, si un `up --remove-orphans` in una le sterge pe ale
+# celeilalte. S-a si intamplat.
+name: carrecords
+
 services:
   db:
     image: postgres:16-alpine

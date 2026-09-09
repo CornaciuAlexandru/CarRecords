@@ -13,6 +13,8 @@
 #   docker network create web        # o singura data, pe server
 #   docker compose --env-file .env up -d
 
+name: proxy
+
 services:
   caddy:
     image: caddy:2-alpine
