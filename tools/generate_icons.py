@@ -70,6 +70,28 @@ def split_mark_and_text(img: Image.Image, bg=BG, tol=40):
     return top.crop(content_bbox(top)), bottom.crop(content_bbox(bottom))
 
 
+def knock_out_background(img: Image.Image, bg=BG, soft=90) -> Image.Image:
+    """Fundalul plin devine transparent, marca ramane.
+
+    Necesar pentru stratul din fata al iconitei adaptive: acolo sistemul pune
+    fundalul lui sub imagine. Daca marca vine cu fundalul ei opac, pe telefon
+    apare un dreptunghi peste fundalul sistemului - exact ce se vedea inainte.
+
+    Trecerea nu e brusca: transparenta creste treptat cu departarea de culoarea
+    fundalului, altfel marginile antialiasate ar ramane cu un contur.
+    """
+    img = img.convert("RGBA")
+    px = img.load()
+    w, h = img.size
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            distance = abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2])
+            if distance < soft:
+                px[x, y] = (r, g, b, int(a * distance / soft))
+    return img
+
+
 def square_icon(mark: Image.Image, size: int, fill_ratio=0.72,
                 bg=BG, alpha_bg=False) -> Image.Image:
     """Aseaza marca centrata pe un fundal patrat."""
@@ -168,11 +190,15 @@ def main():
             '    <monochrome android:drawable="@mipmap/ic_launcher_foreground"/>\n'
             '</adaptive-icon>\n', encoding="utf-8")
 
+    # Marca fara fundalul ei: dedesubt vine fundalul sistemului. Serveste si
+    # ca iconita monocroma (Android 13+), care se deseneaza din canalul alpha.
+    cut = knock_out_background(mark)
     for folder, size in [("mipmap-mdpi", 108), ("mipmap-hdpi", 162),
                          ("mipmap-xhdpi", 216), ("mipmap-xxhdpi", 324),
                          ("mipmap-xxxhdpi", 432)]:
-        # 0.42 pentru ca sistemul taie marginile (safe zone e cercul central)
-        square_icon(mark, size, fill_ratio=0.42, alpha_bg=True).save(
+        # Zona sigura a iconitei adaptive e cercul central, 66 din 108 unitati.
+        # Ce iese din el poate fi taiat de forma aleasa de launcher.
+        square_icon(cut, size, fill_ratio=0.54, alpha_bg=True).save(
             ANDROID_RES / folder / "ic_launcher_foreground.png")
 
     values = ANDROID_RES / "values"
