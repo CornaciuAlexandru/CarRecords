@@ -13,6 +13,13 @@ import pytest
 _EXTERNAL_DB = os.environ.get("TEST_DATABASE_URL")
 _TMP_DB = Path(tempfile.gettempdir()) / "carrecords_test.db"
 os.environ["DATABASE_URL"] = _EXTERNAL_DB or f"sqlite:///{_TMP_DB.as_posix()}"
+# Fixate inainte de importul aplicatiei, ca sa nu depinda testele de fisierul
+# .env al celui care le ruleaza. Un ENVIRONMENT=production din .env-ul cuiva ar
+# schimba tacit ce verifica testele.
+os.environ["ENVIRONMENT"] = "local"
+# Platile se verifica la Google. Testele nu au cont de serviciu si n-ar trebui
+# sa iasa in internet, deci accepta chitante care incep cu "test-".
+os.environ["ALLOW_MOCK_BILLING"] = "true"
 
 from fastapi.testclient import TestClient  # noqa: E402
 from app.main import app                    # noqa: E402

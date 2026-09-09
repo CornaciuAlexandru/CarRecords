@@ -76,6 +76,18 @@ class Settings(BaseSettings):
     # sa le blocam retroactiv.
     REQUIRE_EMAIL_VERIFICATION: bool = False
 
+    # ── Plati (Google Play) ──────────────────────────────────────
+    # Numele pachetului aplicatiei, asa cum apare in Play Console.
+    ANDROID_PACKAGE_NAME: str = "ro.carrecords.app"
+    # Calea catre fisierul JSON al contului de serviciu cu acces la
+    # Google Play Android Developer API. Fara el, cumpararile se resping:
+    # un cont care primeste PRO dintr-o eroare nu se mai ia inapoi.
+    GOOGLE_PLAY_SERVICE_ACCOUNT_FILE: str = ""
+    # NUMAI pentru teste. Cu ea pornita, orice chitanta care incepe cu "test-"
+    # e acceptata - adica oricine isi poate acorda MAXI. Se verifica mai jos
+    # sa nu fie activa in productie.
+    ALLOW_MOCK_BILLING: bool = False
+
     # ── Descoperire in retea locala (doar pentru rulare pe PC) ────
     DISCOVERY_ENABLED: bool = True
 
@@ -112,3 +124,12 @@ if settings.is_production and settings.SECRET_KEY in ("dev-secret-key", "", None
 UPLOAD_PATH = Path(settings.UPLOAD_DIR)
 DOCUMENTS_PATH = UPLOAD_PATH / "documents"
 PHOTOS_PATH = UPLOAD_PATH / "photos"
+
+
+# Cu plati simulate in productie, orice utilizator isi poate acorda MAXI
+# trimitand un sir care incepe cu "test-". Nu pornim asa.
+if settings.is_production and settings.ALLOW_MOCK_BILLING:
+    raise RuntimeError(
+        "ALLOW_MOCK_BILLING este activ in productie. Scoate-l din .env: "
+        "cu el pornit, orice cont isi poate acorda singur abonament."
+    )

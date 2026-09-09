@@ -36,3 +36,4 @@ class User(Base):
     cars = relationship("Car", back_populates="owner", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     email_tokens = relationship("EmailToken", back_populates="user", cascade="all, delete-orphan")
+    purchases = relationship("Purchase", back_populates="user", cascade="all, delete-orphan")
