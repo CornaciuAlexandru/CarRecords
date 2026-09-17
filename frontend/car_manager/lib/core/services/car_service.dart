@@ -6,6 +6,19 @@ import '../api/api_client.dart';
 class CarService {
   final Dio _dio = createDio();
 
+  /// Timeouts pentru scanarile OCR.
+  ///
+  /// Cele implicite (30 s de asteptare a raspunsului) sunt pentru cereri
+  /// obisnuite. O poza de telefon are 3-4 MB de trimis pe date mobile, iar
+  /// Tesseract mai lucreaza cateva secunde dupa. Cu limitele implicite, cererea
+  /// expira pe telefon in timp ce serverul termina, taxeaza scanarea si
+  /// raspunde in gol: utilizatorul vedea "nu se poate ajunge la server" si o
+  /// scanare in minus.
+  static final _scanOptions = Options(
+    sendTimeout: const Duration(seconds: 90),
+    receiveTimeout: const Duration(seconds: 120),
+  );
+
   Future<List<Car>> getCars() async {
     final resp = await _dio.get('/cars');
     return (resp.data as List).map((j) => Car.fromJson(j)).toList();
@@ -62,7 +75,8 @@ class CarService {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath, filename: 'scan.jpg'),
     });
-    final resp = await _dio.post('/cars/$carId/vignettes/scan', data: formData);
+    final resp = await _dio.post('/cars/$carId/vignettes/scan',
+        data: formData, options: _scanOptions);
     return resp.data;
   }
 
@@ -90,7 +104,8 @@ class CarService {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath, filename: 'scan.jpg'),
     });
-    final resp = await _dio.post('/cars/$carId/insurance/scan', data: formData);
+    final resp = await _dio.post('/cars/$carId/insurance/scan',
+        data: formData, options: _scanOptions);
     return resp.data;
   }
 
@@ -118,7 +133,8 @@ class CarService {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath, filename: 'scan.jpg'),
     });
-    final resp = await _dio.post('/cars/$carId/registration/scan', data: formData);
+    final resp = await _dio.post('/cars/$carId/registration/scan',
+        data: formData, options: _scanOptions);
     return resp.data;
   }
 

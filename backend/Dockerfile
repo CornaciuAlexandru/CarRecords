@@ -2,6 +2,8 @@
 FROM python:3.12-slim
 
 # Tesseract cu limba romana (necesar pentru OCR pe taloane/asigurari)
+# + osd: detectarea orientarii paginii. Pozele de pe telefon vin rotite, iar
+#   ghicirea rotatiei dupa numarul de cuvinte alegea textul cu capul in jos.
 # + libpq pentru PostgreSQL
 # + fonts-dejavu-core: fara un font cu diacritice, raportul PDF ar scrie
 #   "Bucuresti" in loc de "Bucuresti" cu s si t - fonturile de baza din PDF
@@ -10,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         tesseract-ocr \
         tesseract-ocr-ron \
         tesseract-ocr-eng \
+        tesseract-ocr-osd \
         libpq5 \
         curl \
         fonts-dejavu-core \

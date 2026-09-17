@@ -147,6 +147,15 @@ class ScanCard extends StatelessWidget {
                 ],
               ),
             ],
+            if (isScanning) ...[
+              const SizedBox(height: 8),
+              // Fara randul asta, cateva secunde de spinner par un blocaj si
+              // omul apasa din nou - si consuma inca o scanare.
+              const Text(
+                'Se citeste documentul. Poate dura pana la un minut pe date mobile.',
+                style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
+              ),
+            ],
             if (scannedImage != null) ...[
               const SizedBox(height: 10),
               ClipRRect(

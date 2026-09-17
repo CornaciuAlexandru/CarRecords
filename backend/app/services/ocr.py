@@ -10,10 +10,29 @@ Pipeline:
      si alegerea trecerii care extrage cele mai multe campuri; campurile lipsa
      se completeaza din celelalte treceri.
 """
+import asyncio
+import logging
+import os
 import re
+import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Optional
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps
+
+log = logging.getLogger("carrecords.ocr")
+
+# Latura lunga la care se face OCR-ul. Tesseract citeste cel mai bine in jur de
+# 300 DPI, iar un document care umple cadrul are cam atat la 2200 px. O poza de
+# telefon vine la 4000 px: peste plafon, timpul creste patratic si calitatea nu
+# creste deloc.
+WORK_LONG_EDGE = 2200
+
+# pytesseract porneste cate un proces tesseract pentru fiecare apel, deci mai
+# multe fire chiar merg in paralel - GIL-ul nu conteaza cand munca e in alt
+# proces. Plafonat la 4: peste, se bat pe aceleasi nuclee.
+_POOL = ThreadPoolExecutor(max_workers=max(2, min(4, os.cpu_count() or 2)),
+                           thread_name_prefix="ocr")
 
 try:
     import pytesseract
@@ -37,6 +56,17 @@ def _load_image(image_path: Path) -> Image.Image:
     img = Image.open(image_path)
     img = ImageOps.exif_transpose(img)
     return img.convert("L")
+
+
+def _fit(img: Image.Image) -> Image.Image:
+    """Aduce imaginea sub WORK_LONG_EDGE. Doar micsoreaza; marirea celor mici
+    o face _enhance."""
+    w, h = img.size
+    longest = max(w, h)
+    if longest <= WORK_LONG_EDGE:
+        return img
+    scale = WORK_LONG_EDGE / longest
+    return img.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
 
 
 def _enhance(img: Image.Image) -> Image.Image:
@@ -84,23 +114,63 @@ def _ocr(img: Image.Image, psm: int) -> str:
         return ""
 
 
+def _mean_confidence(img: Image.Image) -> float:
+    """Increderea medie a cuvintelor. Textul cu capul in jos produce cuvinte
+    la fel de multe ca cel drept, dar Tesseract nu crede in ele."""
+    try:
+        data = pytesseract.image_to_data(
+            img, lang=OCR_LANG, config="--oem 3 --psm 6",
+            output_type=pytesseract.Output.DICT,
+        )
+    except Exception:
+        return 0.0
+    confs = []
+    for conf, txt in zip(data.get("conf", []), data.get("text", [])):
+        if not (txt or "").strip():
+            continue
+        try:
+            c = float(conf)
+        except ValueError:
+            continue
+        if c >= 0:
+            confs.append(c)
+    return sum(confs) / len(confs) if confs else 0.0
+
+
 def _detect_rotation(img: Image.Image) -> int:
-    """Detecteaza rotatia corecta testand toate cele 4 orientari pe o versiune
-    mica a imaginii. Scor = numarul de cuvinte lizibile (text rotit produce
-    gibberish scurt)."""
+    """Unghiul (in sensul PIL, antiorar) cu care trebuie rotita imaginea ca
+    textul sa fie drept.
+
+    Intai detectorul de orientare al lui Tesseract (OSD): un singur apel,
+    facut exact pentru asta. Daca nu e instalat sau nu e sigur, se compara
+    cele patru orientari dupa increderea medie a cuvintelor - in paralel.
+
+    Versiunea de dinainte numara cuvintele de 3+ caractere din fiecare
+    orientare si o alegea pe cea cu mai multe. Textul cu capul in jos produce
+    tot atatea "cuvinte" cat cel drept, doar ca sunt gibberish, asa ca poza
+    de pe telefon ajungea la parser inversata si nu iesea niciun camp.
+    """
     small = img.copy()
-    small.thumbnail((1000, 1000), Image.LANCZOS)
+    small.thumbnail((1200, 1200), Image.LANCZOS)
     small = ImageOps.autocontrast(small, cutoff=1)
 
-    best_rot, best_score = 0, -1
-    for rot in (0, 90, 180, 270):
+    try:
+        osd = pytesseract.image_to_osd(small, config="--psm 0")
+        rotate = re.search(r"Rotate:\s*(\d+)", osd)
+        conf = re.search(r"Orientation confidence:\s*([\d.]+)", osd)
+        if rotate and (conf is None or float(conf.group(1)) >= 1.0):
+            # Tesseract spune cat sa rotim in sensul acelor de ceas; PIL
+            # roteste invers.
+            return (360 - int(rotate.group(1))) % 360
+    except Exception as e:
+        log.info("OSD indisponibil, cad pe scorul de incredere: %s", e)
+
+    def score(rot: int) -> tuple:
         rotated = small.rotate(rot, expand=True) if rot else small
-        text = _ocr(rotated, psm=6)
-        # cuvinte de minim 3 caractere alfanumerice = semnal de text real
-        score = len(re.findall(r'[A-Za-z0-9ĂÎȘȚÂăîșțâ]{3,}', text))
-        if score > best_score:
-            best_rot, best_score = rot, score
-    return best_rot
+        return _mean_confidence(rotated), rot
+
+    scored = list(_POOL.map(score, (0, 90, 180, 270)))
+    return max(scored)[1]
 
 
 def _text_variants(image_path: Path, psms=(4, 6)) -> list[str]:
@@ -117,16 +187,12 @@ def _text_variants(image_path: Path, psms=(4, 6)) -> list[str]:
     if rot:
         img = img.rotate(rot, expand=True)
 
-    enhanced = _enhance(img)
+    enhanced = _enhance(_fit(img))
     binary = _otsu_binarize(enhanced)
 
-    variants = []
-    for variant in (enhanced, binary):
-        for psm in psms:
-            text = _ocr(variant, psm)
-            if text.strip():
-                variants.append(text)
-    return variants
+    jobs = [(variant, psm) for variant in (enhanced, binary) for psm in psms]
+    texts = _POOL.map(lambda j: _ocr(*j), jobs)
+    return [t for t in texts if t.strip()]
 
 
 def _extract_text(image_path: Path) -> str:
@@ -141,7 +207,7 @@ def _prepared_images(image_path: Path) -> tuple:
     rot = _detect_rotation(img)
     if rot:
         img = img.rotate(rot, expand=True)
-    enhanced = _enhance(img)
+    enhanced = _enhance(_fit(img))
     return enhanced, _otsu_binarize(enhanced)
 
 
@@ -231,7 +297,9 @@ def _find_invoice_number(text: str) -> Optional[str]:
 # ═══════════════════════════════════════════════════════════════════
 
 async def extract_vignette_data(image_path: Path) -> dict:
-    text = _extract_text(image_path)
+    # OCR-ul tine secunde bune si e munca de procesor. Pe bucla de evenimente
+    # ar bloca toate celelalte cereri ale acestui worker pana termina.
+    text = await asyncio.to_thread(_extract_text, image_path)
 
     ROMANIAN_COMPANIES = ["CNAIR", "DRPCIV", "Roviniete", "roviniete.ro", "e-rovinieta"]
     company = next((c for c in ROMANIAN_COMPANIES if c.lower() in text.lower()), None)
@@ -282,7 +350,7 @@ async def extract_vignette_data(image_path: Path) -> dict:
 # ═══════════════════════════════════════════════════════════════════
 
 async def extract_insurance_data(image_path: Path) -> dict:
-    text = _extract_text(image_path)
+    text = await asyncio.to_thread(_extract_text, image_path)
 
     INSURERS = [
         "Allianz", "ASIROM", "Generali", "Omniasig", "Groupama",
@@ -358,6 +426,14 @@ _EMBED_RE = re.compile(
 )
 
 _DATE_RE = re.compile(r"\b\d{1,2}[.\-/]\d{1,2}[.\-/]\d{4}\b")
+
+# Un rand care incepe cu I sau I.1 citit gresit ('| 10.10.2024', 'l.1 10.10.2024',
+# '1 10.10.2024'), urmat de o data. Grupul 1 e prezent doar pentru I.1.
+_LONE_I_RE = re.compile(
+    # Gunoiul din fata nu are voie sa inghita "|": ala poate fi chiar I-ul.
+    r"^\s*(?:[^A-Za-z0-9\s|]\s*){0,2}[|1lI!]([.,]\s?[1lI|])?\s+"
+    r"(\d{1,2}[.\-/]\d{1,2}[.\-/]\d{4})"
+)
 
 _KNOWN_BRANDS = [
     "DACIA", "VOLKSWAGEN", "RENAULT", "FORD", "TOYOTA", "BMW", "MERCEDES-BENZ",
@@ -481,7 +557,28 @@ def _parse_talon_fields(text: str) -> dict:
                 fields.setdefault("I", dates[0])
                 fields.setdefault("I1", dates[1])
 
+        # Acelasi lucru cand I si I.1 stau fiecare pe randul ei. Tesseract nu
+        # citeste aproape niciodata un I izolat ca I: iese '|', '1' sau 'l'.
+        # Niciun alt camp al talonului nu incepe cu un singur caracter din
+        # astea urmat direct de o data, deci potrivirea e sigura.
+        if matched_code is None:
+            m_i = _LONE_I_RE.match(line)
+            if m_i and _parse_date_str(m_i.group(2)):
+                code = "I1" if m_i.group(1) else "I"
+                fields.setdefault(code, m_i.group(2))
+
     return fields
+
+
+def _rows(words: list[dict], line_tol: float) -> list[list[dict]]:
+    """Cuvintele grupate pe randuri (sus-jos), fiecare rand stanga-dreapta."""
+    lines: list[list[dict]] = []
+    for w in sorted(words, key=lambda w: w["cy"]):
+        if lines and abs(w["cy"] - lines[-1][0]["cy"]) <= line_tol:
+            lines[-1].append(w)
+        else:
+            lines.append([w])
+    return [sorted(line, key=lambda w: w["x"]) for line in lines]
 
 
 def _reading_order(words: list[dict], line_tol: float) -> list[dict]:
@@ -585,11 +682,18 @@ def _spatial_fields(words: list[dict]) -> dict:
             band_x2 = max(w["x2"] for w in same_line[:len(value_words)])
             below = [w for w in words
                      if lw["cy"] + line_tol < w["cy"] <= lw["cy"] + line_tol * 6
-                     and band_x1 - line_tol <= w["x"] <= band_x2 + line_tol * 3
-                     and _canon_code(w["text"]) not in _TALON_CODES]
-            if below:
-                below = _reading_order(below, line_tol)
-                value = _clean_value(value + " " + " ".join(w["text"] for w in below))
+                     and band_x1 - line_tol <= w["x"] <= band_x2 + line_tol * 3]
+            # Randurile de sub adresa apartin adresei doar pana la primul rand
+            # care incepe cu alt cod de camp. Inainte se scoteau doar codurile
+            # si se pastrau valorile lor, asa ca adresa se termina in 'RENAULT'.
+            kept = []
+            for row in _rows(below, line_tol):
+                if _canon_code(row[0]["text"]) in _TALON_CODES and len(row[0]["text"]) <= 6:
+                    break
+                kept.extend(w for w in row
+                            if _canon_code(w["text"]) not in _TALON_CODES)
+            if kept:
+                value = _clean_value(value + " " + " ".join(w["text"] for w in kept))
 
         if value and code not in fields:
             fields[code] = value
@@ -681,8 +785,15 @@ def _clean_name(value: str) -> Optional[str]:
 
 
 async def extract_registration_data(image_path: Path) -> dict:
+    """Talonul. Munca reala e in _extract_registration_sync, rulata intr-un
+    fir separat ca sa nu tina bucla de evenimente ostatica."""
+    return await asyncio.to_thread(_extract_registration_sync, image_path)
+
+
+def _extract_registration_sync(image_path: Path) -> dict:
     if not OCR_AVAILABLE:
         return {"ocr_raw_text": ""}
+    started = time.perf_counter()
     try:
         enhanced, binary = _prepared_images(image_path)
     except Exception:
@@ -691,9 +802,14 @@ async def extract_registration_data(image_path: Path) -> dict:
     # Doua surse de adevar, combinate:
     #   1. text pe linii  — robust cand randurile sunt curate
     #   2. layout (x, y)  — prinde etichetele lipite de gunoi si coloanele
-    variants = [t for img in (enhanced, binary) for psm in (4, 6)
-                if (t := _ocr(img, psm)).strip()]
+    # Toate cele sase treceri Tesseract pleaca deodata: fiecare e un proces
+    # separat, iar serverul are mai multe nuclee decat una.
+    text_jobs = [(img, psm) for img in (enhanced, binary) for psm in (4, 6)]
+    text_futures = [_POOL.submit(_ocr, img, psm) for img, psm in text_jobs]
+    box_futures = [_POOL.submit(_word_boxes, img) for img in (enhanced, binary)]
+    variants = [t for t in (f.result() for f in text_futures) if t.strip()]
     if not variants:
+        log.info("ocr talon: fara text, %.1fs", time.perf_counter() - started)
         return {"ocr_raw_text": ""}
 
     parsed = sorted(
@@ -708,8 +824,7 @@ async def extract_registration_data(image_path: Path) -> dict:
 
     # Completam din parsarea spatiala ce nu s-a gasit pe linii
     spatial, itp_spatial = {}, None
-    for img in (enhanced, binary):
-        boxes = _word_boxes(img)
+    for boxes in (f.result() for f in box_futures):
         for code, val in _spatial_fields(boxes).items():
             spatial.setdefault(code, val)
         itp_spatial = itp_spatial or _date_near_label(boxes, "X")
@@ -824,7 +939,7 @@ async def extract_registration_data(image_path: Path) -> dict:
     if owner_address and len(owner_address) < 4:
         owner_address = None
 
-    return {
+    result = {
         "owner_name": owner_name,
         "owner_address": owner_address,
         "itp_expiry_date": itp_expiry_date,
@@ -836,3 +951,7 @@ async def extract_registration_data(image_path: Path) -> dict:
         "manufacturing_year": manufacturing_year,
         "ocr_raw_text": full_text[:800],
     }
+    found = [k for k, v in result.items() if v and k != "ocr_raw_text"]
+    log.info("ocr talon: %.1fs, %d/9 campuri: %s",
+             time.perf_counter() - started, len(found), ",".join(found))
+    return result
