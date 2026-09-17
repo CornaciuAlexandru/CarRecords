@@ -277,7 +277,7 @@ class _ReportCardState extends ConsumerState<_ReportCard> {
       // Planul nu ajunge: aratam ce ar debloca, nu un mesaj de eroare.
       if (isPaymentRequired(e)) {
         showUpgradeSheet(context,
-            reason: (e as dynamic).response?.data?['detail'] as String?);
+            reason: serverDetail(e));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(parseError(context, e)),

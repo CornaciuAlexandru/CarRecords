@@ -119,7 +119,7 @@ class _AddInsuranceScreenState extends ConsumerState<AddInsuranceScreen> {
       if (isPaymentRequired(e)) {
         if (mounted) {
           showUpgradeSheet(context,
-              reason: (e as dynamic).response?.data?['detail'] as String?);
+              reason: serverDetail(e));
         }
         return;
       }

@@ -86,7 +86,7 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
       if (isPaymentRequired(e)) {
         if (mounted) {
           showUpgradeSheet(context,
-              reason: (e as dynamic).response?.data?['detail'] as String?);
+              reason: serverDetail(e));
         }
         return;
       }

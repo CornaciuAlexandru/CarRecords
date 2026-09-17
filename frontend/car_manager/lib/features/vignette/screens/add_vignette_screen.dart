@@ -102,7 +102,7 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
       if (isPaymentRequired(e)) {
         if (mounted) {
           showUpgradeSheet(context,
-              reason: (e as dynamic).response?.data?['detail'] as String?);
+              reason: serverDetail(e));
         }
         return;
       }

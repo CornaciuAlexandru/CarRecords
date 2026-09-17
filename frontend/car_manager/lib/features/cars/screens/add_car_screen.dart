@@ -72,7 +72,7 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
         if (mounted) {
           setState(() => _isLoading = false);
           showUpgradeSheet(context,
-              reason: (e as dynamic).response?.data?['detail'] as String?);
+              reason: serverDetail(e));
         }
         return;
       }

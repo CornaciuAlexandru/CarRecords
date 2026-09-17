@@ -1,6 +1,34 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'l10n.dart';
+
+/// Mesajul trimis de server, daca exista si daca se poate citi.
+///
+/// Corpul unui raspuns de eroare nu e intotdeauna JSON gata parsat. O cerere
+/// facuta cu `responseType: bytes` - descarcarea unui PDF, de pilda - primeste
+/// si eroarea tot ca octeti. Indexarea acelor octeti cu 'detail' arunca, iar
+/// exceptia aia cade tocmai in blocul care trata eroarea si inghite tot ce
+/// urma: butonul parea ca nu face absolut nimic.
+String? serverDetail(Object error) {
+  if (error is! DioException) return null;
+  final data = error.response?.data;
+  if (data is Map) return data['detail']?.toString();
+  if (data is List<int>) return _detailFromJson(utf8.decode(data, allowMalformed: true));
+  if (data is String) return _detailFromJson(data);
+  return null;
+}
+
+String? _detailFromJson(String raw) {
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is Map) return decoded['detail']?.toString();
+  } catch (_) {
+    // Nu era JSON. Nu avem ce mesaj sa aratam, si nu e motiv de exceptie.
+  }
+  return null;
+}
 
 /// Serverul a refuzat pentru ca depaseste planul contului.
 ///
@@ -25,7 +53,7 @@ String parseError(BuildContext context, Object error) {
 
     // Erori HTTP cu mesaj de la backend
     final statusCode = error.response?.statusCode;
-    final detail = error.response?.data?['detail'];
+    final detail = serverDetail(error);
 
     // Limitarea de rata are mesaj propriu, tradus: cel de la server e
     // intr-o singura limba.
