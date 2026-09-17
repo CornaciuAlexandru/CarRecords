@@ -15,7 +15,14 @@ class AuthNotifier extends AsyncNotifier<User?> {
   @override
   Future<User?> build() async {
     final service = ref.read(authServiceProvider);
-    if (await service.isLoggedIn()) {
+    // Cat timp starea contului se incarca, butonul de autentificare e
+    // dezactivat. Deci verificarea sesiunii n-are voie sa dureze la nesfarsit:
+    // orice s-ar intampla cu stocarea de pe dispozitiv, dupa opt secunde
+    // pornim ca si cum n-ar exista sesiune si omul se poate autentifica.
+    final logged = await service
+        .isLoggedIn()
+        .timeout(const Duration(seconds: 8), onTimeout: () => false);
+    if (logged) {
       final user = await service.getMe();
       _applyPlan(user);
       // Sesiune reluata: realiniem alarmele cu ce e pe server. Datele se pot

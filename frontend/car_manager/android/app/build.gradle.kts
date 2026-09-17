@@ -62,6 +62,15 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // Scrise explicit, nu lasate implicite: R8 rula oricum, dar fara
+            // fisierul de reguli de mai jos. Asa se vede din build.gradle ca
+            // exista reguli si de ce.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 

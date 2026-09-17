@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,9 +17,17 @@ class TokenStore {
   static const _accessKey = 'access_token';
   static const _refreshKey = 'refresh_token';
 
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
+  /// Pe Android NU folosim EncryptedSharedPreferences.
+  ///
+  /// Acela sta pe androidx.security.crypto, depreciat de Google, care la randul
+  /// lui sta pe Tink. Pe un Oppo cu ColorOS, prima creare a cheii nu se termina
+  /// niciodata: ecranul de autentificare ramane cu butonul dezactivat, fiindca
+  /// starea contului asteapta citirea tokenului.
+  ///
+  /// Varianta implicita cripteaza tot cu o cheie din Keystore si tine valorile
+  /// in preferinte obisnuite - mai putine piese intre noi si disc, pentru un
+  /// token care oricum expira in 15 minute.
+  static const _storage = FlutterSecureStorage();
 
   /// Copie in memorie, ca sa nu trecem prin canalul de platforma la fiecare
   /// cerere HTTP. Se invalideaza la fiecare scriere sau stergere.
@@ -30,6 +39,36 @@ class TokenStore {
   /// boolean: doua apeluri simultane trebuie sa astepte aceeasi migrare, nu
   /// sa porneasca fiecare cate una.
   static Future<void>? _migration;
+
+  /// Cat asteptam stocarea sistemului inainte sa o consideram indisponibila.
+  ///
+  /// In mod normal raspunde in milisecunde. A existat insa un caz in care nu
+  /// raspundea deloc - R8 taiase clasele de care depinde - iar aplicatia
+  /// ramanea blocata cu butonul de autentificare invartindu-se la nesfarsit.
+  /// Cauza aceea e reparata (android/app/proguard-rules.pro), dar o scriere
+  /// pe disc n-are voie sa poata bloca aplicatia, indiferent de motiv.
+  static const _timeout = Duration(seconds: 5);
+
+  /// Odata ce stocarea a dat gres, nu mai insistam la fiecare cerere.
+  /// Tokenurile raman in memorie: sesiunea merge pana la inchiderea
+  /// aplicatiei, iar apoi se cere o reautentificare. Neplacut, dar folosibil -
+  /// spre deosebire de un ecran blocat.
+  static bool _storageDown = false;
+
+  /// Stocarea securizata a esuat in aceasta sesiune?
+  static bool get storageUnavailable => _storageDown;
+
+  /// Ruleaza o operatie pe stocare fara sa poata bloca apelantul.
+  static Future<T?> _guard<T>(Future<T> Function() op, String what) async {
+    if (_storageDown) return null;
+    try {
+      return await op().timeout(_timeout);
+    } catch (e) {
+      _storageDown = true;
+      debugPrint('TokenStore: stocarea securizata nu raspunde ($what): $e');
+      return null;
+    }
+  }
 
   static Future<String?> get accessToken async {
     await _ensureLoaded();
@@ -45,11 +84,13 @@ class TokenStore {
 
   static Future<void> save({required String access, required String refresh}) async {
     await _ensureMigrated();
+    // Intai in memorie: sesiunea trebuie sa functioneze chiar daca scrierea pe
+    // disc de mai jos esueaza.
     _access = access;
     _refresh = refresh;
     _loaded = true;
-    await _storage.write(key: _accessKey, value: access);
-    await _storage.write(key: _refreshKey, value: refresh);
+    await _guard(() => _storage.write(key: _accessKey, value: access), 'scriere');
+    await _guard(() => _storage.write(key: _refreshKey, value: refresh), 'scriere');
   }
 
   static Future<void> clear() async {
@@ -57,15 +98,15 @@ class TokenStore {
     _access = null;
     _refresh = null;
     _loaded = true;
-    await _storage.delete(key: _accessKey);
-    await _storage.delete(key: _refreshKey);
+    await _guard(() => _storage.delete(key: _accessKey), 'stergere');
+    await _guard(() => _storage.delete(key: _refreshKey), 'stergere');
   }
 
   static Future<void> _ensureLoaded() async {
     if (_loaded) return;
     await _ensureMigrated();
-    _access = await _storage.read(key: _accessKey);
-    _refresh = await _storage.read(key: _refreshKey);
+    _access = await _guard<String?>(() => _storage.read(key: _accessKey), 'citire');
+    _refresh = await _guard<String?>(() => _storage.read(key: _refreshKey), 'citire');
     _loaded = true;
   }
 
@@ -75,14 +116,16 @@ class TokenStore {
   /// SharedPreferences.
   static Future<void> _migrate() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance().timeout(_timeout);
       final oldAccess = prefs.getString(_accessKey);
       final oldRefresh = prefs.getString(_refreshKey);
       if (oldAccess != null) {
-        await _storage.write(key: _accessKey, value: oldAccess);
+        await _guard(() => _storage.write(key: _accessKey, value: oldAccess),
+            'migrare');
       }
       if (oldRefresh != null) {
-        await _storage.write(key: _refreshKey, value: oldRefresh);
+        await _guard(() => _storage.write(key: _refreshKey, value: oldRefresh),
+            'migrare');
       }
       await prefs.remove(_accessKey);
       await prefs.remove(_refreshKey);
@@ -98,5 +141,6 @@ class TokenStore {
     _refresh = null;
     _loaded = false;
     _migration = null;
+    _storageDown = false;
   }
 }
