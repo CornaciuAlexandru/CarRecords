@@ -153,3 +153,108 @@ def test_city_is_found_without_a_label(text, expected):
 ])
 def test_issuer_is_recognised_and_normalised(text, expected):
     assert ocr._find_issuer(text) == expected
+
+
+# ── Bon de benzinarie ────────────────────────────────────────────────
+#
+# Formatul in care se cumpara cele mai multe roviniete: bon de casa, etichete
+# bilingve, iar valoarea tiparita pe randul de sub eticheta fiindca nu incape
+# langa ea. Numarul de inmatriculare si VIN-ul sunt inventate.
+
+RECEIPT = """MOL ROMANIA PETROLEUM PRODUCTS SRL
+SELIMBAR, STR. SIBIULUI, NR.1, JUD.SIBIU
+COD FISCAL: RO7745470
+NUMAR BON NEFISCAL: 318
+COD CASIER: 2
+POS: 2
+
+ROVINIETA
+DOVADA / COUNTERFOIL
+COPIE CLIENT/CUSTOMERS COPY
+
+NR AUTO/REGISTRATION NUMBER:        AB99TST
+SERIE SASIU/V.I.N.:          VF1BT1RG600000000
+TARA/COUNTRY:                       ROMANIA(RO)
+TIP/TYPE:                      AUTOTURISME 12 LUNI
+PET/PRICE:                 253.92 LEI (50.00 EUR)
+CURS:               1 EUR=5.0783 LEI/30.09.2025
+VALABIL DE LA/START OF VALIDITY:
+                             12.10.2025 00:00:00
+PANA LA/END OF VALIDITY:
+                             11.10.2026 23:59:59
+ID TRANZACTIE/TRANSACTION ID:
+                                 CNADNR0300000000
+SERIE/SERIAL NUMBER:
+                                     7160000000
+
+A SE PASTRA UN AN LA DATA EXPIRATI!
+KEEP IT FOR 1 YEAR AFTER EXPIRATION!
+
+NUMAR UNIC: 1000000000
+DATA: 10/10/2025            ORA: 14:02:28
+BON NEFISCAL"""
+
+
+def test_receipt_validity_dates_come_from_the_line_below_the_label():
+    """Eticheta e bilingva si lunga, asa ca valoarea se tipareste dedesubt.
+
+    Cautarea de dinainte se uita dupa data INAUNTRUL etichetei, nu o gasea, si
+    cadea inapoi pe prima data din document - care aici e cursul valutar de pe
+    randul CURS. Si inceputul, si sfarsitul ieseau 30.09.2025.
+    """
+    assert ocr._find_date(RECEIPT, [r"valabil[aă]?\s*de\s*la",
+                                    r"start\s*of\s*validity"]) == "2025-10-12"
+    assert ocr._find_date(RECEIPT, [r"p[aâ]n[aă]\s*la",
+                                    r"end\s*of\s*validity"]) == "2026-10-11"
+
+
+def test_receipt_purchase_date_is_the_bare_data_label():
+    """Bonul scrie doar "DATA: 10/10/2025", jos de tot, cu bare oblice."""
+    assert ocr._find_date(RECEIPT, [r"\bdata\s*:"]) == "2025-10-10"
+
+
+def test_receipt_issuer_is_the_station_not_a_transaction_id():
+    """"CNADNR0300000000" e ID-ul tranzactiei. Lipit de cifre, nu e nume de
+    firma - emitentul e benzinaria din antetul bonului."""
+    assert ocr._find_issuer(RECEIPT) == "MOL"
+
+
+def test_receipt_serial_number_is_read_from_below_its_label():
+    """Bonul are numar de serie, dar nu si serie alfanumerica. Numarul nu
+    trebuie confundat cu ID-ul tranzactiei sau cu numarul bonului."""
+    series, number = ocr._find_series_and_number(RECEIPT)
+    assert number == "7160000000"
+    assert series is None
+
+
+def test_receipt_price_is_the_amount_not_the_exchange_rate():
+    """Pe bon sunt trei numere cu zecimale: pretul, echivalentul in euro si
+    cursul. Cel cu eticheta de pret castiga."""
+    assert ocr._find_price(RECEIPT) == 253.92
+
+
+def test_receipt_city_comes_from_the_county_in_the_header():
+    assert ocr._find_city(RECEIPT) == "Sibiu"
+
+
+def test_receipt_period_is_read_from_the_vehicle_type_line():
+    """"AUTOTURISME 12 LUNI" - perioada nu e scrisa ca atare nicaieri."""
+    import re
+    assert re.search(r"12\s*luni", RECEIPT, re.IGNORECASE)
+
+
+def test_value_after_label_handles_both_layouts():
+    assert ocr._value_after_label("Serie/Serial number:\n   ABC123", 
+                                  r"seri[ae]\s*/\s*serial\s*number") == "ABC123"
+    assert ocr._value_after_label("Serie/Serial number: ABC123",
+                                  r"seri[ae]\s*/\s*serial\s*number") == "ABC123"
+    assert ocr._value_after_label("nimic aici", r"seri[ae]") is None
+
+
+def test_the_earliest_company_name_in_the_document_wins():
+    """Bonul incepe cu antetul vanzatorului, iar CNAIR apare mai jos doar ca
+    parte din codul tranzactiei. Daca ordinea din lista ar decide, orice bon de
+    benzinarie ar fi atribuit CNAIR - ceea ce si se intampla."""
+    assert ocr._find_issuer(RECEIPT) == "MOL"
+    # Un document emis chiar de CNAIR il are in antet, deci tot el iese.
+    assert ocr._find_issuer("C.N.A.I.R. S.A.\nvandut prin OMV") == "CNAIR"

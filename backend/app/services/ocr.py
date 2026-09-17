@@ -288,19 +288,54 @@ def _parse_date_str(s: str) -> Optional[str]:
     return f"{y}-{mo:02d}-{d:02d}"
 
 
-def _find_date(text: str, patterns: list[str]) -> Optional[str]:
-    date_re = r"\b(\d{1,2})[.\-/\s](\d{1,2})[.\-/\s](\d{4})\b"
+def _find_date(text: str, patterns: list[str], window: int = 160,
+               fallback: bool = False) -> Optional[str]:
+    """Prima data care urmeaza dupa una dintre etichete.
+
+    Cauta in cele `window` caractere de dupa eticheta, trecand peste randuri:
+    pe bonurile de la benzinarie valoarea sta pe randul urmator, aliniata la
+    dreapta, nu langa eticheta.
+
+    Varianta de dinainte cauta data INAUNTRUL textului etichetei - unde nu era
+    niciodata - si cadea inapoi pe prima data din tot documentul. Pe o rovinieta
+    aia e cursul valutar, asa ca inceputul si sfarsitul valabilitatii ieseau
+    amandoua gresite si identice.
+
+    `fallback` readuce vechiul comportament, si se foloseste doar acolo unde o
+    data oarecare e mai buna decat niciuna.
+    """
     for pattern in patterns:
-        block = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
-        if block:
-            found = re.search(date_re, block.group(0))
+        for m in re.finditer(pattern, text, re.IGNORECASE):
+            found = _DATE_RE.search(text[m.end():m.end() + window])
             if found:
-                d, m, y = found.group(1).zfill(2), found.group(2).zfill(2), found.group(3)
-                return f"{y}-{m}-{d}"
-    all_dates = re.findall(date_re, text)
-    if all_dates:
-        d, m, y = all_dates[0]
-        return f"{y}-{m.zfill(2)}-{d.zfill(2)}"
+                parsed = _parse_date_str(found.group(0))
+                if parsed:
+                    return parsed
+    if fallback:
+        for raw in _DATE_RE.findall(text):
+            parsed = _parse_date_str(raw)
+            if parsed:
+                return parsed
+    return None
+
+
+def _value_after_label(text: str, keyword: str, window: int = 200) -> Optional[str]:
+    """Valoarea care urmeaza unei etichete, de pe acelasi rand sau de pe cel
+    urmator.
+
+    Etichetele bonurilor sunt bilingve si lungi ("SERIE/SERIAL NUMBER:"), iar
+    valoarea nu mai incape pe rand - se tipareste dedesubt, aliniata la dreapta.
+    """
+    for m in re.finditer(keyword, text, re.IGNORECASE):
+        rest = text[m.end():m.end() + window]
+        head, _, below = rest.partition("\n")
+        # Restul etichetei, pana la doua puncte, nu e valoare.
+        value = head.split(":", 1)[1] if ":" in head else head
+        if value.strip():
+            return value.strip()
+        for line in below.splitlines():
+            if line.strip():
+                return line.strip()
     return None
 
 
@@ -401,10 +436,23 @@ def _strip_diacritics_simple(value: str) -> str:
 
 
 def _find_issuer(text: str) -> Optional[str]:
+    """Emitentul: numele de firma care apare cel mai devreme in document.
+
+    Ordinea in pagina decide, nu ordinea din lista. Un bon incepe cu antetul
+    vanzatorului, iar numele CNAIR apare mai jos doar ca parte din codul
+    tranzactiei ("CNADNR0300000000") - daca lista ar decide, orice bon de
+    benzinarie ar fi atribuit CNAIR.
+    """
+    best_pos, best_name = None, None
     for pattern, name in _VIGNETTE_ISSUERS:
-        if re.search(pattern, text, re.IGNORECASE):
-            return name
-    return None
+        for m in re.finditer(pattern, text, re.IGNORECASE):
+            # Lipit de cifre inseamna ca face parte dintr-un cod, nu dintr-un nume.
+            if text[m.end():m.end() + 1].isdigit():
+                continue
+            if best_pos is None or m.start() < best_pos:
+                best_pos, best_name = m.start(), name
+            break
+    return best_name
 
 
 def _find_city(text: str) -> Optional[str]:
@@ -455,6 +503,15 @@ def _find_series_and_number(text: str) -> tuple:
     Erau amandoua intr-un singur camp: regexul vechi prindea "RO 1234567"
     intreg si il punea la numarul facturii, iar seria ramanea goala.
     """
+    # Bon de benzinarie: "SERIE/SERIAL NUMBER:" si valoarea pe randul de sub.
+    # Se incearca primul, fiindca eticheta e neambigua; celelalte cautari sunt
+    # pe formulari mai libere si pot nimeri alte numere de pe bon.
+    value = _value_after_label(text, r"seri[ae]\s*/\s*serial\s*number")
+    if value:
+        m = re.match(r"([A-Z]{1,4})?\s*(\d{5,14})", value.upper())
+        if m:
+            return m.group(1), m.group(2)
+
     series = None
     m = _SERIES_RE.search(text)
     if m:
@@ -518,6 +575,10 @@ async def extract_vignette_data(image_path: Path) -> dict:
     purchase_date = _find_date(text, [
         r"(?:data|dat[aă])\s*(?:emiterii?|achiziti|cump[aă]r|pl[aă]ti)",
         r"(?:emis[aă]?|issued)\s*(?:la|on|:)",
+        # Bonul de benzinarie scrie doar "DATA: 10/10/2025", jos de tot.
+        # Cu doua puncte obligatorii, ca sa nu se potriveasca cu avertismentul
+        # "A SE PASTRA UN AN LA DATA EXPIRATI!".
+        r"\bdata\s*:",
     ])
 
     # "Valabilitate: 01.07.2026 - 01.07.2027": doua date pe acelasi rand, cu o
@@ -536,13 +597,17 @@ async def extract_vignette_data(image_path: Path) -> dict:
 
     if not valid_from:
         valid_from = _find_date(text, [
-            r"valabil[aă]?\s*(?:de la|din|from|start)",
-            r"(?:start|inceput|de la)\s*(?:dat[aă]|date)?",
+            r"valabil[aă]?\s*de\s*la",
+            r"start\s*of\s*validity",
+            r"valabil[aă]?\s*(?:din|from|start)",
+            r"(?:inceput|de la)\s*(?:dat[aă]|date)?",
         ])
     if not valid_until:
         valid_until = _find_date(text, [
-            r"(?:expir[aă]|valid[aă]?\s*p[aâ]n[aă]|until|end|sfar[sș]it)",
-            r"(?:p[aâ]n[aă]\s*la|valabil[aă]?\s*p[aâ]n[aă])",
+            # "PANA LA/END OF VALIDITY:" - eticheta bilingva, valoarea dedesubt.
+            r"p[aâ]n[aă]\s*la",
+            r"end\s*of\s*validity",
+            r"(?:expir[aă]|valid[aă]?\s*p[aâ]n[aă]|until|sfar[sș]it)",
         ])
     # Doua date identice inseamna ca amandoua cautarile au nimerit acelasi loc.
     if valid_from and valid_from == valid_until:
