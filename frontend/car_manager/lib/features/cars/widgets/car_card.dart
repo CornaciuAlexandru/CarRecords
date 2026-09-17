@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/user.dart';
+import '../../../core/models/vehicle_type.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/l10n.dart';
 
@@ -43,8 +44,12 @@ class CarCard extends StatelessWidget {
                   color: (_fuelColors[car.fuelType] ?? AppColors.primary).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(14),
                 ),
+                // Forma spune ce fel de vehicul e, culoarea spune ce
+                // combustibil foloseste. Doua informatii pe doua canale, intr-un
+                // singur loc - de asta se deosebeste un TIR de o motocicleta
+                // fara sa citesti nimic.
                 child: Icon(
-                  _fuelIcons[car.fuelType] ?? Icons.directions_car,
+                  car.vehicleType.icon,
                   color: _fuelColors[car.fuelType] ?? AppColors.primary,
                   size: 28,
                 ),

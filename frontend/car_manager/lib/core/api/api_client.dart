@@ -70,11 +70,22 @@ Dio createDio() {
       return handler.next(response);
     },
     onError: (error, handler) async {
-      if (error.response?.statusCode == 401) {
+      // Reimprospatarea insasi poate raspunde 401, cand tokenul de reimprospatare
+      // a expirat sau a fost revocat. Fara conditia asta, incercarea de a o
+      // repara ar chema din nou reimprospatarea, la nesfarsit.
+      final isRefreshCall = error.requestOptions.path.contains('/auth/refresh');
+      if (error.response?.statusCode == 401 && !isRefreshCall) {
         final refreshed = await _tryRefreshToken(dio);
         if (refreshed) {
           final opts = error.requestOptions;
           opts.headers['Authorization'] = 'Bearer ${await TokenStore.accessToken}';
+          // Un corp multipart se consuma la prima trimitere. Fara clona, reluarea
+          // pleaca fara fisier, esueaza tacut in `catch`-ul de mai jos, iar omul
+          // vede eroarea 401 initiala - desi tokenul nou era deja valid. Exact
+          // asa cadea scanarea documentelor dupa 15 minute de folosire.
+          if (opts.data is FormData) {
+            opts.data = (opts.data as FormData).clone();
+          }
           try {
             final response = await dio.fetch(opts);
             return handler.resolve(response);

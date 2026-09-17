@@ -6,6 +6,7 @@ import '../providers/cars_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/cm_text_field.dart';
 import '../../../shared/widgets/cm_button.dart';
+import '../../../core/models/vehicle_type.dart';
 import '../../../core/utils/error_handler.dart';
 import '../../../core/utils/l10n.dart';
 import '../../../core/widgets/upgrade_sheet.dart';
@@ -42,6 +43,8 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
     super.dispose();
   }
 
+  VehicleType _vehicleType = VehicleType.car;
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
@@ -57,6 +60,7 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
         if (_capacityCtrl.text.isNotEmpty) 'engine_capacity': int.parse(_capacityCtrl.text),
         if (_powerCtrl.text.isNotEmpty) 'engine_power': int.parse(_powerCtrl.text),
         if (_fuelType != null) 'fuel_type': _fuelType,
+        'vehicle_type': _vehicleType.value,
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -97,6 +101,14 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
           padding: const EdgeInsets.all(20),
           children: [
             _sectionTitle(tr(context).generalInfo),
+            // Sta primul, inaintea marcii: tipul decide ce fel de campuri au
+            // sens mai jos, iar in lista e singurul lucru care se vede de la
+            // distanta.
+            _VehicleTypePicker(
+              selected: _vehicleType,
+              onChanged: (t) => setState(() => _vehicleType = t),
+            ),
+            const SizedBox(height: 14),
             CmTextField(controller: _nicknameCtrl, label: tr(context).nickname, hint: tr(context).hintNickname,
                 prefixIcon: Icons.label_outline),
             const SizedBox(height: 14),
@@ -165,4 +177,51 @@ class _AddCarScreenState extends ConsumerState<AddCarScreen> {
     child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16,
         color: AppColors.primary)),
   );
+}
+
+/// Alegerea tipului de vehicul.
+///
+/// Iconite, nu o lista derulanta: sunt sase optiuni, se recunosc din desen mai
+/// repede decat din text, si asa utilizatorul vede exact ce va aparea in lista.
+class _VehicleTypePicker extends StatelessWidget {
+  final VehicleType selected;
+  final ValueChanged<VehicleType> onChanged;
+
+  const _VehicleTypePicker({required this.selected, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Tip vehicul',
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final type in VehicleType.values)
+              ChoiceChip(
+                selected: type == selected,
+                onSelected: (_) => onChanged(type),
+                avatar: Icon(
+                  type.icon,
+                  size: 18,
+                  color: type == selected ? Colors.white : AppColors.primary,
+                ),
+                label: Text(type.label),
+                labelStyle: TextStyle(
+                  fontSize: 13,
+                  color: type == selected ? Colors.white : null,
+                  fontWeight: type == selected ? FontWeight.w600 : null,
+                ),
+                selectedColor: AppColors.primary,
+                backgroundColor: Colors.white,
+              ),
+          ],
+        ),
+      ],
+    );
+  }
 }

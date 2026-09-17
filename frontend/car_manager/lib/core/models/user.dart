@@ -1,3 +1,5 @@
+import 'vehicle_type.dart';
+
 class User {
   final String id;
   final String email;
@@ -102,6 +104,7 @@ class Car {
   final String id;
   final String userId;
   final String? nickname;
+  final VehicleType vehicleType;
   final String brand;
   final String model;
   final int year;
@@ -122,6 +125,7 @@ class Car {
     required this.id,
     required this.userId,
     this.nickname,
+    this.vehicleType = VehicleType.car,
     required this.brand,
     required this.model,
     required this.year,
@@ -143,6 +147,7 @@ class Car {
         id: j['id'],
         userId: j['user_id'],
         nickname: j['nickname'],
+        vehicleType: VehicleType.from(j['vehicle_type']),
         brand: j['brand'],
         model: j['model'],
         year: j['year'],
@@ -160,6 +165,7 @@ class Car {
 
   Map<String, dynamic> toJson() => {
         if (nickname != null) 'nickname': nickname,
+        'vehicle_type': vehicleType.value,
         'brand': brand,
         'model': model,
         'year': year,

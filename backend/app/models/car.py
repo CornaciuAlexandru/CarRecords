@@ -11,6 +11,9 @@ class Car(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     nickname = Column(String, nullable=True)
+    # Text, nu Enum: un enum nativ de PostgreSQL ar cere o migrare de schema la
+    # fiecare tip nou de vehicul. Valorile permise sunt in app/core/vehicles.py.
+    vehicle_type = Column(String, default="masina", nullable=False)
     brand = Column(String, nullable=False)
     model = Column(String, nullable=False)
     year = Column(Integer, nullable=False)

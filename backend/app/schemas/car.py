@@ -2,9 +2,16 @@ from pydantic import BaseModel
 from typing import Optional, Literal
 from datetime import datetime
 
+from app.core.vehicles import DEFAULT_VEHICLE_TYPE
+
+# Tinut sincron cu app/core/vehicles.VEHICLE_TYPES. Literal cere valori
+# scrise la propriu, deci nu se poate construi din tuplu.
+VehicleType = Literal["masina", "motocicleta", "camion", "tir", "utilaj", "altul"]
+
 
 class CarCreate(BaseModel):
     nickname: Optional[str] = None
+    vehicle_type: VehicleType = DEFAULT_VEHICLE_TYPE
     brand: str
     model: str
     year: int
@@ -19,6 +26,8 @@ class CarCreate(BaseModel):
 
 
 class CarUpdate(CarCreate):
+    # La editare, un camp nemodificat nu trebuie sa readuca tipul la "masina".
+    vehicle_type: Optional[VehicleType] = None
     brand: Optional[str] = None
     model: Optional[str] = None
     year: Optional[int] = None
@@ -40,6 +49,7 @@ class CarOut(BaseModel):
     license_plate: str
     registration_number: Optional[str]
     mileage: Optional[int]
+    vehicle_type: str = DEFAULT_VEHICLE_TYPE
     # Cate scanari OCR s-au folosit din cele incluse cu masina si cate au ramas.
     # Ajung la aplicatie ca sa poata arata "mai ai 3 scanari" inainte ca omul sa
     # faca poza, nu dupa.

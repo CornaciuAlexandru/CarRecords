@@ -91,7 +91,8 @@ class _AddRegistrationScreenState extends ConsumerState<AddRegistrationScreen> {
         return;
       }
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(tr(context).scanFailed('$e')), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(tr(context).scanFailed(parseError(context, e))),
+            backgroundColor: AppColors.danger),
       );
     } finally {
       if (mounted) setState(() => _isScanning = false);
