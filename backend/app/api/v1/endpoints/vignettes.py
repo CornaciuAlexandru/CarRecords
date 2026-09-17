@@ -36,7 +36,11 @@ def create_vignette(
     db: Session = Depends(get_db),
 ):
     get_owned_car(car_id, current_user, db)
-    vignette = Vignette(car_id=car_id, **data.model_dump())
+    payload = data.model_dump()
+    # Coloana e obligatorie in baza de date si o folosesc rovinietele vechi;
+    # formularul nu mai cere campul, deci il completam noi.
+    payload["valid_from"] = payload.get("valid_from") or payload["purchase_date"]
+    vignette = Vignette(car_id=car_id, **payload)
     db.add(vignette)
     db.commit()
     db.refresh(vignette)

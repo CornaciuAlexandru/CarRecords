@@ -304,13 +304,29 @@ def _find_date(text: str, patterns: list[str]) -> Optional[str]:
     return None
 
 
+# O suma are o moneda langa ea, sau o eticheta inaintea ei. Fara conditia asta,
+# regexul prindea "01.07" din "01.07.2026" si punea 1,07 lei la pret.
+_PRICE_WITH_CURRENCY = re.compile(
+    r"(\d{1,3}(?:[ .]\d{3})*[.,]\d{2})\s*(?:RON|LEI|EUR|€)\b", re.IGNORECASE)
+_PRICE_WITH_LABEL = re.compile(
+    r"(?:tarif|pre[tț]|valoare|suma|total|cost)\s*[:\s]*"
+    r"(\d{1,3}(?:[ .]\d{3})*[.,]\d{2})", re.IGNORECASE)
+
+
 def _find_price(text: str) -> Optional[float]:
-    match = re.search(r"(\d{1,4}[.,]\d{2})\s*(RON|LEI|EUR|lei)?", text, re.IGNORECASE)
-    if match:
+    for pattern in (_PRICE_WITH_CURRENCY, _PRICE_WITH_LABEL):
+        m = pattern.search(text)
+        if not m:
+            continue
+        raw = m.group(1).replace(" ", "").replace(",", ".")
+        # "1.234.50" -> separatorul de mii dispare, virgula zecimala a devenit punct
+        if raw.count(".") > 1:
+            head, _, tail = raw.rpartition(".")
+            raw = head.replace(".", "") + "." + tail
         try:
-            return float(match.group(1).replace(",", "."))
+            return float(raw)
         except ValueError:
-            pass
+            continue
     return None
 
 
@@ -343,18 +359,151 @@ async def _run_scan(fn, image_path: Path):
                                       timeout=SCAN_DEADLINE_S)
 
 
+# Emitentii de roviniete. Fiecare intrare e (ce cautam in text, ce scriem in
+# formular) - pe document apare "C.N.A.I.R. S.A." sau "CNADNR", dar in aplicatie
+# vrem o singura forma.
+_VIGNETTE_ISSUERS = [
+    (r"c\.?\s?n\.?\s?a\.?\s?i\.?\s?r\.?", "CNAIR"),
+    (r"cnadnr", "CNAIR"),
+    (r"administrare[a]?\s+(?:a\s+)?infrastructurii\s+rutiere", "CNAIR"),
+    (r"e[\s\-]?rovinieta", "e-rovinieta.ro"),
+    (r"roviniete\.ro", "roviniete.ro"),
+    (r"po[sș]ta\s+rom[aâ]n[aă]", "Posta Romana"),
+    (r"\bomv\b|petrom", "OMV Petrom"),
+    (r"rompetrol", "Rompetrol"),
+    (r"\bmol\b", "MOL"),
+    (r"lukoil", "Lukoil"),
+    (r"socar", "Socar"),
+    (r"selfpay", "SelfPay"),
+    (r"paypoint", "PayPoint"),
+    (r"\bcec\b|banca\s+transilvania|\bbcr\b", "Banca"),
+]
+
+# Orasele in care se elibereaza cel mai des roviniete: resedinte de judet plus
+# localitatile mari. O lista fixa bate un regex pe "oras/localitatea": pe
+# document numele apare de multe ori singur, in adresa punctului de emitere.
+_RO_CITIES = [
+    "Bucuresti", "Cluj-Napoca", "Timisoara", "Iasi", "Constanta", "Craiova",
+    "Brasov", "Galati", "Ploiesti", "Oradea", "Braila", "Arad", "Pitesti",
+    "Sibiu", "Bacau", "Targu Mures", "Baia Mare", "Buzau", "Botosani",
+    "Satu Mare", "Ramnicu Valcea", "Suceava", "Piatra Neamt", "Drobeta-Turnu Severin",
+    "Targu Jiu", "Targoviste", "Focsani", "Bistrita", "Resita", "Tulcea",
+    "Slatina", "Calarasi", "Alba Iulia", "Giurgiu", "Deva", "Hunedoara",
+    "Zalau", "Sfantu Gheorghe", "Barlad", "Vaslui", "Roman", "Turda",
+    "Medias", "Slobozia", "Alexandria", "Miercurea Ciuc", "Petrosani", "Lugoj",
+    "Mangalia", "Onesti", "Sighetu Marmatiei", "Campina", "Mioveni", "Navodari",
+]
+
+
+def _strip_diacritics_simple(value: str) -> str:
+    table = str.maketrans("ăâîșşțţĂÂÎȘŞȚŢ", "aaissttAAISSTT")
+    return value.translate(table)
+
+
+def _find_issuer(text: str) -> Optional[str]:
+    for pattern, name in _VIGNETTE_ISSUERS:
+        if re.search(pattern, text, re.IGNORECASE):
+            return name
+    return None
+
+
+def _find_city(text: str) -> Optional[str]:
+    """Orasul de pe document.
+
+    Intai un nume de oras cunoscut, oriunde in text: pe rovinieta apare in
+    adresa punctului de emitere, fara nicio eticheta inaintea lui. Regexul pe
+    "oras/localitatea" ramane ca rezerva, pentru documentele care chiar au
+    eticheta.
+    """
+    flat = _strip_diacritics_simple(text).lower()
+    # Cele mai lungi intai: "Targu Mures" inaintea lui "Targu Jiu" nu conteaza,
+    # dar "Cluj-Napoca" trebuie sa castige in fata unui eventual "Cluj".
+    for city in sorted(_RO_CITIES, key=len, reverse=True):
+        if re.search(rf"\b{re.escape(_strip_diacritics_simple(city).lower())}\b", flat):
+            return city
+    # Eticheta se potriveste indiferent de majuscule, dar numele trebuie sa
+    # inceapa cu litera mare - altfel "localitate" din "fara nicio localitate"
+    # se potrivea cu "loc" si intorcea "alitate".
+    m = re.search(
+        r"(?i:(?:ora[sș]ul?|municipiul|localitatea|loc\.|jude[tț]ul))"
+        r"[\s:]+([A-ZĂÎȘȚ][a-zA-ZăîșțâÂ\-]{2,})",
+        text)
+    return m.group(1) if m else None
+
+
+# Seria si numarul stau de obicei impreuna: "Seria RO nr. 1234567". Numarul de
+# inmatriculare foloseste tot "nr.", deci il excludem explicit - altfel ajungea
+# el in campul de numar al facturii.
+# "Seria: RO   Nr.: 12345678" - intre eticheta si valoare pot fi mai multe
+# semne de punctuatie si spatii ("Nr.:"), nu doar unul.
+_PUNCT = r"[\s:.\-–]*"
+# Fara spatiu intre litere si cifre: o serie poate fi "AB1", dar in
+# "Seria RO 4443332" cifrele de dupa spatiu sunt numarul, nu seria.
+_SERIES_RE = re.compile(
+    r"seri[ae]" + _PUNCT + r"([A-Z]{1,4}\d{0,4})(?![A-Za-z0-9])", re.IGNORECASE)
+_NUMBER_RE = re.compile(
+    r"(?:nr|num[aă]r(?:ul)?)" + _PUNCT + r"(\d{4,12})\b", re.IGNORECASE)
+# Numarul de inmatriculare foloseste tot "nr.", dar e urmat de cuvant, nu de
+# cifre - deci nu se potriveste cu _NUMBER_RE. Ramane totusi exclus explicit
+# pentru documentele care scriu "Nr. inmatriculare 12345".
+_PLATE_LABEL_RE = re.compile(r"nr\.?\s*[iî]nmatricul", re.IGNORECASE)
+
+
+def _find_series_and_number(text: str) -> tuple:
+    """(serie, numar) de pe dovada de plata.
+
+    Erau amandoua intr-un singur camp: regexul vechi prindea "RO 1234567"
+    intreg si il punea la numarul facturii, iar seria ramanea goala.
+    """
+    series = None
+    m = _SERIES_RE.search(text)
+    if m:
+        series = re.sub(r"\s+", "", m.group(1)).upper()
+
+    number = None
+    for m in _NUMBER_RE.finditer(text):
+        # Sarim peste numarul de inmatriculare, daca documentul il scrie cu cifre.
+        before = text[max(0, m.start() - 30):m.start() + 4]
+        if _PLATE_LABEL_RE.search(before):
+            continue
+        number = m.group(1)
+        break
+    if not number:
+        # "Seria RO 1234567" fara cuvantul "nr": numarul urmeaza seriei.
+        m = re.search(r"seri[ae]" + _PUNCT + r"[A-Z]{1,4}\s*(\d{4,12})",
+                      text, re.IGNORECASE)
+        if m:
+            number = m.group(1)
+    return series, number
+
+
+_PERIOD_DAYS = {"7_zile": 7, "30_zile": 30, "90_zile": 90, "1_an": 365}
+
+
+def _period_from_dates(valid_from: Optional[str], valid_until: Optional[str]) -> Optional[str]:
+    """Perioada dedusa din cele doua date, cand documentul n-o scrie explicit."""
+    if not (valid_from and valid_until):
+        return None
+    from datetime import date as _date
+    try:
+        a = _date.fromisoformat(valid_from)
+        b = _date.fromisoformat(valid_until)
+    except ValueError:
+        return None
+    days = (b - a).days
+    best, best_diff = None, None
+    for name, expected in _PERIOD_DAYS.items():
+        diff = abs(days - expected)
+        if best_diff is None or diff < best_diff:
+            best, best_diff = name, diff
+    # Peste 20% abatere nu mai e perioada aia, e altceva.
+    return best if best_diff is not None and best_diff <= _PERIOD_DAYS[best] * 0.2 else None
+
+
 async def extract_vignette_data(image_path: Path) -> dict:
     # OCR-ul tine secunde bune si e munca de procesor. Pe bucla de evenimente
     # ar bloca toate celelalte cereri ale acestui worker pana termina.
     text = await _run_scan(_extract_text, image_path)
-
-    ROMANIAN_COMPANIES = ["CNAIR", "DRPCIV", "Roviniete", "roviniete.ro", "e-rovinieta"]
-    company = next((c for c in ROMANIAN_COMPANIES if c.lower() in text.lower()), None)
-
-    city_match = re.search(
-        r"(?:ora[sș]|municipiul|localitatea|loc\.?|jude[tț]ul)\s*[:\s]*([A-ZĂÎȘȚ][a-zA-ZăîșțÂ\-]+)",
-        text, re.IGNORECASE
-    )
 
     period = None
     if re.search(r"7\s*zile|7\s*days|saptam", text, re.IGNORECASE):
@@ -363,32 +512,56 @@ async def extract_vignette_data(image_path: Path) -> dict:
         period = "30_zile"
     elif re.search(r"90\s*zile|90\s*days|trimestri", text, re.IGNORECASE):
         period = "90_zile"
-    elif re.search(r"1\s*an|12\s*luni|anual|1\s*year", text, re.IGNORECASE):
+    elif re.search(r"12\s*luni|anual|1\s*year|\b1\s*an\b", text, re.IGNORECASE):
         period = "1_an"
 
     purchase_date = _find_date(text, [
-        r"(?:data|dat[aă])\s*(?:emiterii?|achiziti|cump[aă]r)",
+        r"(?:data|dat[aă])\s*(?:emiterii?|achiziti|cump[aă]r|pl[aă]ti)",
         r"(?:emis[aă]?|issued)\s*(?:la|on|:)",
     ])
-    valid_from = _find_date(text, [
-        r"valabil[aă]?\s*(?:de la|din|from|start)",
-        r"(?:start|inceput|de la)\s*(?:dat[aă]|date)?",
-    ])
-    valid_until = _find_date(text, [
-        r"(?:expir[aă]|valid[aă]?\s*p[aâ]n[aă]|until|end|sfar[sș]it)",
-        r"(?:p[aâ]n[aă]\s*la|valabil[aă]?\s*p[aâ]n[aă])",
-    ])
+
+    # "Valabilitate: 01.07.2026 - 01.07.2027": doua date pe acelasi rand, cu o
+    # singura eticheta pentru amandoua. Se incearca PRIMUL, fiindca e forma cea
+    # mai raspandita si cea mai sigura - cautarile pe eticheta separata de mai
+    # jos gaseau amandoua datele in acelasi loc si puneau inceputul si la
+    # expirare, deci rovinieta parea expirata in ziua cumpararii.
+    valid_from = valid_until = None
+    m = re.search(
+        r"valabil[a-zăâ]*" + _PUNCT + r"(\d{1,2}[.\-/]\d{1,2}[.\-/]\d{4})"
+        r"\s*(?:-|–|—|pana la|p[aâ]n[aă] la)\s*(\d{1,2}[.\-/]\d{1,2}[.\-/]\d{4})",
+        text, re.IGNORECASE)
+    if m:
+        valid_from = _parse_date_str(m.group(1))
+        valid_until = _parse_date_str(m.group(2))
+
+    if not valid_from:
+        valid_from = _find_date(text, [
+            r"valabil[aă]?\s*(?:de la|din|from|start)",
+            r"(?:start|inceput|de la)\s*(?:dat[aă]|date)?",
+        ])
+    if not valid_until:
+        valid_until = _find_date(text, [
+            r"(?:expir[aă]|valid[aă]?\s*p[aâ]n[aă]|until|end|sfar[sș]it)",
+            r"(?:p[aâ]n[aă]\s*la|valabil[aă]?\s*p[aâ]n[aă])",
+        ])
+    # Doua date identice inseamna ca amandoua cautarile au nimerit acelasi loc.
+    if valid_from and valid_from == valid_until:
+        valid_until = None
+
+    period = period or _period_from_dates(valid_from, valid_until)
+    series, number = _find_series_and_number(text)
 
     return {
         "purchase_date": purchase_date,
         "valid_from": valid_from,
         "valid_until": valid_until,
         "validity_period": period,
-        "issuer_company": company,
-        "city": city_match.group(1) if city_match else None,
+        "issuer_company": _find_issuer(text),
+        "city": _find_city(text),
         "price": _find_price(text),
-        "invoice_number": _find_invoice_number(text),
-        "ocr_raw_text": text[:500] if text else "",
+        "invoice_number": number,
+        "invoice_series": series,
+        "ocr_raw_text": text[:800] if text else "",
     }
 
 

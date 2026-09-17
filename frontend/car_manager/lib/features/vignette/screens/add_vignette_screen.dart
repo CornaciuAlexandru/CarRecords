@@ -38,7 +38,6 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
   final _notesCtrl = TextEditingController();
 
   late DateTime _purchaseDate;
-  late DateTime _validFrom;
   DateTime? _validUntil;
   late String _period;
   bool _isLoading = false;
@@ -54,7 +53,6 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
     super.initState();
     final e = widget.existing;
     _purchaseDate = e?.purchaseDate ?? DateTime.now();
-    _validFrom    = e?.validFrom   ?? DateTime.now();
     _period       = e?.validityPeriod ?? '1_an';
     _validUntil   = e?.validUntil;
     if (e != null) {
@@ -69,14 +67,16 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
     }
   }
 
+  /// Perioada aleasa propune o data de expirare, socotita de la cumparare.
+  /// Ramane editabila: pe rovinieta scrie data exacta, si ea are ultimul
+  /// cuvant.
   void _updateUntilDate() {
     final days = {'7_zile': 7, '30_zile': 30, '90_zile': 90, '1_an': 365};
-    setState(() => _validUntil = _validFrom.add(Duration(days: days[_period] ?? 365)));
+    setState(() => _validUntil = _purchaseDate.add(Duration(days: days[_period] ?? 365)));
   }
 
   Map<String, dynamic> _buildPayload() => {
     'purchase_date': _purchaseDate.toIso8601String().substring(0, 10),
-    'valid_from':    _validFrom.toIso8601String().substring(0, 10),
     'valid_until':   _validUntil!.toIso8601String().substring(0, 10),
     'validity_period': _period,
     if (_companyCtrl.text.isNotEmpty) 'issuer_company': _companyCtrl.text,
@@ -121,14 +121,17 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
       if (data['city'] != null) _cityCtrl.text = data['city'];
       if (data['price'] != null) _priceCtrl.text = '${data['price']}';
       if (data['invoice_number'] != null) _invoiceNrCtrl.text = data['invoice_number'];
+      if (data['invoice_series'] != null) _invoiceSeriesCtrl.text = data['invoice_series'];
+      if (data['purchase_date'] != null) _purchaseDate = DateTime.parse(data['purchase_date']);
       if (data['validity_period'] != null) { _period = data['validity_period']; _updateUntilDate(); }
-      if (data['valid_from'] != null) { _validFrom = DateTime.parse(data['valid_from']); _updateUntilDate(); }
+      // Data de pe document bate perioada propusa de noi.
+      if (data['valid_until'] != null) _validUntil = DateTime.parse(data['valid_until']);
     });
   }
 
   void _showQuickSaveDialog(Map<String, dynamic> data) {
-    final hasData = data['issuer_company'] != null || data['validity_period'] != null ||
-        data['valid_from'] != null || data['price'] != null;
+    final hasData = data.entries.any((e) =>
+        e.key != 'ocr_raw_text' && e.value != null);
     final rawText = data['ocr_raw_text'] as String? ?? '';
 
     showDialog(
@@ -149,7 +152,10 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
                 const SizedBox(height: 12),
                 if (data['issuer_company'] != null) _ocrRow(tr(context).issuer, data['issuer_company']),
                 if (data['validity_period'] != null) _ocrRow(tr(context).period, _periods[data['validity_period']] ?? data['validity_period']),
-                if (data['valid_from'] != null) _ocrRow(tr(context).validFrom, data['valid_from']),
+                if (data['valid_until'] != null) _ocrRow('Expira la', data['valid_until']),
+                if (data['invoice_series'] != null) _ocrRow('Seria', data['invoice_series']),
+                if (data['invoice_number'] != null) _ocrRow('Numar', data['invoice_number']),
+                if (data['city'] != null) _ocrRow(tr(context).city, data['city']),
                 if (data['price'] != null) _ocrRow(tr(context).price, '${data['price']} RON'),
               ] else ...[
                 const Icon(Icons.info_outline, color: AppColors.warning, size: 32),
@@ -254,26 +260,10 @@ class _AddVignetteScreenState extends ConsumerState<AddVignetteScreen> {
               Expanded(child: _DateField(label: tr(context).purchaseDate, date: _purchaseDate,
                   onPick: (d) => setState(() => _purchaseDate = d))),
               const SizedBox(width: 12),
-              Expanded(child: _DateField(label: tr(context).validFrom, date: _validFrom,
-                  onPick: (d) { setState(() => _validFrom = d); _updateUntilDate(); })),
+              Expanded(child: _DateField(label: 'Data expirarii',
+                  date: _validUntil ?? _purchaseDate.add(const Duration(days: 365)),
+                  onPick: (d) => setState(() => _validUntil = d))),
             ]),
-            if (_validUntil != null) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.success.withOpacity(0.3)),
-                ),
-                child: Row(children: [
-                  const Icon(Icons.check_circle, color: AppColors.success, size: 16),
-                  const SizedBox(width: 8),
-                  Text(tr(context).expiresOnDate(_fmt.format(_validUntil!)),
-                      style: const TextStyle(color: AppColors.success, fontWeight: FontWeight.w600)),
-                ]),
-              ),
-            ],
             const SizedBox(height: 20),
             CmTextField(controller: _companyCtrl, label: tr(context).issuerCompany, hint: 'CNAIR', prefixIcon: Icons.business_outlined),
             const SizedBox(height: 14),

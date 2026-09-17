@@ -5,7 +5,10 @@ from datetime import date, datetime
 
 class VignetteCreate(BaseModel):
     purchase_date: date
-    valid_from: date
+    # Optional: formularul cere data cumpararii si data expirarii, fiindca alea
+    # doua scriu pe rovinieta si alea conteaza. Cand lipseste, inceputul
+    # valabilitatii e ziua cumpararii.
+    valid_from: Optional[date] = None
     valid_until: date
     validity_period: Literal["7_zile", "30_zile", "90_zile", "1_an"]
     issuer_company: Optional[str] = None
