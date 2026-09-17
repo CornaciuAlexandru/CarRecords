@@ -58,6 +58,18 @@ def ensure_can_scan(user: User, car) -> None:
     )
 
 
+def scan_found_something(extracted: dict) -> bool:
+    """A iesit macar un camp util din scanare?
+
+    Dictionarul intors de OCR are mereu toate cheile, cu None acolo unde nu s-a
+    citit nimic - deci `if extracted:` era mereu adevarat si se taxa si o poza
+    din care nu iesise absolut nimic. Textul brut nu conteaza: e pentru
+    depanare, nu pentru utilizator.
+    """
+    return any(v not in (None, "", [], {}) for k, v in extracted.items()
+               if k != "ocr_raw_text")
+
+
 def charge_scan(user: User, car, db: Session) -> None:
     """Scade o scanare si salveaza.
 
@@ -66,3 +78,14 @@ def charge_scan(user: User, car, db: Session) -> None:
     """
     if entitlements.consume_scan(user, car):
         db.commit()
+
+
+def scan_took_too_long() -> HTTPException:
+    """Raspunsul cand OCR-ul a depasit termenul. Nu se taxeaza: omul n-a primit
+    nimic. 504, nu 500 - aplicatia il arata ca "incearca din nou", nu ca eroare
+    interna."""
+    return HTTPException(
+        status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+        detail="Citirea documentului a durat prea mult. Incearca o poza mai "
+               "clara sau mai apropiata de document.",
+    )

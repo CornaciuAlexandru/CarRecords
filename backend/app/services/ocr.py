@@ -30,9 +30,29 @@ WORK_LONG_EDGE = 2200
 
 # pytesseract porneste cate un proces tesseract pentru fiecare apel, deci mai
 # multe fire chiar merg in paralel - GIL-ul nu conteaza cand munca e in alt
-# proces. Plafonat la 4: peste, se bat pe aceleasi nuclee.
-_POOL = ThreadPoolExecutor(max_workers=max(2, min(4, os.cpu_count() or 2)),
-                           thread_name_prefix="ocr")
+# proces.
+#
+# Cate deodata: cel mult atatea cate nuclee sunt, si nu mai mult de 4. Pe un
+# VPS cu doua nuclee, sase procese tesseract in paralel - fiecare cu firele
+# lui OpenMP - se calca pe picioare si dureaza minute in loc de secunde. De
+# asta si OMP_THREAD_LIMIT=1 de mai jos: un tesseract, un fir; paralelismul
+# il facem noi, la nivel de proces, unde il putem masura si limita.
+_WORKERS = max(1, min(4, os.cpu_count() or 1))
+_POOL = ThreadPoolExecutor(max_workers=_WORKERS, thread_name_prefix="ocr")
+os.environ.setdefault("OMP_THREAD_LIMIT", "1")
+
+# Cat asteptam un singur apel tesseract. Un proces care a ramas agatat nu
+# trebuie sa tina cererea ostatica: se omoara si trecerea aia lipseste din
+# rezultat, restul merg mai departe.
+PASS_TIMEOUT_S = 45
+
+# Cate scanari proceseaza un worker deodata. Restul asteapta la rand, in loc
+# sa porneasca fiecare cate sase procese tesseract peste celelalte.
+_SCAN_SLOTS = asyncio.Semaphore(1)
+
+# Limita totala a unei scanari. Peste ea, cererea primeste 504 si scanarea nu
+# se taxeaza - vezi endpointurile.
+SCAN_DEADLINE_S = 90
 
 try:
     import pytesseract
@@ -40,10 +60,12 @@ try:
     pytesseract.pytesseract.tesseract_cmd = settings.TESSERACT_PATH
     _available = pytesseract.get_languages(config='')
     OCR_LANG = 'ron+eng' if 'ron' in _available else 'eng'
+    _LANGS = set(_available)
     OCR_AVAILABLE = True
 except Exception:
     OCR_AVAILABLE = False
     OCR_LANG = 'eng'
+    _LANGS = set()
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -108,9 +130,11 @@ def _otsu_binarize(img: Image.Image) -> Image.Image:
 def _ocr(img: Image.Image, psm: int) -> str:
     try:
         return pytesseract.image_to_string(
-            img, lang=OCR_LANG, config=f'--oem 3 --psm {psm}'
+            img, lang=OCR_LANG, config=f'--oem 3 --psm {psm}',
+            timeout=PASS_TIMEOUT_S,
         )
-    except Exception:
+    except Exception as e:
+        log.warning("tesseract psm %d: %s", psm, e)
         return ""
 
 
@@ -120,7 +144,7 @@ def _mean_confidence(img: Image.Image) -> float:
     try:
         data = pytesseract.image_to_data(
             img, lang=OCR_LANG, config="--oem 3 --psm 6",
-            output_type=pytesseract.Output.DICT,
+            output_type=pytesseract.Output.DICT, timeout=PASS_TIMEOUT_S,
         )
     except Exception:
         return 0.0
@@ -155,7 +179,9 @@ def _detect_rotation(img: Image.Image) -> int:
     small = ImageOps.autocontrast(small, cutoff=1)
 
     try:
-        osd = pytesseract.image_to_osd(small, config="--psm 0")
+        if "osd" not in _LANGS:
+            raise RuntimeError("osd.traineddata nu e instalat")
+        osd = pytesseract.image_to_osd(small, config="--psm 0", timeout=PASS_TIMEOUT_S)
         rotate = re.search(r"Rotate:\s*(\d+)", osd)
         conf = re.search(r"Orientation confidence:\s*([\d.]+)", osd)
         if rotate and (conf is None or float(conf.group(1)) >= 1.0):
@@ -198,7 +224,10 @@ def _text_variants(image_path: Path, psms=(4, 6)) -> list[str]:
 def _extract_text(image_path: Path) -> str:
     """Text combinat din toate variantele — pentru cautari regex simple
     (rovinieta, asigurare)."""
-    return "\n".join(_text_variants(image_path))
+    started = time.perf_counter()
+    text = "\n".join(_text_variants(image_path))
+    log.info("ocr text: %.1fs, %d caractere", time.perf_counter() - started, len(text))
+    return text
 
 
 def _prepared_images(image_path: Path) -> tuple:
@@ -220,9 +249,10 @@ def _word_boxes(img: Image.Image, psm: int = 6) -> list[dict]:
     try:
         data = pytesseract.image_to_data(
             img, lang=OCR_LANG, config=f'--oem 3 --psm {psm}',
-            output_type=pytesseract.Output.DICT,
+            output_type=pytesseract.Output.DICT, timeout=PASS_TIMEOUT_S,
         )
-    except Exception:
+    except Exception as e:
+        log.warning("tesseract image_to_data: %s", e)
         return []
 
     words = []
@@ -296,10 +326,27 @@ def _find_invoice_number(text: str) -> Optional[str]:
 #  Rovinieta
 # ═══════════════════════════════════════════════════════════════════
 
+class ScanTimeout(Exception):
+    """Scanarea a depasit SCAN_DEADLINE_S. Nu se taxeaza."""
+
+
+async def _run_scan(fn, image_path: Path):
+    """Ruleaza o extractie in afara buclei, pe rand, cu termen.
+
+    Pe rand: doua scanari simultane pe acelasi worker ar porni de doua ori mai
+    multe procese tesseract decat are rost, iar a doua ar astepta oricum.
+    Cu termen: o cerere nu ramane niciodata agatata; aplicatia stie sa arate
+    un mesaj pentru 504, dar nu pentru o conexiune care nu se mai inchide.
+    """
+    async with _SCAN_SLOTS:
+        return await asyncio.wait_for(asyncio.to_thread(fn, image_path),
+                                      timeout=SCAN_DEADLINE_S)
+
+
 async def extract_vignette_data(image_path: Path) -> dict:
     # OCR-ul tine secunde bune si e munca de procesor. Pe bucla de evenimente
     # ar bloca toate celelalte cereri ale acestui worker pana termina.
-    text = await asyncio.to_thread(_extract_text, image_path)
+    text = await _run_scan(_extract_text, image_path)
 
     ROMANIAN_COMPANIES = ["CNAIR", "DRPCIV", "Roviniete", "roviniete.ro", "e-rovinieta"]
     company = next((c for c in ROMANIAN_COMPANIES if c.lower() in text.lower()), None)
@@ -350,7 +397,7 @@ async def extract_vignette_data(image_path: Path) -> dict:
 # ═══════════════════════════════════════════════════════════════════
 
 async def extract_insurance_data(image_path: Path) -> dict:
-    text = await asyncio.to_thread(_extract_text, image_path)
+    text = await _run_scan(_extract_text, image_path)
 
     INSURERS = [
         "Allianz", "ASIROM", "Generali", "Omniasig", "Groupama",
@@ -787,7 +834,7 @@ def _clean_name(value: str) -> Optional[str]:
 async def extract_registration_data(image_path: Path) -> dict:
     """Talonul. Munca reala e in _extract_registration_sync, rulata intr-un
     fir separat ca sa nu tina bucla de evenimente ostatica."""
-    return await asyncio.to_thread(_extract_registration_sync, image_path)
+    return await _run_scan(_extract_registration_sync, image_path)
 
 
 def _extract_registration_sync(image_path: Path) -> dict:

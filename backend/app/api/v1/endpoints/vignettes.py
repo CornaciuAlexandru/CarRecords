@@ -1,8 +1,10 @@
+import asyncio
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.core.database import get_db
-from app.core.deps import charge_scan, ensure_can_scan, get_current_user
+from app.core.deps import (charge_scan, ensure_can_scan, get_current_user,
+                           scan_found_something, scan_took_too_long)
 from app.models.user import User
 from app.models.car import Car
 from app.models.vignette import Vignette
@@ -51,8 +53,13 @@ async def scan_vignette(
     car = get_owned_car(car_id, current_user, db)
     ensure_can_scan(current_user, car)
     file_path = await save_document(file, current_user.id)
-    extracted = await extract_vignette_data(file_path)
-    if extracted:
+    try:
+        extracted = await extract_vignette_data(file_path)
+    except asyncio.TimeoutError:
+        raise scan_took_too_long()
+    # Se taxeaza doar ce a produs ceva. Un dictionar plin de None nu e o
+    # scanare, e o poza din care n-am putut citi.
+    if scan_found_something(extracted):
         charge_scan(current_user, car, db)
     return {
         "file_path": str(file_path),
