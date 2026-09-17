@@ -796,6 +796,114 @@ def _extract_vin(value: str) -> Optional[str]:
     return m.group(0) if m else None
 
 
+# Codul producatorului (primele 3 caractere din VIN), pentru marcile de pe
+# piata din Romania. E singura parte a VIN-ului care se poate verifica: restul
+# e numar de serie, orice combinatie e plauzibila.
+#
+# Cifra de control (pozitia 9) NU e folosita: e obligatorie in America de Nord,
+# dar producatorii europeni nu o implementeaza - verificata pe VIN-uri reale
+# Dacia, Renault, VW, Skoda, BMW, Opel, Fiat, niciunul nu trece.
+_WMI_BY_BRAND = {
+    "DACIA":         ("UU1", "UU5", "UU6"),
+    "RENAULT":       ("VF1", "VF2", "VF6", "VF8"),
+    "VOLKSWAGEN":    ("WVW", "WV1", "WV2", "WVG"),
+    "SKODA":         ("TMB",),
+    "AUDI":          ("WAU", "TRU"),
+    "BMW":           ("WBA", "WBS", "WBY", "WBX"),
+    "MERCEDES":      ("WDB", "WDD", "WDC", "WDF", "W1K", "W1V"),
+    "MERCEDES-BENZ": ("WDB", "WDD", "WDC", "WDF", "W1K", "W1V"),
+    "OPEL":          ("W0L", "W0V"),
+    "FORD":          ("WF0", "WF1"),
+    "PEUGEOT":       ("VF3",),
+    "CITROEN":       ("VF7",),
+    "FIAT":          ("ZFA",),
+    "TOYOTA":        ("JTD", "SB1", "VNK", "NMT", "JTM"),
+    "HYUNDAI":       ("TMA", "KMH", "NLH"),
+    "KIA":           ("U5Y", "KNA", "KNE"),
+    "SEAT":          ("VSS",),
+    "VOLVO":         ("YV1", "YV4"),
+    "NISSAN":        ("VSK", "SJN", "JN1"),
+    "MAZDA":         ("JMZ", "JM0"),
+    "HONDA":         ("SHH", "JHM"),
+    "SUZUKI":        ("TSM", "JSA"),
+    "MITSUBISHI":    ("JMB",),
+    "CHEVROLET":     ("KL1",),
+    "LAND ROVER":    ("SAL",),
+    "PORSCHE":       ("WP0", "WP1"),
+    "TESLA":         ("5YJ", "7SA"),
+    "JEEP":          ("1C4", "3C4"),
+    "MINI":          ("WMW",),
+    "SMART":         ("WME",),
+    "LEXUS":         ("JTH",),
+    "SUBARU":        ("JF1",),
+    "DAEWOO":        ("KLA",),
+    "LADA":          ("XTA",),
+    "ALFA ROMEO":    ("ZAR",),
+}
+
+_ALL_WMI = {w for group in _WMI_BY_BRAND.values() for w in group}
+
+# Perechi pe care Tesseract le confunda pe majuscule. F si E difera printr-o
+# singura bara orizontala - cea mai frecventa greseala pe taloane scanate.
+_CONFUSABLE = {
+    "E": "F", "F": "E", "B": "8", "8": "B", "S": "5", "5": "S",
+    "Z": "2", "2": "Z", "G": "6", "6": "G", "D": "0", "0": "D",
+    "U": "V", "V": "U", "T": "1", "1": "T", "C": "G", "Y": "V",
+}
+
+
+def _fix_vin_wmi(vin: str, brand: Optional[str]) -> str:
+    """Corecteaza codul producatorului daca o singura litera il desparte de
+    unul cunoscut.
+
+    OCR-ul citise 'VE1...' pentru un Renault: E in loc de F. Corectia se aplica
+    doar cand rezultatul e neambiguu - un singur cod cunoscut la distanta de un
+    caracter confundabil - si, cand marca e cunoscuta, doar catre codurile
+    marcii respective.
+    """
+    head = vin[:3]
+    known = _WMI_BY_BRAND.get((brand or "").upper())
+    if known and head in known:
+        return vin
+    if not known and head in _ALL_WMI:
+        return vin
+
+    pool = known if known else _ALL_WMI
+    matches = set()
+    for i, ch in enumerate(head):
+        swap = _CONFUSABLE.get(ch)
+        if not swap:
+            continue
+        candidate = head[:i] + swap + head[i + 1:]
+        if candidate in pool:
+            matches.add(candidate)
+    if len(matches) == 1:
+        fixed = matches.pop()
+        log.info("vin: cod producator %s -> %s (marca %s)", head, fixed, brand)
+        return fixed + vin[3:]
+    return vin
+
+
+def _vote_vin(candidates: list[str]) -> Optional[str]:
+    """Alege VIN-ul din mai multe treceri OCR, caracter cu caracter.
+
+    Votul pe siruri intregi pierde cazul obisnuit: trei treceri citesc corect,
+    una greseste o litera, iar cele patru rezultate sunt patru siruri diferite
+    daca greselile nu coincid. Votul pe pozitii repara fiecare caracter separat.
+    """
+    from collections import Counter
+    if not candidates:
+        return None
+    full = [c for c in candidates if len(c) == 17]
+    if not full:
+        return Counter(candidates).most_common(1)[0][0]
+    if len(set(full)) == 1:
+        return full[0]
+    voted = "".join(Counter(chars).most_common(1)[0][0] for chars in zip(*full))
+    log.info("vin: vot pe caractere din %d treceri -> %s", len(full), voted)
+    return voted
+
+
 def _find_vin_in_text(text: str) -> Optional[str]:
     """Cauta un VIN in text, doar in tokeni individuali sau perechi adiacente
     (nu comprima linii intregi — ar produce false pozitive)."""
@@ -965,16 +1073,21 @@ def _extract_registration_sync(image_path: Path) -> dict:
                 model = known
                 break
 
-    # ── E: VIN / serie sasiu (vot majoritar intre variante) ──────
-    from collections import Counter
-    vin_votes = Counter()
+    # ── E: VIN / serie sasiu ─────────────────────────────────────
+    # Fiecare trecere OCR da un candidat; votul se face pe fiecare caracter in
+    # parte, apoi codul producatorului se verifica fata de marca detectata.
+    vin_candidates = []
     for var_fields, var_text in parsed:
         vin = _extract_vin(var_fields["E"]) if "E" in var_fields else None
         if not vin:
             vin = _find_vin_in_text(var_text)
         if vin:
-            vin_votes[vin] += 1
-    car_series = vin_votes.most_common(1)[0][0] if vin_votes else None
+            vin_candidates.append(vin)
+    if "E" in spatial:
+        spatial_vin = _extract_vin(spatial["E"])
+        if spatial_vin:
+            vin_candidates.append(spatial_vin)
+    car_series = _vote_vin(vin_candidates)
 
     # ── C.2.1 + C.2.2: nume + prenume proprietar ─────────────────
     surname = _clean_name(fields.get("C21", "")) if "C21" in fields else None
@@ -1001,4 +1114,6 @@ def _extract_registration_sync(image_path: Path) -> dict:
     found = [k for k, v in result.items() if v and k != "ocr_raw_text"]
     log.info("ocr talon: %.1fs, %d/9 campuri: %s",
              time.perf_counter() - started, len(found), ",".join(found))
+    if car_series:
+        result["car_series"] = _fix_vin_wmi(car_series, brand)
     return result

@@ -124,3 +124,49 @@ def test_lone_i_lines_are_the_registration_date():
         assert ocr._parse_talon_fields(line).get("I1") == "10.10.2024", line
     # Un B cu o data ramane B, nu devine I.
     assert "I" not in ocr._parse_talon_fields("B 03.01.2013")
+
+
+# ── Seria de sasiu (VIN) ─────────────────────────────────────────────
+
+def test_manufacturer_code_is_corrected_towards_the_brand():
+    """Cazul real raportat: OCR-ul a citit E in loc de F. Cele doua litere
+    difera printr-o bara orizontala, iar pe un talon scanat se confunda des."""
+    assert ocr._fix_vin_wmi("VE1BT1RG648222399", "RENAULT") == "VF1BT1RG648222399"
+    assert ocr._fix_vin_wmi("UV1KSDCEF12345678", "DACIA") == "UU1KSDCEF12345678"
+
+
+def test_a_correct_vin_is_left_alone():
+    for vin, brand in (("VF1BT1RG648222399", "RENAULT"),
+                       ("WBA3B1C51DF123456", "BMW"),
+                       ("TMBJF25L6E6012345", "SKODA")):
+        assert ocr._fix_vin_wmi(vin, brand) == vin
+
+
+def test_correction_works_without_a_known_brand():
+    """Marca nu se citeste intotdeauna. Cand codul rezultat e neambiguu la
+    nivelul tuturor producatorilor, corectia se aplica oricum."""
+    assert ocr._fix_vin_wmi("VE1BT1RG648222399", None) == "VF1BT1RG648222399"
+
+
+def test_an_unrecognisable_code_is_not_invented():
+    """Un cod de producator la mai mult de o litera distanta de orice cod
+    cunoscut se lasa asa cum e: mai bine o valoare pe care omul o corecteaza
+    decat una inventata de noi, care pare corecta."""
+    assert ocr._fix_vin_wmi("XYZ12345678901234", "RENAULT") == "XYZ12345678901234"
+
+
+def test_a_brand_that_does_not_match_the_code_is_not_forced():
+    """Marca citita gresit nu trebuie sa strice un VIN corect: BMW-ul ramane
+    BMW chiar daca marca detectata spune altceva."""
+    assert ocr._fix_vin_wmi("WBA3B1C51DF123456", "DACIA") == "WBA3B1C51DF123456"
+
+
+def test_character_voting_beats_a_single_bad_pass():
+    """Trei treceri citesc corect, una greseste o litera. Votul pe siruri
+    intregi ar fi dat patru rezultate diferite daca greselile nu coincid;
+    votul pe pozitii repara fiecare caracter separat."""
+    good, bad = "VF1BT1RG648222399", "VE1BT1RG648222399"
+    assert ocr._vote_vin([good, good, good, bad]) == good
+    assert ocr._vote_vin([good, bad, good, "VF1BT1RG648222398"]) == good
+    assert ocr._vote_vin([good] * 4) == good
+    assert ocr._vote_vin([]) is None
